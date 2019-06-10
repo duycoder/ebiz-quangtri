@@ -1,0 +1,497 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@using Business.CommonModel.LICH_CONGTAC;
+@using Business.CommonModel.CONSTANT;
+@model LichCongTacViewModel
+@{
+    ViewBag.Title = "Quản lý lịch công tác lãnh đạo";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style type="text/css">
+    #ribbon {
+        background-color: #57889c
+    }
+
+        #ribbon .btn-calendar-function {
+            margin: 0 5px;
+        }
+
+    #content .jarviswidget > header {
+        height: auto;
+        overflow: hidden;
+    }
+
+    #btn--group-calendar-type, #btn--group-send-calendar-email {
+        float: right;
+        margin: 5px 10px;
+    }
+
+    #btn--select-group {
+        width: 250px;
+        float: right;
+    }
+
+    #content .jarviswidget {
+        margin: 0 0 10px 0;
+    }
+
+    #block--list-calendars .well {
+        padding: 0 20px 20px 20px;
+    }
+
+    .calendar--table--data,
+    .calendar--table--data-week,
+    .calendar--table--data-day {
+        border: 1px solid #118ACB;
+    }
+
+        .calendar--table--data thead tr th,
+        .calendar--table--data-week thead tr th,
+        .calendar--table--data-day thead tr th {
+            background-color: #118ACB;
+            border: 1px solid #118ACB;
+            text-transform: uppercase;
+            color: #fff;
+            text-align: center;
+            height: 50px;
+            padding: 0;
+        }
+
+        .calendar--table--data .calendar--cell--highlight,
+        .calendar--table--data-week .calendar--cell--highlight,
+        .calendar--table--data-day .calendar--cell--highlight {
+            background-color: #ffeaa7;
+        }
+
+        .calendar--table--data .calendar--cell--content,
+        .calendar--table--data .calendar--cell--empty,
+        .calendar--table--data-week .calendar--cell--content,
+        .calendar--table--data-week .calendar--cell--empty {
+            overflow: hidden;
+        }
+
+    .calendar--cell--data {
+        min-height: 50px;
+        position: relative;
+    }
+
+    .calendar--table--data tbody tr td,
+    .calendar--table--data-week tbody tr td,
+    .calendar--table--data-day tbody tr td {
+        border: 1px solid #118ACB;
+    }
+
+
+    /*THÁNG*/
+    .calendar--table--data thead tr th {
+        width: 100px;
+        line-height: 50px;
+    }
+
+    .calendar--table--data tbody tr td {
+        height: 100px;
+    }
+
+
+    .calendar--cell--date {
+        text-align: right;
+        font-weight: bold;
+        font-size: 16px;
+        color: #118ACB;
+    }
+
+    .calendar--table--data .calendar--cell--data {
+        text-indent: 10px;
+    }
+
+    .calendar--cell--hour {
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    .calendar--cell--title {
+    }
+
+    .calendar--cell--car-registration-alert {
+        color: #118ACB;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .calendar--cell--data:hover > .calendar--cell--editor {
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .calendar--cell--editor {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: -1;
+        background: rgba(17, 138, 203, 0.7);
+        text-align: center;
+        border-radius: 5px;
+    }
+
+        .calendar--cell--editor i {
+            color: #fff;
+            line-height: 0.4em;
+            font-size: 1.4em;
+        }
+
+        .calendar--cell--editor .btn-group {
+            position: absolute;
+            top: 40%;
+            left: 0;
+            right: 0;
+        }
+
+    .calendar--cell--add-new {
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+        background: rgba(17, 138, 203, 0.7);
+        text-align: center;
+    }
+
+        .calendar--cell--add-new .btn-group a {
+            color: #fff;
+        }
+
+    .calendar--table--data .calendar--cell--content,
+    .calendar--table--data .calendar--cell--empty {
+        height: 130px;
+    }
+
+    .calendar--table--data .calendar--cell--empty {
+        line-height: 130px;
+    }
+
+    .calendar--cell--empty {
+        position: relative;
+    }
+
+        .calendar--cell--empty:hover > .calendar--cell--add-new {
+            display: block;
+        }
+
+    .calendar--cell--extend, .calendar--cell--add {
+        height: 20px;
+        display: block;
+        color: #118ACB;
+        text-align: left;
+        width: 48%;
+    }
+
+    .calendar--cell--extend {
+        float: right;
+    }
+
+    .calendar--cell--add {
+        float: left;
+    }
+
+    .calendar--cell--extend:hover,
+    .calendar--cell--ad:hover {
+        text-decoration: underline;
+    }
+
+    /*TUẦN*/
+    .calendar--table--data-week tbody td:first-child {
+        width: 100px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        color: #118ACB;
+    }
+
+    .calendar--table--data-week tr th:not(:first-child) {
+        width: 200px;
+    }
+
+    .calendar--table--data-week .calendar--cell--content {
+        height: 100px;
+    }
+
+    .calendar--table--data-week .calendar--cell--empty {
+        height: 40px;
+    }
+
+    .calendar--table--data-week .calendar--cell--empty {
+        line-height: 40px;
+    }
+
+    /*NGÀY*/
+    .calendar--table--data-day thead tr th {
+        line-height: 50px;
+    }
+
+        .calendar--table--data-day thead tr th:first-child {
+            width: 100px;
+        }
+
+    .calendar--table--data-day tr td:not(:first-child) {
+        width: 200px;
+    }
+
+    .calendar--table--data-day tr td:nth-child(2) {
+        width: 500px;
+    }
+
+    .calendar--table--data-day .calendar--cell--time-title {
+        text-align: left;
+        font-size: 16px;
+        color: #000;
+    }
+
+    .calendar--table--data-day tbody tr td:first-child,
+    .calendar--table--data-day tbody tr td:last-child {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .calendar--table--data-day tbody tr td:first-child {
+        font-size: 16px;
+    }
+
+    .calendar--table--data-day tbody tr td:last-child {
+        font-size: 14px;
+    }
+
+    .calendar--table--data-day tbody tr td:first-child {
+        color: #118ACB;
+    }
+
+    .calendar--table--data-day .btn-group .fa-search {
+        line-height: 0.4em;
+        font-size: 1.4em;
+    }
+
+    .calendar--table--data-day .btn-group .fa-pencil-square {
+        color: #dfb56c;
+        font-size: 1.5em;
+        line-height: 0.5em;
+    }
+
+    .calendar--table--data-day .btn-group .glyphicon-remove {
+        color: red
+    }
+
+    .ui-autocomplete {
+        z-index: 5000 !important;
+    }
+</style>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        @if (Model.canCreate)
+        {
+            <a class="btn btn-default pull-right btn-calendar-function" href="@Url.Action("CreateLichCongTac")">
+                <i class="fa fa-plus"></i><span>&nbsp;Thêm mới</span>
+            </a>
+        }
+    </div>
+</div>
+
+<div id="modal--lichcongtac-detail" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:70%">
+    </div>
+</div>
+
+<div id="modal--lichcongtac-email" class="modal" tabindex="-1" role="dialog">
+</div>
+
+<div id="content">
+    <div class="widget-t-body no-padding">
+        <div class="jarviswidget">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fas fa-calendar txt-color-darken"></i>
+                </span>
+
+                <h2 class="group-tittle mt10">
+                    Quản lý lịch công tác lãnh đạo
+                </h2>
+
+                <div class="btn-group" role="group" aria-label="Calendar Type" id="btn--group-calendar-type">
+                    <button type="button" data-calendar-type="@LICH_CONSTANT.THANG" class="btn @(Model.calendarType == LICH_CONSTANT.THANG ? "btn-primary": "btn-default")">
+                        <i class="fas fa-calendar"></i>&nbsp;Tháng
+                    </button>
+                    <button type="button" data-calendar-type="@LICH_CONSTANT.TUAN" class="btn @(Model.calendarType == LICH_CONSTANT.TUAN ? "btn-primary": "btn-default")">
+                        <i class="fas fa-table"></i>&nbsp;Tuần
+                    </button>
+                    <button type="button" data-calendar-type="@LICH_CONSTANT.NGAY" class="btn @(Model.calendarType == LICH_CONSTANT.NGAY ? "btn-primary": "btn-default")">
+                        <i class="fas fa-bars"></i>&nbsp;Ngày
+                    </button>
+                </div>
+
+                <input type="hidden" id="CALENDAR_TYPE" value="@Model.calendarType" />
+                @if (Model.isLeader)
+                {
+                    <div class="btn-group" id="btn--select-group">
+                        @Html.DropDownList("select--leader", Model.groupOfLanhDaos, new { @class = "txt-select2 hide", @style = "width:100%" })
+                    </div>
+                }
+                else
+                {
+                    <div class="btn-group" id="btn--select-group">
+                        @Html.DropDownList("select--leader", Model.groupOfLanhDaos, "--- Chọn lãnh đạo ---", new { @class = "txt-select2", @style = "width:100%" })
+                    </div>
+                }
+
+                <div class="btn-group" id="btn--group-send-calendar-email">
+                    <a class="btn btn-default" href="javascript:void(0)" id="btn--send-calendar-email">
+                        <i class="fa fa-envelope"></i><span>&nbsp;Gửi email</span>
+                    </a>
+                </div>
+            </header>
+        </div>
+    </div>
+
+    <div id="block--list-calendars">
+        @{Html.RenderAction("SearchLichCongTac", new { searchModel = new LICHCONGTAC_SEARCH() { calendarType = Model.calendarType } });}
+    </div>
+</div>
+
+
+<div id="modal--edit--lich-cong-tac" role="dialog" class="modal fade" data-backdrop="false">
+</div>
+
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<script>
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function(){
+            $('.txt-select2').select2();
+        });
+
+        $('#btn--group-calendar-type .btn').on('click',function(){
+            var calendarType = $(this).data('calendar-type');
+            $('#CALENDAR_TYPE').val(calendarType);
+            $('#btn--group-calendar-type .btn').removeClass('btn-primary').addClass('btn-default');
+            $(this).addClass('btn-primary');
+
+            var searchModel = {
+                calendarType: calendarType,
+                calendarDay: new Date(),
+                leaderId: $('#select--leader').val() != '' ? parseInt($('#select--leader').val()) : null
+            }
+            search(searchModel)
+        });
+
+        $('#select--leader').on('change',function(){
+            searchLichCongTac();
+        })
+
+        $('#btn--send-calendar-email').on('click',function(){
+            var userId = $('#select--leader').val() != '' ? parseInt($('#select--leader').val()) : null;
+            $.get('/LichCongTacArea/LichCongTac/SendEmail?userId='+ userId, function(rs){
+                $('#modal--lichcongtac-email').html(rs);
+                $('#modal--lichcongtac-email').modal('show');
+            });
+        });
+    });
+
+    function showInfo(id){
+            $.ajax({
+                url: '@Url.Action("DetailLichCongTac")',
+                data: { 'id': id, 'isShowCarRegistration': true },
+                type: 'post',
+                dataType:'html',
+                success: function (rs) {
+                    $('#modal--lichcongtac-detail').html(rs);
+                    $('#modal--lichcongtac-detail').modal('show');
+                },error: function () {
+                    NotiError("Không thực hiện được thao tác");
+                }
+            });
+        }
+    function searchLichCongTac(){
+         var leaderId = $('#select--leader').val() != '' ? parseInt($('#select--leader').val()) : null;
+            var calendarType = parseInt($('#CALENDAR_TYPE').val());
+            if(calendarType == parseInt('@LICH_CONSTANT.NGAY')){
+                searchLichCongTacByDay();
+            }else if(calendarType == parseInt('@LICH_CONSTANT.TUAN')){
+                searchLichCongTacByWeek();
+            }else{
+                searchLichCongTacByMonth();
+            }
+    }
+
+    function search(searchModel){
+            $.ajax({
+                url: '/LICHCONGTACArea/LICHCONGTAC/SearchLichCongTac',
+                type: 'post',
+                dataType : "html",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(searchModel),
+                success: function (result) {
+                    $('#block--list-calendars').html(result);
+                }, error: function (result) {
+                    NotiError('Có lỗi xảy ra');
+                }
+            })
+        }
+
+    function deleteCalendar(id){
+        $.confirm({
+                'title': 'Xác nhận xóa',
+                'message': 'Bạn có chắc chắn muốn xóa lịch công tác này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("DeleteLichCongTac")',
+                                data: { 'id': id },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess('Xóa lịch công tác thành công');
+                                        searchLichCongTac();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+
+    function registerCar(calendarId){
+        location.href = '/QL_DANGKY_XEArea/QL_DANGKY_XE/Create?calendarId='+calendarId;
+    }
+
+    function edit(id){
+        $.get('/LICHCONGTACArea/LichCongTac/EditFastLichCongTac?year=0&month=0&day=0&hour=0&minute=0&id='+id, function(result){
+            $('#modal--edit--lich-cong-tac').html(result);
+            $('#modal--edit--lich-cong-tac').modal('show');
+        });
+    }
+</script>

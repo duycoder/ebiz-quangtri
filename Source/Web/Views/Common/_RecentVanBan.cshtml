@@ -1,0 +1,307 @@
+﻿@using CommonHelper
+@model Web.Models.VanBanModel
+
+@{
+    if (Model.ListVbDi.Count > 0)
+    {
+    <!--THÔNG KÊ VĂN BẢN ĐI-->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable left @(Model.ListVbDi.Count == 0 ? "hide" : "")" style="padding-top: 10px; padding-bottom: 10px">
+            <div class="jarviswidget " role="widget">
+                <header role="heading">
+                    <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+                    <h2 class="group-tittle mt10"><a href="/HSVanBanDiArea/HSVanBanDi/Index">Văn bản đi (@Model.ListVbDi.Count)</a></h2>
+                </header>
+                <div role="content" style="padding:0px; border: 0px;">
+                    <div class="widget-body">
+                        <div id="tbl-vanbanden">
+                            <table class="hinet-table table table-bordered table-hover" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 4%">STT</th>
+                                        <th style="width: 49%">Trích yếu</th>
+                                        <th>Độ khẩn</th>
+                                        <th>Độ ưu tiên</th>
+                                        <th>Người ký</th>
+                                        <th>Ngày nhận xử lý</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int count = 0;
+                                        foreach (var item in Model.ListVbDi.ListItem)
+                                        {
+                                            var classed = "";
+                                            if (!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                            {
+                                                classed = "style='color:" + item.COLOR + " !important; font-weight:bold'";
+                                            }
+                                            count++;
+                                            <tr style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")">
+                                                <td>@count</td>
+                                                <td>
+                                                    <a style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")" class="text-ellipsis" title="@item.TRICHYEU" href="/HSVanBanDiArea/HSVanBanDi/DetailVanBan/@item.ID">@item.TRICHYEU</a>
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                                    {
+
+                                                        <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <span>@item.TEN_DOKHAN</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.ICON_DOUUTIEN))
+                                                    {
+                                                        <img class="division-icon" src="@item.ICON_DOUUTIEN" title="@item.TEN_DOUUTIEN" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@item.TEN_DOUUTIEN</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @Html.Raw((item.TEN_NGUOIKY != null ? item.TEN_NGUOIKY + " <br />" : ""))
+                                                    <span class="custom-span">@item.CHUCVU</span>
+                                                </td>
+                                                <td>
+                                                    @string.Format("{0:dd/MM/yyyy}", @item.Update_At)
+
+
+                                                    <span style="color:#ff0000">
+                                                        @{
+                                                            var Ngay = int.Parse(string.Format("{0:dd}", @item.Update_At));
+                                                            var Thang = int.Parse(string.Format("{0:MM}", @item.Update_At));
+                                                            var Nam = int.Parse(string.Format("{0:yyyy}", @item.Update_At));
+                                                            DateTime NgayUpdate = new DateTime(Nam, Thang, Ngay);
+                                                            DateTime NowDate = DateTime.Today;
+                                                            double TotalNgay = (NowDate - NgayUpdate).TotalDays;
+                                                            <p>@TotalNgay ngày</p>
+
+                                                        }
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                                            }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+                                                            }
+                                                            if (Model.ListVbDen.Count > 0)
+                                                            {
+        <!--THÔNG KÊ VĂN BẢN ĐẾN-->
+                                                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 @(Model.ListVbDen.Count == 0 ? "hide" : "") sortable-grid ui-sortable left" style="padding-top: 10px; padding-bottom: 10px">
+                                                                    <div class="jarviswidget " role="widget">
+                                                                        <header role="heading">
+                                                                            <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+                                                                            <h2 class="group-tittle mt10"><a href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/ChuaXuLy">Văn bản đến (@Model.ListVbDen.Count)</a></h2>
+                                                                        </header>
+                                                                        <div role="content" style="padding: 0px; border: 0px;">
+                                                                            <div class="widget-body">
+                                                                                <div id="tbl-vanbanden">
+                                                                                    <table class="hinet-table table table-bordered table-hover" cellspacing="0" width="100%">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th style="width: 4%">STT</th>
+                                                                                                @*<th style="width: 8%">Mã hiệu</th>*@
+                                                                                                <th style="width: 49%">Trích yếu</th>
+                                                                                                <th>Độ khẩn</th>
+                                                                                                <th>Độ ưu tiên</th>
+                                                                                                <th>Người ký</th>
+                                                                                                <th>Ngày đến</th>
+                                                                                                <th>Ngày nhận xử lý</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            @{
+                                                                                                int count = 0;
+                                                                                                foreach (var item in Model.ListVbDen.ListItem)
+                                                                                                {
+                                                                                                    var classed = "";
+                                                                                                    if (!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                                                                                    {
+                                                                                                        classed = "style='color:" + item.COLOR + " !important; font-weight:bold'";
+                                                                                                    }
+                                                                                                    count++;
+                                                                                                    <tr style="color: @(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")">
+                                                                                                        <td>@count</td>
+                                                                                                        @*<td>
+                                                                                                                <a style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")" href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen/@item.ID">
+                                                                                                                    @item.SOHIEU
+                                                                                                                </a>
+                                                                                                            </td>*@
+                                                                                                        <td>
+                                                                                                            <a style="color: @(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")" class="text-ellipsis" title="@item.TRICHYEU" href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen/@item.ID">@item.TRICHYEU</a>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            @if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                                                                                            {
+
+                                                                                                                <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+
+                                                                                                                <span>@item.TEN_DOKHAN</span>
+                                                                                                            }
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            @if (!string.IsNullOrEmpty(item.ICON_DOMAT))
+                                                                                                            {
+                                                                                                                <img class="division-icon" src="@item.ICON_DOMAT" title="@item.TEN_DOMAT" />
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                <span>@item.TEN_DOMAT</span>
+                                                                                                            }
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            @Html.Raw((item.NGUOIKY != null ? item.NGUOIKY + " <br />" : ""))
+                                                                                                            <span class="custom-span">@item.CHUCVU</span>
+                                                                                                        </td>
+                                                                                                        <td>@string.Format("{0:dd/MM/yyyy}", @item.NGAYTAO)</td>
+                                                                                                        <td>
+                                                                                                            @string.Format("{0:dd/MM/yyyy}", @item.Update_At)
+                                                                                                            <span style="color: #ff0000">
+                                                                                                                @{
+                                                                                                                    var Ngay = int.Parse(string.Format("{0:dd}", @item.Update_At));
+                                                                                                                    var Thang = int.Parse(string.Format("{0:MM}", @item.Update_At));
+                                                                                                                    var Nam = int.Parse(string.Format("{0:yyyy}", @item.Update_At));
+                                                                                                                    DateTime NgayUpdate = new DateTime(Nam, Thang, Ngay);
+                                                                                                                    DateTime NowDate = DateTime.Today;
+                                                                                                                    double TotalNgay = (NowDate - NgayUpdate).TotalDays;
+                                                                                                                    <p>@TotalNgay ngày</p>
+
+                                                                                                                }
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                                    }
+                                                                                            }
+                                                                                        </tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </article>
+                                                                                                                    }
+                                                                                                                    if (Model.ListVbDenNoiBo.Count > 0)
+                                                                                                                    {
+                                                            <!--THÔNG KÊ VĂN BẢN ĐẾN NỘI BỘ-->
+                                                                                                                        <article class="col-xs-6 col-sm-12 col-md-12 col-lg-12 @(Model.ListVbDenNoiBo.Count == 0 ? "hide" : "") sortable-grid ui-sortable left" style="padding-top: 10px; padding-bottom: 10px">
+                                                                                                                            <div class="jarviswidget " role="widget">
+                                                                                                                                <header role="heading">
+                                                                                                                                    <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+                                                                                                                                    <h2 class="group-tittle mt10"><a href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/NoiBoChuaXuLy">Văn bản đến nội bộ (@Model.ListVbDenNoiBo.Count)</a></h2>
+                                                                                                                                </header>
+                                                                                                                                <div role="content" style="padding:0px; border: 0px;">
+                                                                                                                                    <div class="widget-body">
+                                                                                                                                        <div id="tbl-vanbanden">
+                                                                                                                                            <table class="hinet-table table table-bordered table-hover" cellspacing="0" width="100%">
+                                                                                                                                                <thead>
+                                                                                                                                                    <tr>
+                                                                                                                                                        <th style="width: 4%">STT</th>
+                                                                                                                                                        @*<th style="width: 8%">Mã hiệu</th>*@
+                                                                                                                                                        <th style="width: 49%">Trích yếu</th>
+                                                                                                                                                        <th>Độ khẩn</th>
+                                                                                                                                                        <th>Độ ưu tiên</th>
+                                                                                                                                                        <th>Người ký</th>
+                                                                                                                                                    </tr>
+                                                                                                                                                </thead>
+                                                                                                                                                <tbody>
+                                                                                                                                                    @{
+                                                                                                                                                        int count = 0;
+                                                                                                                                                        foreach (var item in Model.ListVbDenNoiBo.ListItem)
+                                                                                                                                                        {
+                                                                                                                                                            var classed = "";
+                                                                                                                                                            if (!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                                                                                                                                            {
+                                                                                                                                                                classed = "style='color:" + item.COLOR + " !important; font-weight:bold'";
+                                                                                                                                                            }
+                                                                                                                                                            count++;
+                                                                                                                                                            <tr style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")">
+                                                                                                                                                                <td>@count</td>
+                                                                                                                                                                @*<td>
+                                                                                                                                                                        <a style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")" href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen/@item.ID">
+                                                                                                                                                                            @item.SOHIEU
+                                                                                                                                                                        </a>
+                                                                                                                                                                    </td>*@
+                                                                                                                                                                <td>
+                                                                                                                                                                    <a style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")" class="text-ellipsis" title="@item.TRICHYEU" href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen/@item.ID">@item.TRICHYEU</a>
+                                                                                                                                                                </td>
+                                                                                                                                                                <td>
+                                                                                                                                                                    @if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                                                                                                                                                    {
+
+                                                                                                                                                                        <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                                                                                                                                                                    }
+                                                                                                                                                                    else
+                                                                                                                                                                    {
+
+                                                                                                                                                                        <span>@item.TEN_DOKHAN</span>
+                                                                                                                                                                    }
+                                                                                                                                                                </td>
+                                                                                                                                                                <td>
+                                                                                                                                                                    @if (!string.IsNullOrEmpty(item.ICON_DOMAT))
+                                                                                                                                                                    {
+                                                                                                                                                                        <img class="division-icon" src="@item.ICON_DOMAT" title="@item.TEN_DOMAT" />
+                                                                                                                                                                    }
+                                                                                                                                                                    else
+                                                                                                                                                                    {
+                                                                                                                                                                        <span>@item.TEN_DOMAT</span>
+                                                                                                                                                                    }
+                                                                                                                                                                </td>
+                                                                                                                                                                <td>
+                                                                                                                                                                    @Html.Raw((item.NGUOIKY != null ? item.NGUOIKY + " <br />" : ""))
+                                                                                                                                                                    <span class="custom-span">@item.CHUCVU</span>
+                                                                                                                                                                </td>
+                                                                                                                                                            </tr>
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                </tbody>
+                                                                                                                                            </table>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </article>
+                                                                                                                                                        }
+}
+
+<script type="text/javascript">
+    $(window).resize(function () {
+        if ($(window).width() <= 1024) {
+            $("body").addClass("minified");
+        }
+    });
+</script>
+
+<style>
+    a.notif-link {
+        color: #ff0033 !important;
+        font-weight: bold;
+    }
+
+    .custom-span {
+        font-style: italic !important;
+        font-weight: bold !important;
+    }
+
+    .ellipsis {
+        white-space: nowrap;
+        width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border: 1px solid #000000;
+    }
+</style>

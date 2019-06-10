@@ -1,0 +1,355 @@
+﻿@using Web.Areas.QuanLyHoSoArea.Models;
+@model FormVanBanModel
+@using (Ajax.BeginForm("SaveVanBan", "QuanLyHoSO", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "FormSuccess"
+}, new { id = "frmVanBan" }))
+{
+    @Html.AntiForgeryToken()
+
+    <script src="~/Scripts/jquery-validation-1.17.0/dist/jquery.validate.min.js"></script>
+    <style>
+        .red {
+            color: red;
+        }
+
+        .width100 {
+            width: 100%;
+            float: left;
+        }
+
+        .form-group {
+            padding: 0 20px;
+        }
+
+
+        .modal-header {
+            background-color: white;
+            color: black;
+            padding: 10px;
+        }
+
+        .modal-footer {
+            padding: 10px;
+        }
+
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background: none;
+        }
+
+        .select2-container .select2-choice .select2-arrow b:before, .select2-selection__arrow b:before {
+            content: "" !important;
+            display: none;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 26px;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            width: 35px;
+        }
+
+        .loading {
+            width: 98%;
+            position: absolute;
+            z-index: 999;
+            height: 600px;
+            text-align: center;
+            display: block;
+        }
+    </style>
+
+
+    <div class="modal-dialog" style="margin: 30px 30px 30px 15%;">
+        <div class="modal-content" style="width:1050px; float:left">
+            <div class="modal-header width100">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    @{
+                        if (Model.VanBan.ID > 0)
+                        {
+                            <span>Cập nhật văn bản</span>
+                        }
+                        else
+                        {
+                            <span>Thêm mới văn bản</span>
+                        }
+                    }
+
+                </h4>
+            </div>
+            <div class="modal-body width100">
+                <div id="loading" style="display:none">
+                    <img src="~/Images/ajax-loader.gif" style="margin-top:250px" />
+                </div>
+                <section class="col-sm-12" id="VanBanContent">
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2" style="width:16%">Tiêu đề:<span class="red">*</span></label>
+                        <div class="col-sm-10" style="width:84%">
+                            <input type="text" value="@Model.VanBan.TIEUDE" id="TIEUDE" name="TIEUDE" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2" style="width:16%">Thuộc hồ sơ:<span class="red">*</span></label>
+                        <div class="col-sm-10" style="width:84%">
+                            @Html.DropDownList("HOSO_ID", Model.ListHoSo, "---Chọn hồ sơ---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Số ký hiệu:<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="text" value="@Model.VanBan.SO_KYHIEU" id="SO_KYHIEU" name="SO_KYHIEU" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Tờ số:<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="text" maxlength="8" value="@Model.VanBan.TOSO" id="TOSO" name="TOSO" placeholder="Nhập số" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Ngôn ngữ:</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("NGONNGU_ID", Model.ListNgonNgu, "---Chọn ngôn ngữ---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Ngày ban hành:<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="text" value="@string.Format("{0:dd/MM/yyyy}",Model.VanBan.NGAYBANHANH)" id="NGAYBANHANH" name="NGAYBANHANH" class="form-control datepicker" />
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Cơ quan ban hành:<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("COQUAN_BANHANH_ID", Model.ListCoQuanBanHanh, "---Chọn cơ quan ban hành---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Lĩnh vực:<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("LINHVUC_ID", Model.ListLinhVuc, "---Chọn lĩnh vực---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Loại văn bản:<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("LOAI_VANBAN_ID", Model.ListLoaiVanBan, "---Chọn loại văn bản---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Độ mật:</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("DOMAT_ID", Model.ListDoMat, "---Chọn độ mật---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Mức độ truy cập:</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("MUCDO_TRUYCAP", Model.ListMucDoTruyCap, "---Chọn mức độ truy cập---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4">Tình trạng vật lý:</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("TINHTRANG_VATLY", Model.ListTinhTrangVatLy, "---Chọn tình trạng vật lý---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2" style="width:16%">Trích yếu văn bản:</label>
+                        <div class="col-sm-10" style="width:84%">
+                            <textarea id="TRICHYEU_VANBAN" name="TRICHYEU_VANBAN" class="form-control" style="min-height:70px">@Model.VanBan.TRICHYEU_VANBAN</textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2" style="width:16%">File đính kèm: </label>
+                        <div class="col-sm-10" style="width:84%">
+                            @Html.Partial("../Common/UploadFile", Model.ListTaiLieu, new ViewDataDictionary { { "is_multi", "0" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2" style="width:16%">Ghi chú</label>
+                        <div class="col-sm-10" style="width:84%">
+                            <textarea id="GHICHU" name="GHICHU" class="form-control" style="min-height:70px">@Model.VanBan.GHICHU</textarea>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer width100">
+                <input type="hidden" id="ID" name="ID" value="@Model.VanBan.ID" />
+                @*<input type="hidden" id="HOSO_ID" name="HOSO_ID" value="@Model.HOSO_ID" />*@
+                <button type="button" class="btn btn-success" onclick="FormSubmit()">
+                    @{
+                        if (Model.VanBan.ID > 0)
+                        {
+                            <span>Cập nhật</span>
+
+                        }
+                        else
+                        {
+                            <span>Thêm mới</span>
+                        }
+                    }
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Hủy bỏ</button>
+            </div>
+        </div>
+        <div>
+            <
+        </div>
+    </div>
+
+}
+<script>
+    //  function FormSuccess(response) {
+
+
+    //}
+    function FormSubmit() {
+        if ($("#frmVanBan").valid()) {
+            $("#loading").addClass("loading");
+            $("#VanBanContent").css("opacity", "0.5");
+            var dataString;
+            var action = $("#frmVanBan").attr("action");
+            $("#frmVanBan").attr("enctype", "multipart/form-data");
+            dataString = new FormData($("#frmVanBan").get(0));
+            contentType = false;
+            processData = false;
+            $.ajax({
+                type: "POST",
+                url: action,
+                async: false,
+                data: dataString,
+                dataType: "json", //change to your own, else read my note above on enabling the JsonValueProviderFactory in MVC
+                contentType: contentType,
+                processData: processData,
+                success: function (response) {
+                    reloadVanBan();
+                    reloadData();
+                    CloseModalVanBan();
+
+                    NotiSuccess(response.message);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    //do your own thing
+                    alert(textStatus.message);
+                }
+            });
+
+        }
+    }
+    $(document).ready(function () {
+        $(".datepicker").datepicker({ dateFormat: 'dd/mm/yy', changeMonth: true, changeYear: true, yearRange: "-65:+0" })
+            .on('change', function () {
+                $(this).valid();  // triggers the validation test
+                //$(this).closest("form").valid();
+            });
+
+        $("select.form-control").select2().on("change", function (e) {
+            $(this).valid()
+        });
+        $("#frmVanBan").validate({
+            ignore: true,
+            rules: {
+                TIEUDE: "required",
+                HOSO_ID: "required",
+                SO_KYHIEU: "required",
+                TOSO: {
+                    required: true,
+                    digits: true
+                },
+                NGAYBANHANH:
+                    {
+                        required: true,
+                        NgayBanHanhValid: true
+                    },
+                COQUAN_BANHANH_ID: "required",
+                LINHVUC_ID: "required",
+                LOAI_VANBAN_ID: "required",
+            },
+            messages: {
+                TIEUDE: "Bạn nhập tiêu đề",
+                HOSO_ID: "Bạn chọn hồ sơ",
+                SO_KYHIEU: "Bạn nhập số ký hiệu",
+                TOSO: {
+                    required: "Bạn nhập tờ số",
+                    digits: "Bạn phải nhập số"
+                },
+                NGAYBANHANH: "Bạn chọn ngày ban hành",
+                COQUAN_BANHANH_ID: "Bạn chọn cơ quan ban hành",
+                LINHVUC_ID: "Bạn chọn lĩnh vực",
+                LOAI_VANBAN_ID: "Bạn chọn loại văn bản",
+            },
+            errorElement: "em",
+            errorPlacement: function (error, element) {
+                error.addClass("help-block");
+                if (element.prop("type") === "checkbox") {
+                    error.insertAfter(element.parent("label"));
+                } else {
+                    if (element.next().length > 0) {
+                        error.insertAfter(element.next());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            },
+
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-8").addClass("has-error").removeClass("has-success");
+                $(element).parents(".col-sm-10").addClass("has-error").removeClass("has-success");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-8").addClass("has-success").removeClass("has-error");
+                $(element).parents(".col-sm-10").addClass("has-success").removeClass("has-error");
+
+            },
+        });
+
+
+        $.validator.addMethod("NgayBanHanhValid", function (value, element) {
+            return this.optional(element) || checkDateTime($("#NGAYBANHANH").val());
+        }, "Ngày ban hành không hợp lệ")
+    });
+    function checkDateTime(date) {
+        // regular expression to match required date format
+        re = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+        if (date != '') {
+            if (regs = date.match(re)) {
+                // day value between 1 and 31
+                if (regs[1] < 1 || regs[1] > 31) {
+                    return false;
+                }
+                // month value between 1 and 12
+                if (regs[2] < 1 || regs[2] > 12) {
+                    return false;
+                }
+                if ((regs[1] > 29 && regs[2] == 2)) {
+                    return false;
+                }
+                // year value between 1895 and now
+                if (regs[3] < 1895) {
+                    return false;
+                }
+                //try {
+                //    var date1 = $.datepicker.parseDate("dd-mm-yy",date);
+                //    //$("#SEARCH_BATDAU_ERROR").hide();
+                //}
+                //catch (err) {
+                //   // $("#SEARCH_BATDAU_ERROR").show();
+                //    return false;
+                //}
+            } else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+</script>

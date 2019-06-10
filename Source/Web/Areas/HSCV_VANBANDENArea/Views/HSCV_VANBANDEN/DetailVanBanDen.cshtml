@@ -1,0 +1,403 @@
+﻿@using Web.Areas.HSCV_VANBANDENArea.Models;
+@using Business.CommonModel.CONSTANT
+@model DetailVanBanDenViewModel
+@{
+    ViewBag.Title = "Thông tin văn bản đến";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style type="text/css">
+    #block--info-vanbanden {
+        width: 80% !important;
+    }
+
+    #table--info-vanbanden {
+        margin-top: 5px;
+        background: #fff;
+        margin-bottom: 5px;
+    }
+
+        #table--info-vanbanden td:nth-child(2n+1) {
+            font-weight: bold !important;
+            text-align: right;
+            width: 16.66666667%;
+            vertical-align: middle;
+        }
+
+            #table--info-vanbanden td:nth-child(2n+1) label {
+                font-weight: bold !important;
+            }
+
+    .list-group {
+        list-style-type: decimal;
+    }
+
+        .list-group li {
+            position: relative;
+            display: block;
+            padding: .75rem 1.25rem;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.125);
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+            .list-group li:first-child {
+                border-top: none;
+            }
+</style>
+
+<div id="ribbon" style=" background-color:#57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        @if (Model.canCreateCalendar)
+        {
+            <a class="btn btn-default pull-right" href="/LICHCONGTACArea/LICHCONGTAC/CreateLichCongTac?idVanBanDen=@Model.entityVanBanDen.ID">
+                <i class="fa fa-plus"></i> <span>Tạo lịch công tác</span>
+            </a>
+        }
+        @*<a class="btn btn-default pull-right" href="/QuanLyCongViec/QuanLyCongViec/Create?Type=1&Id=@Model.entityVanBanDen.ID">
+                <i class="fa fa-plus"></i> <span>Tạo công việc</span>
+            </a>*@
+        <a class="btn btn-default pull-right" href="/HSVanBanDiArea/HSVanBanDi/CreateVB?id=0&idVanBanDen=@Model.entityVanBanDen.ID">
+            <i class="fa fa-plus"></i> <span>Thêm mới văn bản đi</span>
+        </a>
+        <a class="btn btn-default pull-right" href="@Url.Action("NavigateBackToList", new { typeOfVanBanDen = Model.typeOfVanBanDen})">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div id="block--info-vanbanden" class="clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fa fa-list-alt txt-color-darken"></i>
+                </span>
+                <h2 class="hidden-xs hidden-sm">
+                    THÔNG TIN VĂN BẢN ĐẾN
+                </h2>
+            </header>
+
+            <table id="table--info-vanbanden" class="table table-bordered">
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">
+                            Đơn vị gửi
+                        </label>
+                    </td>
+                    <td class="td-label col-sm-2">
+                        <label>
+                            @Model.nameOfDonViGui
+                        </label>
+                    </td>
+
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">
+                            Loại cơ quan
+                        </label>
+                    </td>
+                    <td class="td-label col-sm-2">
+                        <label>
+                            @Model.nameOfLoaiCoQuan
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Loại văn bản</label>
+                    </td>
+                    <td>
+                        <label>@Model.nameOfLoaiVanBan</label>
+                    </td>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Lĩnh vực</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @Model.nameOfLinhVucVanBan
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Số hiệu</label>
+                    </td>
+                    <td>
+                        <label>@Model.entityVanBanDen.SOHIEU</label>
+                    </td>
+
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Mã đăng ký</label>
+                    </td>
+                    <td>
+                        <label>@Model.entityVanBanDen.MA_DANGKY</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Trích yếu</label>
+                    </td>
+                    <td colspan="3">
+                        <label>@Model.entityVanBanDen.TRICHYEU</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Công văn đến</label>
+                    </td>
+                    <td colspan="3">
+                        <label>@Model.nameOfCongVanDen</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Độ mật</label>
+                    </td>
+                    <td>
+                        <label>@Model.nameOfDoKhan</label>
+                    </td>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Độ khẩn</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>@Model.nameOfDoUuTien</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Số trang</label>
+                    </td>
+                    <td>
+                        <label>@Model.entityVanBanDen.SOTRANG</label>
+                    </td>
+
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Số văn bản đi theo sổ</label>
+                    </td>
+                    <td>
+                        <label>@Model.entityVanBanDen.SODITHEOSO</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Số bản</label>
+                    </td>
+                    <td>
+                        <label>@Model.entityVanBanDen.SO_BAN</label>
+                    </td>
+
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Loại bản</label>
+                    </td>
+                    <td>
+                        <label>@Model.nameOfThongTinLoaiBan</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Ngày có hiệu lực</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @string.Format("{0:dd-MM-yyyy}", Model.entityVanBanDen.NGAY_HIEULUC)
+                        </label>
+                    </td>
+
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Thời hạn thu hồi</label>
+                    </td>
+                    <td>
+                        <label>
+                            @string.Format("{0:dd-MM-yyyy}", Model.entityVanBanDen.NGAYHET_HIEULUC)
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Ngày văn bản </label>
+                    </td>
+                    <td>
+                        <label>
+                            @string.Format("{0:dd-MM-yyyy}", Model.entityVanBanDen.NGAY_VANBAN)
+                        </label>
+                    </td>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Ngày ban hành</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @string.Format("{0:dd-MM-yyyy}", Model.entityVanBanDen.NGAY_BANHANH)
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">
+                            Thời hạn giải quyết
+                        </label>
+                    </td>
+
+                    <td colspan="3">
+                        <label>
+                            @string.Format("{0:dd-MM-yyyy}", Model.entityVanBanDen.THOIHAN_GIAIQUYET)
+                        </label>
+                    </td>
+                </tr>
+
+
+                @if (Model.entityVanBanDen.NGAYCONGTAC != null)
+                {
+                    <tr>
+                        <td class="txt-right col-sm-2">
+                            <label class="lbl-title">
+                                Ngày công tác
+                            </label>
+                        </td>
+
+                        <td colspan="3">
+                            @string.Format("{0:dd-MM-yyyy}", Model.entityVanBanDen.NGAYCONGTAC)
+                            @if (Model.entityVanBanDen.GIO_CONGTAC != null)
+                            {
+                                <span>
+                                    &nbsp;lúc&nbsp;<b>@(Model.entityVanBanDen.GIO_CONGTAC.Value.ToString("D2") + "h" + (Model.entityVanBanDen.PHUT_CONGTAC.HasValue ? Model.entityVanBanDen.PHUT_CONGTAC.Value.ToString("D2") : ""))</b>
+                                </span>
+                            }
+
+                            @if (Model.hasSteps && Model.entityVanBanDen.NGAYCONGTAC.HasValue)
+                            {
+                                if (Model.isDuplicateCalendar == true)
+                                {
+                                    <span style="color: red">
+                                        <b>
+                                            <i>&nbsp;(Ngày công tác hiện tại đang bị trùng  với lịch công tác - Bấm chi tiết để xem )</i>
+                                        </b>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-info">
+                                        <b>
+                                            <i>&nbsp;(Bấm chi tiết để xem lịch công tác trong tuần hiện tại)</i>
+                                        </b>
+                                    </span>
+                                }
+                                <button type="button" class="btn btn-default btn-sm" id="btn--show-calendar-user">
+                                    <i class="fa fa-search"></i>&nbsp;&nbsp;Chi tiết
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Người ký</label>
+                    </td>
+                    <td>
+                        <label>@Model.entityVanBanDen.NGUOIKY</label>
+                    </td>
+
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Chức vụ người ký</label>
+                    </td>
+                    <td>
+                        <label>
+                            @Model.entityVanBanDen.CHUCVU
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Tác giả</label>
+                    </td>
+                    <td colspan="3">
+                        <label>
+                            @Model.entityVanBanDen.TACGIA
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Nội dung</label>
+                    </td>
+                    <td colspan="3">
+                        <label>
+                            @Html.Raw(Model.entityVanBanDen.NOIDUNG)
+                        </label>
+                    </td>
+                </tr>
+            </table>
+
+            @if (Model.groupOfTaiLieuDinhKems.Any())
+            {
+                @Html.Partial("../Common/UploadFile", Model.groupOfTaiLieuDinhKems, new ViewDataDictionary() { { "detail", 1 }, { "allowviewpdf", 0 } })
+            }
+
+            <div class="col-md-12 col-sm-12" id="block--info-workflow">
+                @{
+                    Html.RenderAction("GetAction", "WFSTREAM", new { area = "WFSTREAMAREA", idItem = Model.entityVanBanDen.ID, itemType = true == Model.entityVanBanDen.IS_NOIBO ? MODULE_CONSTANT.VANBANDENNOIBO : MODULE_CONSTANT.VANBANDEN });
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal--lich-cong-tac-user">
+</div>
+
+<style type="text/css">
+    #block--info-workflow {
+        padding: 10px;
+        text-align: center;
+        margin-top: 0px;
+        background-color: transparent !important;
+        border: none
+    }
+</style>
+
+<script>
+    $(function(){
+        if($('#btn--show-calendar-user').length > 0){
+            $('#btn--show-calendar-user').on('click',function(){
+                var params = {
+                    userId: '@Model.currentUserId',
+                    date: new Date(parseInt('@Model.entityVanBanDen.NGAYCONGTAC.GetValueOrDefault().Year'), parseInt('@Model.entityVanBanDen.NGAYCONGTAC.GetValueOrDefault().Month') -1 , parseInt('@Model.entityVanBanDen.NGAYCONGTAC.GetValueOrDefault().Day'))
+                }
+
+                $.ajax({
+                  type: 'post',
+                  url: '/LICHCONGTACArea/LichCongTac/LichCongTacCanBoTrongNgay/',
+                  contentType: 'application/json',
+                  dataType:'html',
+                  data: JSON.stringify(params),
+                  success: function (result) {
+                        $('#modal--lich-cong-tac-user').html(result);
+                        $('#modal--lich-cong-tac-user').modal('show');
+                  },
+                  error: function () {
+                    NotiError('Không thể tải lịch công tác');
+                  }
+               });
+            });
+        }
+    })
+
+</script>

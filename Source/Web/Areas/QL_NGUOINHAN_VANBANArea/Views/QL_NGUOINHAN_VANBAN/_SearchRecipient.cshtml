@@ -1,0 +1,78 @@
+﻿@using Business.CommonModel.CONSTANT;
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("SearchData", "QL_NGUOINHAN_VANBAN",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+                <div class="col-md-12 row-block">
+                    <label class="col-md-2 control-label" for="TEN_NHOM">
+                        Tên nhóm
+                    </label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" name="TEN_NHOM"/>
+                    </div>
+                </div>
+
+                <div class="row"></div>
+
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="button--search-assignment" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        &nbsp;Tìm kiếm
+                    </button>
+
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </span>
+                        &nbsp;Đóng
+                    </a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<script>
+    function searchSuccess(result) {
+        $("#table--recipients").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: result.TotalPage,
+            recordCount: result.Count,
+            listItem: result.ListItem
+        });
+    }
+    function configSearch() {
+        $(".txt-select2").select2();
+    }
+
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", configSearch)
+        });
+    })
+
+</script>

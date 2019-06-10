@@ -1,0 +1,226 @@
+﻿@{
+    ViewBag.Title = "Quản lý văn bản đã phát hành";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Web.Areas.HSVanBanDiArea.Models
+@using Newtonsoft.Json
+@model VanBanDiVM
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListResult.ListItem));
+}
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+
+<style>
+    .vbchuaxuly tr td:nth-child(3){
+        width:15% !important;
+    }
+</style>
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("CreateVb","HSVanBanDi")">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<style>
+    #tbl-vanbanden table tr {
+        font-weight: bolder;
+    }
+</style>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading" style="height: 40px; line-height: 35px;">
+            <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10">
+                Quản lý văn bản đi chưa xử lý
+            </h2>
+            <div class="render-table-info" style="float: right">
+
+            </div>
+        </header>
+        <div role="content" style="padding:0px; border: 0px;">
+            <div class="widget-body">
+                <div id="tbl-vanbanden">
+                    <table class="hinet-table table table-hover vbchuaxuly congviec" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Trích yếu</th>
+                                <th style="width:10%">Thể loại</th>
+                                <th style="width:10%">Lĩnh vực</th>
+                                <th style="width:10%">Độ mật</th>
+                                <th style="width:10%">Độ khẩn</th>
+                                <th>Người ký</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    var typeId = 0;
+    var lstData = eval(@lstData);
+    function pagefunction() {
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            
+            {
+                tdClass: "text-justify",
+                isSort:false,
+                nameModel:'TRICHYEU',
+                content: function (data) {
+                    var html = "<a href='/HSVanBanDiArea/VanBanChuaXuLy/DetailVanBan/" + data.ID + "' title = '" + data.TRICHYEU + "' class='text-ellipsis'>" + data.TRICHYEU + "</a>";
+                    return html;
+                }
+            },
+            {
+                tdClass: "center width-10",
+                isSort: true,
+                nameModel: 'TEN_LOAIVANBAN',
+                content: function (data) {
+                    return data.TEN_LOAIVANBAN;
+                }
+            },
+
+            {
+                tdClass: "center width-10",
+                isSort: true,
+                nameModel: 'TEN_LINHVUC',
+                content: function (data) {
+                    return data.TEN_LINHVUC;
+                }
+            },
+            {
+                tdClass: "center width-10",
+                isSort: true,
+                nameModel: 'TEN_DOKHAN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOKHAN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOKHAN + '" title="' + data.TEN_DOKHAN + '" />';
+                    } else {
+                        return data.TEN_DOKHAN;
+                    }
+                }
+            },
+            {
+                tdClass: "center width-10",
+                isSort: true,
+                nameModel: 'TEN_DOUUTIEN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOUUTIEN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOUUTIEN + '" title="' + data.TEN_DOUUTIEN + '" />';
+                    } else {
+                        return data.TEN_DOUUTIEN;
+                    }
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_NGUOIKY',
+                content: function (data) {
+                    if(data.TEN_NGUOIKY != null){
+                        return data.TEN_NGUOIKY + '<br/>' + '<i>'+data.CHUCVU+'</i>';
+                    }else{
+                        return '<span style="color:red">Không rõ</span>';
+                    }
+                }
+            },
+             {
+                 tdClass: "center",
+                 isSort: true,
+                 nameModel: 'CREATED_AT',
+                 content: function (data) {
+                     return '<span>Ngày tạo: '+ToDate(data.CREATED_AT)+'</span>';
+                 }
+             },
+           
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.ListResult.TotalPage,
+            recordCount: @Model.ListResult.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+    }
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+
+    .hinet-table td:nth-child(3) {
+        width: 28% !important;
+    }
+
+    .text-justify, .text-justify a {
+        text-align: justify !important;
+    }
+</style>

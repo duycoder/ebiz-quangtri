@@ -1,0 +1,810 @@
+﻿@font-face {
+    src: url("/fonts/UTM God's WordBold.ttf");
+    font-family: god word bold;
+}
+
+body {
+    background: #eff0f0;
+}
+
+.padding-0 {
+    padding: 0px;
+}
+
+#tbl-vanbanden table tr td:nth-child(2) {
+    font-weight: bold;
+}
+
+.do-khan a,
+.do-khan {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+#tbl_view_vanbanden {
+    margin-bottom: 0px;
+}
+
+#ribbon {
+    background-color: #b78c1f !important;
+    height: 40px;
+    min-height: 40px;
+    padding-right: 0px;
+}
+
+    #ribbon .col-sm-6 {
+        padding-top: 4px;
+    }
+
+    #ribbon .btn-flat {
+        margin-right: 5px;
+        border: 0px;
+        color: red;
+        font-weight: bold;
+        height: 25px;
+        font-size: 14px;
+        padding-top: 3px;
+    }
+
+        #ribbon .btn-flat:focus {
+            background: #fff;
+        }
+#tbl-vanbanden .lst-vbden tr td:last-child p, #tbl-vanbandi .lst-vanbandi tr td:last-child p{
+    margin-bottom:0 !important;
+}
+.hethieuluc{
+    color:#ff0033;
+}
+#bar-chart-grouped, #notif-content {
+    height: 382px !important;
+}
+
+#header {
+    background-color: #f0f0f0;
+    background-image: none;
+    height: 45px;
+}
+
+    #header > div {
+        height: 45px;
+    }
+
+#logo img,
+#logo {
+    width: auto;
+}
+
+#logo {
+    margin-top: 6px;
+    margin-left: 10px;
+    height: auto !important;
+}
+
+.title-site {
+    font-family: 'god word bold';
+    font-size: 26px;
+    line-height: 26px;
+    color: #ff0033;
+    margin-left: 20px;
+    margin-top: 8px;
+}
+
+#left-panel {
+    padding-top: 45px;
+}
+
+.login-info {
+    background-color: #b50101;
+    height: 40px;
+    position: relative;
+    border: 0px;
+}
+
+
+    .login-info > .menu-name {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 8px 20px !important;
+    }
+
+    .login-info > span {
+        height: auto;
+    }
+
+    .login-info > .minifyme {
+        width: 40px;
+        top: 0px;
+        right: 0px;
+        padding: 0px;
+        z-index: 9;
+        background: transparent;
+        color: #fff;
+        border-radius: 0px;
+        border-bottom: 0px;
+        height: 36px;
+        margin: 0px;
+        border-left: 1px solid #940101;
+    }
+
+        .login-info > .minifyme::before {
+            content: ".";
+            width: 1px;
+            height: 36px;
+            background: #d50000;
+            position: absolute;
+            left: 0px;
+            float: left;
+            text-indent: -9999px;
+        }
+
+        .login-info > .minifyme i {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+#left-panel {
+    width: 225px;
+    background: #e4dec6;
+}
+
+#content {
+    /*padding: 15px;*/
+}
+
+.minified #left-panel {
+    width: 50px;
+}
+
+.minified #main {
+    margin-left: 50px;
+}
+
+.minified .login-info span.menu-name {
+    display: none;
+}
+
+.minified .minifyme .fa:before {
+    content: "\f04e";
+}
+
+.minified .login-info {
+    height: 40px;
+}
+
+#left-panel nav ul li a {
+    line-height: 45px;
+    padding: 0px;
+    color: #333;
+    font-weight: bold;
+    padding-left: 10px;
+    background: none;
+    border-right: 0px;
+    font-size: 13px;
+}
+
+    #left-panel nav ul li a i {
+        /*color: #fff;*/
+        color: black;
+    }
+
+#left-panel nav ul li.open > a {
+    color: #333 !important;
+    font-weight: bold;
+}
+
+.title-site a {
+    color: #ff0033;
+}
+.modal-dialog .modal-footer button:first-child, #frmHoSo .modal-dialog .modal-footer button.btn-success, #modal--edit--booking #form--edit--room-request .modal-footer #btn--save{
+    padding: 8px 20px !important;
+    background: #009c03 !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    color: #fff;
+}
+.modal-dialog .modal-footer button:last-child, #modal--edit--booking #form--edit--room-request .modal-footer .btn-default{
+        padding: 8px 20px;
+    background: #a90329;
+    text-transform: uppercase;
+    border: none;
+    color: #fff;
+}
+#left-panel nav > ul > li > ul > li > a,
+#left-panel nav > ul > li > ul > li > ul > li > a {
+    padding-left: 40px;
+    line-height: 21px;
+    font-weight: normal;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 13px;
+}
+#wid-id-0 #tbl-vanbanden .vbdi-dabanhanh tr th:nth-child(5),#wid-id-0 #tbl-vanbanden .vbdi-dabanhanh tr .index-vbdaxuly th:nth-child(3){
+    width:300px;
+}
+#left-panel nav > ul ul li::before {
+    left: 20px;
+    top: 20px;
+}
+
+#left-panel nav > ul > li > ul::before {
+    left: 20px;
+}
+#modal_hoso .modal-dialog{
+    width:900px;
+}
+#modal_hoso .modal-dialog .modal-footer,#modal_vanban .modal-footer{
+    text-align:center;
+}
+#left-panel nav > ul > li > a b {
+    top: 0px;
+    margin-top: 0px;
+}
+
+#left-panel nav {
+    height: calc(100vh - 110px);
+    border-right: 1px solid #ccc;
+}
+
+.jarviswidget > header {
+    border: 1px solid #C2C2C2;
+    background: #fafafa !important;
+    height: 38px;
+}
+
+    .jarviswidget > header > h2 a,
+    .jarviswidget > header > h2 {
+        font-weight: bold;
+        color: #ff0033 !important;
+    }
+
+    .jarviswidget > header > .widget-icon {
+        width: 38px;
+        height: 38px;
+        line-height: 38px;
+        color: #333;
+    }
+
+.minified #left-panel nav ul li a {
+    padding: 15px;
+    color: #333;
+}
+
+.minified nav > ul > li > a > .menu-item-parent,
+.minified nav > ul > li > ul {
+    left: 50px;
+}
+
+.minified nav > ul > li > a > .menu-item-parent {
+    height: 45px;
+    border: 0px;
+    margin: 0px;
+    line-height: 45px;
+}
+
+.minified #left-panel nav > ul > li > ul > li {
+    background: #fff;
+}
+
+.minified #left-panel nav > ul > li > a > .menu-item-parent,
+.minified #left-panel nav > ul > li > ul {
+    border: 0px;
+    margin-top: 0px;
+}
+
+.minified #left-panel nav > ul > li > ul {
+    width: 198px;
+}
+
+.minified #left-panel nav > ul > li > a > .menu-item-parent {
+    color: #ff0033;
+}
+
+#left-panel .admin-menu-left li.open li.active_trail a {
+    color: #ff0033 !important;
+}
+
+#left-panel .admin-menu-left > li,
+#left-panel .admin-menu-left li.open li:hover a {
+    color: #ff0033 !important;
+    background: none !important;
+}
+
+#quick-search {
+    padding-top: 7px;
+    padding-left: 57px;
+    padding-bottom: 0px;
+}
+
+#quick-report {
+    float: left;
+    margin-bottom: 0px;
+}
+
+    #quick-report li {
+        float: left;
+        height: 45px;
+        width: 60px;
+        border-left: 1px solid #ccc;
+        position: relative;
+        list-style: none;
+    }
+
+        #quick-report li a {
+            cursor: pointer;
+            font-size: 16px;
+            color: #000;
+            float: left;
+            position: absolute;
+            transform: translate(-50%,-50%);
+            top: 50%;
+            left: 50%;
+        }
+
+        #quick-report li:hover a {
+            color: #ff0033;
+        }
+
+        #quick-report li a b {
+            position: absolute;
+            top: -5px;
+            right: -15px;
+            border-radius: 7px;
+            font-size: 9px;
+            padding: 3px 5px;
+            background: #ff0000 !important;
+        }
+        #quick-report #data-quick-report li a b{
+            position:static !important;
+            color:#fff !important;
+        }
+        #wid-id-0 #luongxuly-vanbandi{
+
+        }
+#mobile-profile-img {
+    display: block !important;
+    padding: 0px !important;
+    float: left;
+    width: 80px;
+}
+
+    #mobile-profile-img > li {
+        float: left;
+        height: 45px;
+        border-left: 1px solid #ccc;
+        width: 100%;
+    }
+
+    #mobile-profile-img a.userdropdown img {
+        width: 35px;
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        margin: auto;
+        top: 0px;
+        bottom: 0px;
+        border: 0px !important;
+        border-radius: 50%;
+        height: 35px;
+    }
+
+#quick-report .ajax-dropdown {
+    top: 60px;
+    right: -55px;
+    padding: 0;
+}
+
+#quick-report .dropdown-menu {
+    width: 400px;
+}
+
+input[type=checkbox] {
+    position: relative;
+    margin: 0px;
+}
+
+.checkBoxControl::after {
+    left: 4px !important;
+}
+
+input[type=checkbox]::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    left: 0;
+    /*margin-left: -20px;*/
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    background-color: #fff;
+    -webkit-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+    -o-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+    transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+input[type="checkbox"]:checked::after {
+    font-family: 'FontAwesome';
+    content: "\f00c";
+}
+
+#ui-datepicker-div {
+    z-index: 100000 !important;
+}
+
+@media only screen and (max-width: 768px) {
+    h2.sitesoft {
+        font-size: 28px;
+    }
+    #modal_create .modal-dialog, #modal_hoso .modal-content, #modal_hoso .modal-dialog{
+        width:100% !important;
+    }
+    #modal_hoso .modal-dialog{
+        margin:0 !important;
+    }
+    #modal_create #createNguoidungForm .control-label{
+        padding-left:0;
+        padding-right:0;
+    } 
+    #tbl-nguoidung .table-hover tr td:nth-child(2), #tbl-nguoidung .table-hover tr td:nth-child(5),#tbl-nguoidung .table-hover tr th:nth-child(5),#tbl-nguoidung .table-hover tr th:nth-child(2){
+        display:none;
+    }
+    #tbl-vanbanden table th:nth-child(2) {
+        width: 26% !important;
+    }
+
+    #content, #block--info-vanbanden {
+        width: 100% !important;
+    }
+
+    #notif-content {
+        height: auto !important;
+    }
+
+    h1.sitename {
+        font-size: 24px;
+    }
+
+    #header-login {
+        height: auto;
+    }
+
+    .left-form a.website {
+        font-size: 28px;
+    }
+
+    .logosite img {
+        width: 100%;
+    }
+
+    .right-form,
+    #form-login {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    #ribbon .breadcrumb, #ribbon .breadcrumb a,
+    #logo-group > span.title-site,
+    #footer-page {
+        display: none !important;
+    }
+
+    .right-form .modal-content {
+        width: auto;
+    }
+
+    .right-form input[type=submit] {
+        float: left;
+    }
+
+    #quick-report {
+        padding-left: 0px;
+    }
+
+    #logo-group {
+        width: auto !important;
+    }
+
+    #main {
+        margin-left: 0px;
+    }
+
+    /*.minified .login-info span {
+        right: -38px;
+    }*/
+}
+#modal--edit--booking #form--edit--room-request .modal-footer{
+    text-align:center;
+} 
+#notification-body li a {
+    transform: unset;
+    left: 0;
+    font-size: 14px;
+    font-weight: normal;
+    top: 0;
+    color: #ff0000 !important;
+    position: static;
+}
+
+#notification-body li:hover {
+    background: #fffe02;
+}
+
+#notification-body {
+    padding: 0 10px;
+    float: left;
+    width: 100%;
+}
+
+#quick-report .ajax-dropdown > :first-child {
+    height: 35px;
+    padding: 0 10px;
+    margin: 0;
+    background: #f00;
+    color: #fffe02;
+}
+
+#quick-report .pull-left {
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+#notification-body .content-noti {
+    padding-right: 10px !important;
+}
+
+#notification-body li {
+    height: auto;
+    border-bottom: 1px solid #ccc;
+    border-left: none;
+}
+
+#quick-report .ajax-notifications {
+    background: none;
+}
+
+.notif-icon {
+    padding: 17px;
+    text-align: center;
+    font-size: 20px;
+    color: #ccc;
+}
+
+.show-notif {
+    padding: 8px 0;
+}
+
+#quick-report .pull-right a {
+    right: 0;
+    transform: unset;
+    top: 2%;
+    font-size: 14px;
+    padding-right: 10px;
+    color: #fffe02 !important;
+}
+
+    #quick-report .pull-right a:hover {
+        color: #fff !important;
+    }
+
+#quick-report .ajax-dropdown > :first-child .pull-right {
+    text-align: right;
+}
+
+#quick-report .nomargin.center a {
+    top: unset;
+    color: #ff0000 !important
+}
+
+#quick-report .ajax-dropdown:before, #quick-report .ajax-dropdown:after {
+    border-bottom-color: #f00;
+}
+
+body {
+    min-height: 800px
+}
+
+#main {
+    height: auto !important;
+     margin-left: 225px;
+
+}
+#tbl-vanbanden{
+    margin-bottom:50px;
+    padding:0px !important;
+}
+#tbl-vanbanden .hinet-table{
+    border-left:none;
+    border-right:none;
+}
+#modal_share .modal-footer{
+    text-align:center;
+}
+@media only screen and (max-width: 1200px) {
+    #quick-report li, #mobile-profile-img {
+        width: 50px;
+    }
+
+    #content, #block--info-vanbanden {
+        width: 100% !important;
+    }
+
+    .text-ellipsis {
+        min-height: 50px;
+        max-height: 100px !important;
+    }
+
+    #main {
+        height: auto !important;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    #div-docx {
+        width: 100% !important;
+    }
+
+    #main .widget-body.col-sm-10 {
+        width: 100%;
+    }
+
+    #quick-report li, #mobile-profile-img {
+        width: 45px;
+    }
+
+    #content, #block--info-vanbanden {
+        width: 100% !important;
+    }
+
+    .text-ellipsis {
+        min-height: 50px;
+        max-height: 100px !important;
+    }
+
+    #main {
+        height: auto !important;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+
+    #notif-content {
+        min-height: 100px !important;
+        max-height: 500px !important;
+        height: auto !important;
+    }
+
+    #main {
+        height: auto !important;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    #notif-content {
+        min-height: 100px !important;
+        max-height: 350px !important;
+    }
+
+    .no-padding.item-notif {
+        height: 40px;
+    }
+
+    .text-ellipsis {
+        min-height: 50px;
+        max-height: 100px !important;
+    }
+
+    #main {
+        height: auto !important;
+    }
+
+    #tbl-vanbanden table thead tr th:last-child, #tbl-vanbanden table tbody tr td:last-child, #tbl-vanbanden table thead tr th:nth-child(5),
+    #tbl-vanbanden table tbody tr td:nth-child(5), #tbl-vanbanden table thead tr th:nth-child(6),
+    #tbl-vanbanden table tbody tr td:nth-child(6) {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .no-padding.item-notif {
+        height: 40px;
+    }
+
+    .right-form .modal-content {
+        margin-left: 12%;
+    }
+
+    .text-ellipsis {
+        min-height: 50px;
+        max-height: 100px !important;
+    }
+
+    #main {
+        height: auto !important;
+    }
+}
+
+@media only screen and (max-width:480px) {
+    .text-ellipsis {
+        min-height: 50px;
+        max-height: 100px !important;
+    }
+
+    #collapseDivSMS #form0 .txt-label{
+        padding-left:15px !important;
+    }
+    #notif-content {
+        height: auto !important;
+    }
+
+    article.col-xs-12.col-sm-12.col-md-9.col-lg-9.sortable-grid.ui-sortable.left, #tbl-vanbanden table thead tr th:last-child, #tbl-vanbanden table tbody tr td:last-child, #tbl-vanbanden table thead tr th:nth-child(5),
+    #tbl-vanbanden table tbody tr td:nth-child(5), #tbl-hscanbo tr th:nth-child(5), #tbl-hscanbo tr td:nth-child(5), #tbl-hscanbo tr th:nth-child(4), #tbl-hscanbo tr td:nth-child(4),
+    #tbl-hscanbo tr th:nth-child(3), #tbl-hscanbo tr td:nth-child(3), #tbl-sms tr th:nth-child(4), #tbl-sms tr td:nth-child(4), #tbl-sms tr th:nth-child(8), #tbl-sms tr td:nth-child(8), #tbl-sms tr th:nth-child(6),#tbl-sms tr td:nth-child(6)
+    {
+        display: none;
+    }
+
+    #main {
+        height: auto !important;
+    }
+
+    #quick-search, #search-block {
+        padding-left: 0;
+    }
+
+    #quick-report li, #mobile-profile-img {
+        width: 45px;
+    }
+
+    #quick-report .ajax-dropdown {
+        right: 0;
+        left: -470%;
+    }
+
+    #quick-report .dropdown-menu {
+        width: 100% !important;
+    }
+
+    #left-panel {
+        left: 0;
+    }
+
+   
+}
+#block--info-vanbanden {
+    width: 100% !important;
+}
+
+.select2-container {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+.is-error {
+    display: none;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #a94442;
+    /* color: #dc3545; */
+    font-style: inherit;
+}
+.show-error {
+    display: block;
+    -webkit-transition: width 2s;
+    transition: width 2s;
+    float: left;
+}
+.calendar--cell-add {
+    width: 100% !important;
+}
+.calendar--cell--extend {
+    width: 100% !important;
+}
+.calendar--cell--add {
+    width: 100% !important;
+}

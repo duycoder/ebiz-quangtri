@@ -1,0 +1,590 @@
+﻿@font-face {
+    src: url(../../../fonts/Roboto-Black.ttf);
+    font-family: robotoblack;
+}
+
+@font-face {
+    src: url(../../../fonts/RobotoCondensed-Bold.ttf);
+    font-family: roboto condensed bold;
+}
+
+@font-face {
+    src: url(../../../fonts/RobotoCondensed-Regular.ttf);
+    font-family: roboto condensed regular;
+}
+@font-face {
+    font-family: 'UTMTimesBold';
+    src: url('../../../fonts/UTMTimesBold.ttf') format('truetype');
+}
+body {
+    background-size: 100% auto;
+    margin: 0px;
+    padding: 0px;
+}
+#form-login .modal-header{
+    border-bottom:2px solid #ff0001 !important;
+}
+h1.sitename {
+    font-family: UTMTimesBold;
+    font-size: 36px;
+    line-height: 30px;
+    color: #ff0000;
+    margin: 10px 10px 20px 10px;
+}
+
+h2.sitesoft {
+    font-family: 'roboto condensed bold';
+    font-size: 38px;
+    line-height: 30px;
+    /*color: #bf0114;*/
+    color: #ff0000 !important;
+    text-transform: uppercase;
+    margin: 10px;
+}
+
+#header-login {
+    height: 18vh;
+    text-align: center;
+    padding-top: calc(9vh - 51px);
+}
+
+#form-login {
+    background-color:#ff0001;
+    background-size: cover;
+    height: 82vh;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.right-form,
+.left-form {
+    padding-top: calc(39vh - 160px);
+}
+
+.left-form {
+    padding-top: calc(39vh - 165px);
+}
+
+    .left-form a {
+        float: left;
+        width: 100%;
+        text-align: center;
+    }
+
+        .left-form a.website {
+            font-size: 40px;
+            color: #ed6d6d;
+            line-height: 68px;
+            /*letter-spacing: 10px;*/
+            margin-top: 15px;
+        }
+
+.pd-0 {
+    padding: 0px;
+}
+
+.footer-right h3 {
+    font-size: 18px;
+    line-height: 40px;
+    color: #fffe02;
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+.footer-right .footer-right-top h3 {
+    margin-top: 10px;
+}
+
+.footer-right-top img {
+    float: right;
+    margin-top: 12px;
+    margin-right: 3px;
+}
+
+.footer-right-bottom img {
+    float: right;
+    margin-top: 4px;
+}
+
+.footer-right .footer-right-bottom span {
+    margin-top: 3px;
+    color:#fffe02;
+    font-size:18px;
+}
+
+#footer-page {
+    position: absolute;
+    bottom: 0px;
+    height: 94px;
+    /*background: rgba(136,4,7,0.6);*/
+    /*background: rgb(11,68,103);*/
+    background:#ff0001;
+    width: 100%;
+    text-align:center;
+}
+
+.footer-left {
+    height: 94px;
+}
+
+    .footer-left img {
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        top: 0px;
+        margin: auto;
+        bottom: 0px;
+    }
+
+    /*.footer-left::after {
+        content: url(../../../img/login/footer-border.png);
+        width: 23px;
+        height: 94px;
+        position: absolute;
+        right: 0px;
+        z-index: 1;
+        overflow: hidden;
+    }*/
+
+.right-form .modal-content {
+    width: 400px;
+}
+.right-form .modal-body{
+    padding: 15px;
+}
+.right-form h2 {
+    color: #221f1f;
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.right-form .form-control {
+    height: 40px;
+    border-radius: 5px;
+    background: #f7f7f7;
+}
+
+.right-form .form-horizontal .control-label {
+    text-align: left;
+    color: #424243;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.right-form input[type=checkbox] {
+    margin-left: 0px;
+    margin-right: 5px;
+    position: relative;
+}
+.saveMk a{
+    color:#da2032;
+    font-weight:bold;
+}
+.right-form input[type=submit] {
+    color: #fff;
+    font-weight: bold;
+    background: #e90102;
+    width: 130px;
+    height: 45px;
+    border: 0px;
+    border-radius: 5px;
+    text-align:center;
+}
+.button-login{
+    text-align:center;
+}
+div.top-main {
+    height: auto;
+}
+
+div.header-text {
+    padding: 20px;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.ErrorMsgStyle {
+    font-size: 12px;
+    color: red;
+    margin: 0 0 4px 104px;
+}
+
+div.content-main {
+    /*padding-top: 50px;*/
+    background: none;
+    margin: 100px 0px 150px;
+    height: auto;
+    padding: 0px;
+}
+
+.content-main .right-main,
+.content-main .left-main {
+    width: 50%;
+    float: left;
+}
+
+    .content-main .right-main .row {
+        float: left;
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+        .content-main .right-main .row input[type=text],
+        .content-main .right-main .row input[type=password] {
+            background: #f4f9fd;
+            width: 408px;
+            height: 45px;
+            padding: 0px;
+            border-radius: 5px;
+            padding-left: 5px;
+            font-size: 18px;
+        }
+
+    .content-main .right-main .row-submit input#LoginButton {
+        width: 191px;
+        height: 45px;
+        background: #016897;
+        border-radius: 6px;
+        border: 0px;
+        text-align: center;
+        font-size: 21.33px;
+        text-transform: inherit;
+        float: left;
+    }
+
+    .content-main .right-main .row .label {
+        font-size: 17.33px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-family: Arial;
+    }
+
+.content-main .left-main {
+    margin-top: 30px;
+}
+
+    .content-main .left-main h1 {
+        font-size: 32px;
+        text-transform: uppercase;
+        color: rgb(1, 104, 151);
+        font-family: eaita;
+    }
+
+@font-face {
+    font-family: eaitas;
+    src: url(../../FontFace/OpenSans-ExtraBold.ttf);
+}
+
+@font-face {
+    font-family: eaita;
+    src: url(../../FontFace/RobotoCondensed-Bold.ttf);
+}
+
+@font-face {
+    font-family: bothongtin;
+    src: url(../../FontFace/Roboto-Bold.ttf);
+}
+
+.content-main .left-main h1 span {
+    font-size: 63px;
+    color: rgb(1, 104, 151);
+    font-weight: bold;
+    font-family: eaitas;
+}
+
+.content-main .left-main h3 {
+    font-size: 24px;
+    font-family: bothongtin;
+    text-transform: uppercase;
+    color: rgb(1, 104, 151);
+    margin-bottom: 40px;
+}
+
+.content-main .left-main p {
+    color: rgb(82, 82, 82);
+    font-size: 21.33px;
+    line-height: 32px;
+}
+
+.left-login-panel {
+    width: 415px;
+    float: left;
+    display: block;
+    height: 500px;
+    padding-left: 50px;
+    margin-right: 146px;
+}
+
+.right-login-panel {
+    background: white;
+    width: 477px;
+    overflow: auto;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 7px #999;
+    margin-top: 70px;
+}
+
+    .right-login-panel #title h2 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2d3d4b;
+        position: relative;
+        display: block;
+        background: url(/Content/Images/ico-log.png) no-repeat left top;
+        padding-bottom: 15px;
+        text-shadow: 2px 2px #fff;
+        border-bottom: 1px #d2d2d2 solid;
+        padding-left: 37px;
+        padding-top: 5px;
+        margin-top: 0px;
+    }
+
+
+
+span.input-label {
+    display: inline-block;
+    width: 170px;
+    margin-right: 20px;
+    font-size: 14px;
+}
+
+div.input-error {
+    color: red;
+    display: none;
+    font-size: 11px;
+    margin-left: 195px;
+}
+
+div.logo-main {
+    margin-top: 120px;
+    margin-left: 34px;
+}
+
+    div.logo-main img.logo-img {
+        width: 500px;
+    }
+
+span.required {
+    color: red;
+}
+
+#LoginButton {
+    text-align: center;
+    padding: 8px 30px 6px;
+    background: #2e3192;
+    color: #fff;
+    font-size: 16px;
+    border: 1px solid #2e3192;
+    display: inline-block;
+    border-radius: 4px;
+    width: 262px;
+    height: 40px;
+    font-weight: bold;
+    text-transform: uppercase;
+    float: right;
+    margin-right: 22px;
+}
+
+.change-password {
+    margin-top: 5px;
+    margin-right: 22px;
+    clear: both;
+    float: right;
+    font-weight: bold;
+}
+
+    .change-password a {
+        text-decoration: none;
+        color: #575757;
+        transition: all 0.4s ease;
+    }
+
+        .change-password a:hover {
+            color: #2e3192;
+        }
+
+div.footer-main {
+    border-top: 1px solid #e9e9e9;
+    background: #4a5966;
+    opacity: .9;
+}
+
+    div.footer-main h2 {
+        background: url(/Content/Images/logo-aita.png)no-repeat;
+        padding-left: 113px;
+        color: #eee;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+.width_250 {
+    width: 250px;
+}
+
+.captcha {
+    margin-left: 193px;
+    margin-top: 15px;
+}
+
+.login-border {
+    border: solid 1px #808080;
+}
+
+.img-captcha {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    margin-bottom: 8px;
+    margin-left: 8px;
+}
+
+.login-button {
+    margin-left: 20px;
+    margin-top: 7px;
+}
+
+.login-input-field {
+    display: block;
+    color: red;
+    float: left;
+    margin-left: 204px;
+}
+
+.login-display {
+    display: none;
+}
+
+input[type=checkbox].css-checkbox {
+    /*display: none;*/
+    opacity: 0;
+    position: absolute;
+}
+
+    input[type=checkbox].css-checkbox + label.css-label2 {
+        padding: 0 15px 0 25px;
+        height: 16px;
+        display: inline-block;
+        line-height: 18px;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        vertical-align: middle;
+        cursor: pointer;
+    }
+
+    input[type=checkbox].css-checkbox:checked + label.css-label2 {
+        background-position: 0 -16px;
+    }
+
+    input[type=checkbox].css-checkbox:indeterminate + label.css-label2 {
+        background-position: 0 -32px;
+    }
+
+label.css-label2 {
+    background-image: url(/Content/Images/checkbox-2.png);
+    /*background-image: url(/Content/Images/QLThi/checkbox.png);*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.rememberInfor {
+    width: 250px;
+    margin-left: 193px;
+}
+
+table.tbl-changepass {
+    margin-top: 10px;
+}
+
+.tbl-changepass .tc-btn {
+    height: 35px;
+}
+
+@media only screen and (max-width: 768px) {
+    h2.sitesoft {
+        font-size: 28px;
+    }
+
+    h1.sitename {
+        font-size: 24px;
+    }
+
+    #header-login {
+        height: auto;
+    }
+
+    .left-form a.website {
+        font-size: 28px;
+    }
+
+    .logosite img {
+        width: 100%;
+    }
+
+    .right-form,
+    #form-login {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .smart-form,
+    #logo-group > span,
+    #footer-page {
+        display: none;
+    }
+
+    .right-form .modal-content {
+        width: auto;
+    }
+    .right-form{
+        width:100%;
+    }
+    .button-login{
+        text-align:center !important;
+    }
+
+    #quick-report {
+        padding-left: 0px;
+    }
+
+    #logo-group {
+        width: auto !important;
+    }
+}
+    @media only screen and (max-width: 480px){
+        #form-login .left-form{
+            display:none;
+        }
+        body{
+            background:#ff0001;
+        }
+        #header-login{
+            background:#fff;
+        }
+        #form-login{
+            height:auto;
+        }
+    }
+@media only screen and (max-width: 768px) {
+    body {
+    background: #ff0001;
+}
+    #header-login{
+        background:#fff;
+    }
+    #form-login .left-form{
+        display:none;
+    }
+}
+

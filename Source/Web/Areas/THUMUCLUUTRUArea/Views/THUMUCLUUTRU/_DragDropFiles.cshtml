@@ -1,0 +1,101 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models
+@model ThuMucLuuTruModel
+<style>
+    hr {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: 0;
+        border-top: 1px solid #eee;
+    }
+</style>
+@using (Ajax.BeginForm("UploadDragDropFile", "ThuMucLuuTru", new AjaxOptions
+{
+    HttpMethod = "POST"
+}, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Upload nhiều file (bằng cách chọn nhiều)</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" value="@Model.FolderId" name="FOLDER_ID" id="FOLDER_ID" />
+                <div class="form-horizontal">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input type="file" name="files" id="filer_input" multiple="multiple">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Định dạng file:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <label style="color: #ff6a00">@Model.Extension</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Dung lượng tối đa:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <label style="color: #ff6a00"> @Model.FileSize (Mb)</label>
+                        </div>
+                    </div>
+                    @Html.Partial("_Storage")
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" id="btnDragDropUpload" value="Tải lên" class="btn btn-success" />
+                <input type="button" value="Đóng" data-dismiss="modal" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <input type="hidden" value="@Model.Extension" id="EXTENSION" />
+    <input type="hidden" value="@Model.FileSize" id="MAXSIZE" />
+    <link href="~/Content/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
+    <link href="~/Content/jquery.filer.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.filer.min.js"></script>
+}
+<script>
+    $(".select-chosen").chosen({ width: "233px" });
+    $(function () {
+        $('#filer_input').filer({
+            showThumbs: true,
+            addMore: true,
+            allowDuplicates: false
+        });
+    });
+    $("form").ajaxForm({
+        beforeSend: function () {
+            $(".loading").show();
+            $("#btnDragDropUpload").prop('disabled', true);
+        },
+        uploadProgress: function () {
+        },
+        success: function (data) {
+            LoadDataByID($("#FOLDER_ID").val());
+            $("#CreateThuMuc").modal("hide");
+            $("#CreateThuMuc").html("");
+            $(".loading").hide();
+            NotiSuccess(data);
+        },
+        complete: function () {
+            $(".loading").hide();
+            $("#CreateThuMuc").modal('hide');
+            $("#CreateThuMuc").html("");
+
+        }, error: function (data) {
+            NotiError(data);
+        }
+    });
+    //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+    loadScript("/Scripts/autoNumeric.min.js", function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $(".select2").select2();
+        });
+        //});
+    });
+</script>

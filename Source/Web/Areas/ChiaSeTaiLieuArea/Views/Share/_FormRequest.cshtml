@@ -1,0 +1,101 @@
+﻿
+@using Business.CommonBusiness
+@using Web.FwCore
+@using Web.Common
+@using Web.Areas.ChiaSeTaiLieuArea.Models
+@model ShareRequestFormModel
+@using (Ajax.BeginForm("SaveRequest", "Share", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "FormSuccess"
+}, new { id = "frmShare", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="margin:30px 30px 30px 15%">
+        <div class="modal-content" style="width:900px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@(Model.Share.ID == 0 ? "Thêm mới yêu cầu chia sẻ tài liệu" : "Cập nhật yêu cầu chia sẻ tài liệu")</h4>
+            </div>
+            <div class="modal-body" style="height:470px;overflow:auto">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Tiêu đề:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" id="TIEUDE" name="TIEUDE" value="@Model.Share.TIEUDE" class="form-control has-errored require" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Ngày yêu cầu:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="DATE_YEU_CAU" disabled="disabled" id="DATE_YEU_CAU" class="form-control" value="@string.Format("{0:dd/MM/yyyy}",Model.Share.DATE_YEU_CAU)" />
+                        </div>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-2">
+                                <label>Nội dung:</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <textarea id="NOIDUNG_YEUCAU" name="NOIDUNG_YEUCAU" class="form-control">@Model.Share.NOIDUNG_YEUCAU</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="ID" name="ID" value="@Model.Share.ID" />
+                    <button type="button" class="btn btn-success" onclick="SaveForm()">
+                        @{
+                            if (Model.Share.ID > 0)
+                            {
+                                <span>Cập nhật</span>
+                            }
+                            else
+                            {
+                                <span>Thêm mới</span>
+                            }
+                        }
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+}
+<script type="text/javascript">
+    function FormSuccess(response) {
+        NotiSuccess(response.Message);
+        reloadData();
+        CloseShareModel();
+    }
+    function failure(xhr, error) {
+        CommonJS.alert(xhr.responseText);
+    }
+    function SaveForm() {
+        if (FormInvalid("frmShare")) {
+            $("#frmShare").submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $(".datepicker").datepicker({ dateFormat: 'dd/mm/yy', changeMonth: true, changeYear: true, yearRange: "-65:+65" })
+            .on('change', function () {
+                $(this).valid();  // triggers the validation test
+                //$(this).closest("form").valid();
+            });
+        //loadScript("/js/plugin/select2/select2.min.js", function () {
+        //});
+        //$("select.form-control").select2().change(function () {
+        //    $(this).valid();
+        //});
+        SetupFormError("frmShare");
+    });
+</script>

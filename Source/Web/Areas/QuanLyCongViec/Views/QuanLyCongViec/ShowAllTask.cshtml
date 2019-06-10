@@ -1,0 +1,25 @@
+﻿
+@model string
+<table class="hinet-table table table-bordered table-hover congviec" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>TASK</th>
+            <th>CÔNG VIỆC</th>
+            <th>NGƯỜI XỬ LÝ</th>
+            <th>THỜI HẠN HOÀN THÀNH</th>
+            <th>TIẾN ĐỘ</th>
+            @*<th>ĐỘ KHẨN</th>
+            <th>ĐỘ ƯU TIÊN</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @Html.Raw(Model)
+    </tbody>
+</table>
+@*<div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12" id="box-nguoixulychinh">
+                @Html.Raw(Model)
+            </div>
+        </div>
+    </div>*@

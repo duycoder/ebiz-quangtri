@@ -1,0 +1,128 @@
+﻿@using Model.Entities
+@using Business.CommonBusiness
+@model PageListResultBO<SYS_TINNHAN>
+<a id="activity" class="activity-dropdown activity-notification" href="javascript:void(0)">
+    <i class="fa fa-bell"></i>
+    <b class="badge" id="totalNotificationForUser">@Model.Count</b>
+</a>
+
+<div class="ajax-dropdown">
+    <div class="row nomargin">
+        <div class="pull-left"><strong>@Model.Count Thông báo</strong></div>
+        <div class="pull-right"><a href="javascript:void(0)" onclick="readAll()">Đánh dấu đã đọc</a></div>
+    </div>
+    <!-- notification content -->
+    <div class="ajax-notifications custom-scroll">
+
+        <div role="content" style="border: 0px;width: 100%;" id="notif-content">
+            <div class="widget-body">
+                <ul class="notification-body" id="notification-body">
+                        @{
+                            foreach (var item in Model.ListItem)
+                            {
+                                <li id="dropdown-content ace-scroll notification_37" class="div-shownotif">
+                                    <div class="col-sm-12 no-padding">
+                                        <div class="col-sm-12 notif-@item.ID show-notif">
+                                            <div class="col-sm-2 col-xs-2 notif-@item.ID notif-icon"><i class="fa fa-user fa-lg"></i></div>
+                                            <div class="col-sm-10 col-xs-10 notif-@item.ID">
+                                                <div class="col-sm-12 show-lst-notif no-padding">
+                                                    @if (!string.IsNullOrEmpty(item.URL))
+                                                    {
+                                                        <a class="notif-link" href='javascript:void(0)' onclick="UpdateStatus('@item.ID','@item.URL')" title='@item.TIEUDE'>@(item.NOIDUNG)</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="notif-link" href='javascript:void(0)' title='@item.NOIDUNG' onclick='Detail(@item.ID)'>@(item.NOIDUNG)</a>
+                                                    }
+                                                </div>
+                                                <label class="col-sm-12 no-padding"><i>@(item.NGAYTAO.HasValue ? item.NGAYTAO.Value.ToString("dd/MM/yyyy") : "")</i></label>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                </li>
+                               
+                            }
+                        }
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- end notification content -->
+    <!-- footer: refresh area -->
+    <!-- end footer -->
+    <div class="row nomargin center">
+        <div class="col-sm-12" style="margin-top:10px">
+            <a href="/SYSTINNHANArea/SYSTINNHAN/Index" style="font-size:14px;font-style:italic" title="Xem thêm">Xem thêm</a>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="" />
+<div id="notif_detail" class="modal fade" role="dialog"></div>
+<style>
+    .notification-body li {
+        width: 100% !important;
+    }
+
+    #activity .ajax-dropdown {
+        height: 410px !important;
+    }
+
+    .custom-link {
+        font-size: 13px !important;
+        color: #3276b1 !important;
+        position: initial !important;
+        transform: initial !important;
+        top: initial !important;
+        left: initial !important;
+    }
+</style>
+<script>    
+    function NotifDetail(id) {
+        $.ajax({
+            url: '/SYSTINNHANArea/SYSTINNHAN/Detail/',
+            type: 'get',
+            cache: false,
+            data: { "id": id },
+            success: function (data) {
+                $("#notif_detail").html(data);
+                $("#notif_detail").modal("show");
+                $(".notif-" + id).remove();
+                $("#notification_" + id).remove();
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }, complete: function () {
+                $("#totalNotificationForUser").html($(".notification-body li").length);
+            }
+        });        
+    }
+    function UpdateStatus(id, url) {
+        $.ajax({
+            url: '/Common/UpdateNotifStatus',
+            type: 'post',
+            data: { "id": id },
+            success: function (data) {
+                location.href = url;
+                //document.location.href = url;
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }            
+        });
+    }
+
+    var readAll = function () {
+      
+        AjaxCall("/SYSTINNHANArea/SYSTINNHAN/ReadAll",'get',null,function (rs) {
+            if (rs.Status) {
+                location.reload();
+            } else {
+                NotiError("Không thực hiện được thao tác")
+            }
+
+        })
+    }
+</script>

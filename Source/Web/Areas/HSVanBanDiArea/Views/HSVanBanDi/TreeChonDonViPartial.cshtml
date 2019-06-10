@@ -1,0 +1,203 @@
+﻿@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Web.FwCore;
+@model CCTCItemTreeBO
+@{
+    var jsonTree = Html.Raw(JsonConvert.SerializeObject(Model));
+    var currentUser = (UserInfoBO)SessionManager.GetUserInfo();
+}
+<style>
+    .Selected {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    #rootNode span {
+        cursor: pointer;
+    }
+
+    .input-Name {
+        padding-left: 10px;
+    }
+
+    .spandeptlabel {
+        background: antiquewhite;
+    }
+
+    .link-choose-all-child-dept:hover {
+        cursor: pointer !important;
+    }
+</style>
+@if (Model.Child != null && Model.Child.Count > 0)
+{
+    <div class="jarviswidget" id="wid-id-chonphongban">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Danh sách đơn vị
+            </h2>
+        </header>
+
+        <div class="widge-t-body no-padding">
+            <div style=" margin:7px;">
+                <input type="text" class="form-control" onkeyup="ChonDonViSearch($(this))" />
+            </div>
+            <div class="tree smart-form tree-chonphongban">
+                <ul id="rootNode-chonphongban"></ul>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    var deptParentId = parseInt('@currentUser.DeptParentID');
+    var ids = $("#DONVINHAN_ID").val().split(',');
+    var isSearch = false;
+    var data = eval(@jsonTree);
+    function initDataTreeChonPhongBan() {
+        IDDonVi = data.ID;
+        $("ul#rootNode-chonphongban span.itemData.Selected").removeClass("Selected");
+        var inputSelector = $("ul#rootNode-chonphongban span.itemData input[value=" + IDDonVi + "]");
+    }
+
+    function getChild(item) {
+        var childrenOfChild = 0;
+        var childrenStr = "";
+        var str = "";
+
+        var classlabel = "";
+        var spanclasslabel = "";
+        if (item.TYPE == 10) {
+            classlabel = "deptlabel";
+            spanclasslabel = "spandeptlabel";
+        }
+        if (item.Child != null && item.Child.length > 0) {
+            str += "<li>";
+            str += '<span class="itemData ' + spanclasslabel + '">';
+            if (item.TYPE != 11) {
+                if (ids.indexOf(item.ID + "") >= 0) {
+                    if (item.ID != deptParentId && item.IS_ALLOW_SELECT == true) {
+                        str += '<input checked type="checkbox" class="dept-doji ' + classlabel + '" id="dept-doji-' + item.ID + '" name="chonphongban" value="' + item.ID + '"/>';
+                    }
+
+                } else {
+                    if (item.ID != deptParentId && item.IS_ALLOW_SELECT == true) {
+                        str += '<input type="checkbox" class="dept-doji ' + classlabel + '" id="dept-doji-' + item.ID + '" name="chonphongban" value="' + item.ID + '"/>';
+                    }
+                }
+            }
+            str += '<i ></i><b class="input-Name">' + item.CODE + " - " + item.NAME + "</b></span>";
+            str += "&nbsp;<a href='javascript:void()' class='link-choose-all-child-dept' data-checked='false' data-id='dept-doji-" + item.ID + "'><label for='dept-doji-" + item.ID + "'><b><u>Chọn tất cả đơn vị</u></b></label></a>";
+            for (var i = 0; i < item.Child.length; i++) {
+                childrenStr += getChild(item.Child[i]);
+                //kiểm tra xem trong con còn có con nữa không?
+                if (item.Child[i].Child != null && item.Child[i].Child.length > 0) {
+                    childrenOfChild++;
+                }
+            }
+            if (childrenOfChild > 0) {
+                str += "&nbsp;<b>/</b>&nbsp;<a href='javascript:void()' class='link-choose-only-child-dept' data-checked='false' data-id='dept-doji-" + item.ID + "'><label for='dept-doji-" + item.ID + "'><b><u>Chọn đơn vị cấp 1</u></b></label></a>";
+            }
+            str += "<ul>";
+            str += childrenStr;
+            str += "</ul>";
+            str += "</li>";
+        } else {
+            var temp = "";
+            if (item.TYPE != 11) {
+                if (item.ID != deptParentId) {
+                    str += "<li>";
+                    if(item.IS_ALLOW_SELECT == true){
+                        if (ids.indexOf(item.ID + "") >= 0) {
+                            temp = '<input checked  type="checkbox" class="dept-doji ' + classlabel + '" name="chonphongban" id="dept-doji-' + item.ID + '" value="' + item.ID + '"/>';
+                        } else {
+                            temp = '<input type="checkbox" class="dept-doji ' + classlabel + '" name="chonphongban" id="dept-doji-' + item.ID + '" value="' + item.ID + '"/>';
+                        }
+                    }
+                    str += '<span class="itemData ' + spanclasslabel + '">' + temp + '<i ></i><b class="input-Name">' + item.CODE + " - " + item.NAME + "</b></span>";
+                    str += "</li>";
+                }
+            }
+        }
+
+        return str;
+    }
+
+    if (data.Child != null && data.Child.length > 0) {
+        var treeData = getChild(data);
+        $("#rootNode-chonphongban").html(treeData);
+    }
+
+    function pageFunctionChonPhongBan() {
+        initDataTreeChonPhongBan();
+    }
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+
+    function ChonDonViSearch(event) {
+        var key = generate_slugable(event.val());
+        if (key != "") {
+            isSearch = true;
+        } else {
+            isSearch = false;
+        }
+        $(".tree-chonphongban b.input-Name").each(function () {
+            var $row = $(this);
+            var name = generate_slugable($row.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $row.parents("li").show();
+            }
+            else {
+                $row.parent().parent().hide();
+            }
+        });
+    }
+    pageFunctionChonPhongBan();
+
+    $(function () {
+        $(".link-choose-only-child-dept").on('click', function () {
+            var id = $(this).data('id');
+            var checkbox = $(this).parent().find('input[type=checkbox][id=' + id + ']');
+            var firstLevelCheckboxes = $(this).next('ul').children('li').children('span').find('input[type=checkbox]');
+            if (checkbox.length > 0) {
+                var checkboxes = $(checkbox).parent().parent().find("ul input[type=checkbox]");
+                setTimeout(function () {
+                    firstLevelCheckboxes.prop('checked', $(checkbox).is(':checked'));
+                }, 1);
+            } else {
+                var checked = $(this).data('checked');
+                $(this).data('checked', !checked);
+                var checkboxes = $(this).parent().find("ul input[type=checkbox]");
+                setTimeout(function () {
+                    firstLevelCheckboxes.prop('checked', !checked);
+                }, 1);
+            }
+        });
+
+        $(".link-choose-all-child-dept").on('click', function () {
+            var id = $(this).data('id');
+            var checkbox = $(this).parent().find('input[type=checkbox][id=' + id + ']');
+            if (checkbox.length > 0) {
+                var checkboxes = $(checkbox).parent().parent().find("ul input[type=checkbox]");
+                setTimeout(function () {
+                    checkboxes.prop('checked', $(checkbox).is(':checked'));
+                }, 1);
+            } else {
+                var checked = $(this).data('checked');
+                $(this).data('checked', !checked);
+                var checkboxes = $(this).parent().find("ul input[type=checkbox]");
+                setTimeout(function () {
+                    checkboxes.prop('checked', !checked);
+                }, 1);
+            }
+        });
+    })
+</script>

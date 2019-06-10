@@ -1,0 +1,22 @@
+﻿@using Business.CommonModel.CONSTANT
+@model Web.Areas.HSVanBanDiArea.Models.ThongTinVanBanDiVM
+
+@{
+    ViewBag.Title = "DetailVanBan";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("Index")">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+@Html.Partial("_Detail", Model)

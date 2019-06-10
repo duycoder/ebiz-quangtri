@@ -1,0 +1,106 @@
+﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using System.Web.Script.Serialization;
+@using Business.CommonBusiness;
+@model CCTCItemTreeBO
+@{
+    var jsonTree = Html.Raw(JsonConvert.SerializeObject(Model));
+}
+<style>
+    .Selected {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    #rootNode span {
+        cursor: pointer;
+    }
+</style>
+@if (Model.Child != null && Model.Child.Count > 0)
+{
+    <div class="jarviswidget" id="wid-id-chonphongban">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Danh sách đơn vị
+            </h2>
+        </header>
+
+        <div class="widge-t-body no-padding">
+            <div style=" margin:7px;">
+                <input type="text" class="form-control" onkeyup="ChonDonViSearch($(this))" />
+            </div>
+            <div class="tree smart-form tree-chonphongban">
+                <ul id="rootNode-chonphongban"></ul>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    var isSearch = false;
+    var data = eval(@jsonTree);
+    function initDataTreeChonPhongBan() {
+        IDDonVi = data.ID;
+        $("ul#rootNode-chonphongban span.itemData.Selected").removeClass("Selected");
+        var inputSelector = $("ul#rootNode-chonphongban span.itemData input[value=" + IDDonVi + "]");
+    }
+
+    function getChild(item) {
+        var str = "";
+        str += "<li>";
+        if (item.Child != null && item.Child.length > 0) {
+            str += '<span class="itemData">' +
+                '<input type="radio" name="chonphongban" value="' + item.ID + '"/>'
+                + '<i ></i><b class="input-Name">' + item.CODE + " - " + item.NAME + "</b></span>";
+            str += "<ul>";
+            for (var i = 0; i < item.Child.length; i++) {
+                str += getChild(item.Child[i]);
+            }
+            str += "</ul>";
+        } else {
+            str += '<span class="itemData">' + '<input  type="radio" name="chonphongban" value="' + item.ID + '"/>' + '<i ></i><b class="input-Name">' + item.CODE + " - " + item.NAME + "</b></span>";
+        }
+        str += "</li>";
+
+        return str;
+    }
+    if (data.Child != null && data.Child.length > 0) {
+        var treeData = getChild(data);
+        $("#rootNode-chonphongban").html(treeData);
+    }
+    function pageFunctionChonPhongBan() {
+        initDataTreeChonPhongBan();
+    }
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+    var isSearch = false;
+    function ChonDonViSearch(event) {
+        var key = generate_slugable(event.val());
+        if (key != "") {
+            isSearch = true;
+        } else {
+            isSearch = false;
+        }
+        $(".tree-chonphongban b.input-Name").each(function () {
+            var $row = $(this);
+            var name = generate_slugable($row.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $row.parents("li").show()
+            }
+            else {
+                $row.parent().parent().hide();
+            }
+        });
+    }
+    pageFunctionChonPhongBan();
+</script>

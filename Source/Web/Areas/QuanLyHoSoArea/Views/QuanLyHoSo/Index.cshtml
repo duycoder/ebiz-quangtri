@@ -1,0 +1,292 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using Model.Entities;
+@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Web.FwCore;
+@using Web.Areas.QuanLyHoSoArea.Models;
+@model QuanLyHoSoIndexViewModel
+
+
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.Source.ListItem));
+
+}
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+    .modal-dialog {
+        margin: 30px 30px 30px 8%;
+    }
+</style>
+
+<div id="ribbon">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6 padding-0">
+        <a class="btn btn-default pull-right" href="javascript:ActionForm(0)">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <span class="widget-icon">
+                <i class="fa fa-th-large"></i>
+            </span>
+            <h2 class="group-tittle mt10">
+                Quản lý hồ sơ - văn bản
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+            <div id="tbl-hoso" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Stt</th>
+                            <th>Hồ sơ</th>
+                            <th>Hồ sơ số</th>
+                            <th>Tên kho</th>
+                            <th>Tên phông</th>
+                            <th>Mục lục số</th>
+                            <th>Hộp số</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="modal_hoso" class="modal fade" role="dialog"></div>
+<div id="modal_vanban" class="modal fade" role="dialog"></div>
+<script>
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+    function pagefunctionSearch() {
+        $(".tbl-search select").select2();
+    }
+
+    var lstData = eval(@lstData);
+        function ActionForm(id) {
+            AjaxCall("/QuanLyHoSoArea/QuanLyHoSo/FormHoSo", 'get', {id:id},function (rs) {
+            $("#modal_hoso").html(rs);
+            $("#modal_hoso").modal("show");
+        })
+    }
+
+    function FormVanBan(hoSoId, id) {
+        AjaxCall("/QuanLyHoSoArea/QuanLyHoSo/FormVanBan", "get", { hoSoId: hoSoId, id: id }, function (rs) {
+            $("#modal_vanban").html(rs);
+            $("#modal_vanban").modal("show");
+        })
+    }
+    function FormVanBanIndex(hoSoId, id) {
+        AjaxCall("/QuanLyHoSoArea/QuanLyHoSo/FormVanBanIndex", "get", { hoSoId: hoSoId, id: id }, function (rs) {
+            $("#modal_vanban").html(rs);
+            $("#modal_vanban").modal("show");
+        })
+    }
+    function DetailVanBan(id) {
+        AjaxCall("/QuanLyHoSoArea/QuanLyHoSo/DetailVanBan", "get", { id: id }, function (rs) {
+            $("#modal_vanban").html(rs);
+            $("#modal_vanban").modal("show");
+        });
+    }
+
+
+    function DetailHoSo(id) {
+        AjaxCall("/QuanLyHoSoArea/QuanLyHoSo/DetailHoSo", "get", { id: id }, function (rs) {
+            $("#modal_hoso").html(rs);
+            $("#modal_hoso").modal("show");
+        });
+    }
+
+    function pagefunction(){
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel:"",
+                isCounter:true,
+                //content: function (data) {
+                //    return "<input type='checkbox'/>"
+                //}
+            },
+
+            {
+                isSort:true,
+                nameModel:'TIEUDE',
+                content: function (data) {
+                    var append = "";
+                    append += "<a href='javascript:DetailHoSo(" + data.ID + ")'>" + data.TIEUDE + "</a>";
+                    append += "( ";
+                    append += "Văn bản: " + data.CountVanBan + " - ";
+                    append += "<span onclick='FormVanBanIndex(" + data.ID +")' class='text-primary fa-lg pointer' style='cursor: pointer;' title='Thêm mới văn bản'><i class='fa fa-plus-circle' aria-hidden='true'></i></span>";
+                    append += " )";
+
+                    return append
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'HOSO_SO',
+                content: function (data) {
+                    return data.HOSO_SO
+                }
+            },
+
+            {
+                isSort: true,
+                nameModel: 'TEN_KHO',
+                content: function (data) {
+                    return data.TEN_KHO
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'TEN_PHONG',
+                content: function (data) {
+                    return data.TEN_PHONG
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'MUCLUC_SO',
+                content: function (data) {
+                    return data.MUCLUC_SO
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'HOPSO',
+                content: function (data) {
+                    return data.HOPSO
+                }
+            },
+               {
+                   isSort:false,
+                   //tdClass:"center",
+                   content: function (data) {
+                       var result = "<div class='btn-group'>";
+                       result += "<a href='javascript:void(0)' onclick='ActionForm(" + data.ID + ")'   title = 'Chỉnh sửa'><i class='fa fa-pencil-square fa-lg' style='color: #dfb56c; font-size: 1.5em; line-height: 0.5em;'> </i>&nbsp;&nbsp;</a> ";
+                       result += "<a href='javascript:void(0)' onclick='DeleteFunction(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-remove fa-lg' style='color:red'> </i>&nbsp;&nbsp;</a>";
+                       result += "</div>";
+                       return result;
+                   }
+               },
+
+        ];
+
+
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '/QuanLyHoSoArea/QuanLyHoSo/getData',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-hoso").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+
+        }
+
+        var tblData=$("#tbl-hoso").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.Source.TotalPage,
+            recordCount: @Model.Source.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+
+    }
+    function DeleteFunction(id) {
+
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa hồ sơ này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+
+                        $.ajax({
+                            url: '/QuanLyHoSoArea/QuanLyHoSo/DeleteHoSo',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Status) {
+                                    NotiSuccess("Xóa hồ sơ thành công");
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+
+                            }
+                        })
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+
+    }
+
+    function reloadData() {
+        $("#tbl-hoso").hinetTable("reload");
+    }
+    function CloseModalVanBan() {
+        $("#modal_vanban").html("");
+        $("#modal_vanban").modal("hide");
+    }
+
+    function CloseModalHoSo() {
+        $("#modal_hoso").html("");
+        $("#modal_hoso").modal("hide");
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js",pagefunction);
+    })
+
+</script>

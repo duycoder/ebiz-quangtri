@@ -1,0 +1,101 @@
+﻿@using Web.Areas.CongViecArea.Models
+@model CongViecIndexViewModel
+@*<table class="table-child hinet-table table table-striped table-hover" cellspacing="0" width="100%">*@
+@{
+    int count = 0;
+    foreach (var item in Model.ListCongViec)
+    {
+        count++;
+        DateTime? NgayKetThuc = null;
+        if (true == item.IS_HASPLAN && item.NGAYKETTHUC_KEHOACH.HasValue)
+        {
+            NgayKetThuc = item.NGAYKETTHUC_KEHOACH;
+        }
+        else
+        {
+            NgayKetThuc = item.NGAYHOANTHANH_THEOMONGMUON;
+        }
+        string RowClass = (DateTime.Now > NgayKetThuc && 100 != item.PHANTRAMHOANTHANH) ? "expired" : "";
+        <tr data-id="@item.ID" data-parent="@Model.RootId" class="@(RowClass) row-child collapse-row list-child-@Model.ParentId list-child-@Model.RootId child-@item.CONGVIECGOC_ID congviec-level-@Model.Level.ToString()">
+            <td class="center width-30">
+                @{
+                    if (item.HasChild)
+                    {
+                        <i data-no="@(Model.RowNo + "." + count)" data-id='@item.ID' class='fa fa-plus-square-o icon-hover fa-lg'></i>
+                    }
+                }
+            </td>
+            <td class="center width-30">@(Model.RowNo + "." + count)</td>
+            <td>
+                @{
+                    string html = "<a  href='/QuanLyCongViec/QuanLyCongViec/Detail/" + item.ID + "' title = 'Chi tiết'>" + item.TENCONGVIEC + "</a>";
+                    if (Model.UserInfo.ID == item.NGUOITAO)
+                    {
+                        html += "<div class='btn-group col-sm-12 no-padding'>";
+                        if (false == item.IS_BATDAU)
+                        {
+                            html += "<a  class='' href='/QuanLyCongViec/QuanLyCongViec/Edit/" + item.ID + "' title = 'Chỉnh sửa'><i class='fa fa-pencil-square-o fa-lg bigger-150 cl-primary'></i></a> ";
+                            if (item.NGUOIXULYCHINH_ID == null || item.TRANGTHAI_ID == TrangThaiCongViecConstant.UNAPPROVAL)
+                            {
+                                html += "<a href='javascript:void(0)' onclick='Remove(" + item.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-trash bigger-150 cl-primary'> </i></a>";
+                            }
+                        }
+                        html += "</div>";
+                    }
+                }
+                @Html.Raw(html)
+            </td>
+            <td class="text-justify">
+                <div class='progress progress-xs' data-progressbar-value='@(item.PHANTRAMHOANTHANH.HasValue? item.PHANTRAMHOANTHANH.Value.ToString() : "0")'><div class='progress-bar'></div></div>
+            </td>
+            <td class="center">@item.TEN_NGUOIGIAOVIEC</td>
+            <td class="center">@item.TEN_NGUOIXULYCHINH</td>
+            <td class="center">
+                @{
+                    if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                    {
+                        <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                    }
+                    else
+                    {
+                        <div>@item.TEN_DOKHAN</div>
+                    }
+                }
+            </td>
+            <td class="center">
+                @{
+                    if (!string.IsNullOrEmpty(item.ICON_DOUUTIEN))
+                    {
+                        <img class="division-icon" src="@item.ICON_DOUUTIEN" title="@item.TEN_DOUUTIEN" />
+                    }
+                    else
+                    {
+                        <div>@item.TEN_DOUUTIEN</div>
+                    }
+                }
+            </td>
+            @*<td class="center">
+                @(item.NGAY_NHANVIEC.HasValue ? item.NGAY_NHANVIEC.Value.ToString("dd/MM/yyyy") : "")
+            </td>*@
+            <td class="center">
+                @{
+                    if (true == item.IS_HASPLAN && item.NGAYKETTHUC_KEHOACH.HasValue)
+                    {
+                        <span>@(item.NGAYKETTHUC_KEHOACH.Value.ToString("dd/MM/yyyy"))</span>
+                    }
+                    else
+                    {
+                        <span>@(item.NGAYHOANTHANH_THEOMONGMUON.HasValue ? item.NGAYHOANTHANH_THEOMONGMUON.Value.ToString("dd/MM/yyyy") : "")</span>
+                    }
+                    if (!string.IsNullOrEmpty(RowClass))
+                    {
+                        <br/>
+                        <i class='quahan'>(Quá hạn)</i>
+                    }
+                }
+            </td>
+            <td></td>
+        </tr>
+    }
+}
+@*</table>*@

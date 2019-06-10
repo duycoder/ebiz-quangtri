@@ -1,0 +1,135 @@
+﻿
+
+@using Business.CommonBusiness
+@using Web.FwCore
+@using Web.Common
+@using Web.Areas.ChiaSeTaiLieuArea.Models
+@model ShareApproveFormModel
+@using (Ajax.BeginForm("SaveShare", "Share", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "FormSuccess"
+}, new { id = "frmShare", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="margin:30px 30px 30px 20%">
+        <div class="modal-content" style="width:1000px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Xác nhận chia sẻ</h4>
+            </div>
+            <div class="modal-body" style="height:470px;overflow:auto">
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-2">Người yêu cầu:</label>
+                    <label class="col-sm-4">@Model.Share.USER_NAME_YEU_CAU</label>
+                    <label class="col-sm-2">Ngày yêu cầu:</label>
+                    <label class="col-sm-4">@string.Format("{0:dd/MM/yyyy}", Model.Share.DATE_YEU_CAU)</label>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Tiêu đề:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Model.Share.TIEUDE
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Nội dung yêu cầu:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @{
+                                if (!string.IsNullOrEmpty(Model.Share.NOIDUNG_YEUCAU))
+                                {
+                                    @Model.Share.NOIDUNG_YEUCAU
+                                }
+                                else
+                                {
+                                    <span>Chưa có thông tin</span>
+
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-2">Người phê duyệt:</label>
+                    <label class="col-sm-4">@Model.Share.USER_NAME_PHE_DUYET</label>
+                    <label class="col-sm-2">Ngày phê duyệt:</label>
+                    <label class="col-sm-4">@string.Format("{0:dd/MM/yyyy}", Model.Share.DATE_PHE_DUYET)</label>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Nội dung phê duyệt:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @{
+                                if (!string.IsNullOrEmpty(Model.Share.NOIDUNG_PHEDUYET))
+                                {
+                                    @Model.Share.NOIDUNG_PHEDUYET
+                                }
+                                else
+                                {
+                                    <span>Chưa có thông tin</span>
+
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-2">Ngày chia sẻ:</label>
+                    <label class="col-sm-4">@string.Format("{0:dd/MM/yyyy}", Model.Share.DATE_CHIA_SE)</label>
+                </div>
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-2">Nội dung chia sẻ</label>
+                    <div class="col-sm-10">
+                        <textarea id="NOIDUNG_CHIASE" name="NOIDUNG_CHIASE" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="ID" name="ID" value="@Model.Share.ID" />
+                <button type="button" class="btn btn-success" onclick="SaveForm()">
+                   Xác nhận chia sẻ tài liệu
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    function FormSuccess(response) {
+        NotiSuccess("Xác nhận chia sẻ tài liệu thành công!");
+        reloadData();
+        CloseShareModel();
+    }
+    function failure(xhr, error) {
+        CommonJS.alert(xhr.responseText);
+    }
+    function SaveForm() {
+        if (FormInvalid("frmShare")) {
+            $("#frmShare").submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $(".datepicker").datepicker({ dateFormat: 'dd/mm/yy', changeMonth: true, changeYear: true, yearRange: "-65:+65" })
+            .on('change', function () {
+                $(this).valid();  // triggers the validation test
+                //$(this).closest("form").valid();
+            });
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+        });
+        //$("select.form-control").select2().change(function () {
+        //    $(this).valid();
+        //});
+        SetupFormError("frmShare");
+    });
+</script>

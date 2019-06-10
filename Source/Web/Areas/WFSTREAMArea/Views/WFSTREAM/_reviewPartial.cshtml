@@ -1,0 +1,224 @@
+﻿@using Web.Areas.WFSTREAMArea.Models;
+@using Business.CommonModel.WFSTREAM;
+@model FlowBO
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+    .cssPhongBan {
+        background-color: #16a085 !important;
+        color: white;
+    }
+
+    .modal-body {
+        max-height: 450px;
+        overflow: auto;
+    }
+</style>
+@{
+    var isNgXuLyChinh = Model.Step.NguoiXuLyChinh != null;
+    long logId = 0;
+    //if (Model.Log != null)
+    //    logId = Model.Log.ID;
+
+}
+<div class="modal-dialog" style="width: 80%">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">Gửi xin ý kiến</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row nomargin">
+                <div class="row">
+                    @if (Model.dsNgNhanChinh != null)
+                    {
+                        <div class="col-sm-12 nopadding nomargin">
+                            <div class="form-group" style="max-height:500px; overflow-y:scroll">
+                                @*<div class="col-sm-12" style="text-align:center">
+                                        <label class="control-label"><strong>Người review</strong></label>
+                                    </div>*@
+                                <div class="col-sm-12">
+                                    <input type="text" id="txtMainprocessSeach" class="form-control" placeholder="Tìm kiếm ..." />
+                                </div>
+                                <div class="col-sm-12">
+                                    <table class="hinet-table table  table-hover table-striped" id="user-main-process">
+                                        @*@for(var i = 1; i < 100; i++)
+                                            {*@
+                                        @foreach (var item in Model.dsNgNhanChinh)
+                                        {
+                                            <tr data-id="@item.PhongBan.ID" class="cssPhongBan">
+                                                <td colspan="3"><strong> @item.PhongBan.NAME</strong></td>
+                                            </tr>
+                                            foreach (var ngdung in item.LstNguoiDung)
+                                            {
+                                                <tr data-type="user" class="child-@item.PhongBan.ID">
+                                                    <td class="width-30">
+                                                        <input type="checkbox" class="joinUser" value="@ngdung.ID" />
+                                                        @*<input type="radio" value="@ngdung.ID" name="mainProcess" />*@
+                                                    </td>
+                                                    <td class="user-name">@ngdung.HOTEN</td>
+                                                    <td>@ngdung.ChucVu</td>
+                                                </tr>
+                                            }
+                                        }
+                                        @*}*@
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><strong>Tin nhắn</strong></label>
+                    <div class="col-sm-12" style="padding:0px">
+                        <textarea class="form-control resize-vertical" id="txtMessage" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer center">
+
+            <button type="button" class="btn btn-primary" onclick="submitReviewAction()">Xong</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+
+    function submitReviewAction() {
+        var err=0;
+        @*var idMainProcess = $("input[name=mainProcess]:checked").val();
+        if ("@Model.IsBack"=="False"&&"@isNgXuLyChinh"=="True" && idMainProcess==null) {
+            NotiError("Bạn chưa chọn người xử lý chính");
+            err++;
+        }*@
+        var idJoinProcess = [];
+        $("input.joinUser:checked").each(function () {
+            idJoinProcess.push($(this).val());
+        })
+
+        if (idJoinProcess.length==0) {
+            NotiError("Bạn chưa chọn người review");
+            err++;
+        }
+        if (!err) {
+            $.ajax({
+                url:'/wfstreamarea/wfstream/SaveReview',
+                type:'post',
+                data:JSON.stringify({"processID":@Model.Process.ID,
+                    "stepID":@Model.Step.ID,
+                    "joinUser":idJoinProcess,
+                    "message":$("#txtMessage").val(),
+                }),
+                dataType:'json',
+                contentType:'application/json',
+                success:function (rs) {
+                    if (rs.Status) {
+                        NotiSuccess("Đã chuyển review");
+                        setTimeout(function () {
+                            location.reload()
+                        },1000);
+                    }else {
+                        NotiError(rs.Message);
+                    }
+                },
+                error:function () {
+                    NotiError("Không chuyển xử lý được");
+                }
+            })
+        }
+    }
+
+    $("#txtMainprocessSeach").keypress(function (e) {
+        if (e.which == 13) {
+            mainLiveSearch($("#txtMainprocessSeach"));
+        }
+    })
+    $("#txtJoinprocessSearch").keypress(function (e) {
+        if (e.which == 13) {
+            joinLiveSearch($("#txtJoinprocessSearch"));
+        }
+    })
+    //var isSearch = false;
+
+    function mainLiveSearch(event) {
+        var key = generate_slugable(event.val());
+        //if (key != "") {
+        //    isSearch = true;
+        //} else {
+        //    isSearch = false;
+        //}
+        $("table#user-main-process tr[data-type=user] td.user-name").each(function () {
+            var $td = $(this);
+            var $tr = $td.parent();
+            var name = generate_slugable($td.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $tr.show();
+            }
+            else {
+                $tr.hide();
+            }
+        });
+        $(".cssPhongBan").each(function () {
+            var id = $(this).attr("data-id");
+            var length = $(".child-" + id + ":visible").length;
+            if (length > 0) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
+    function joinLiveSearch(event) {
+
+        var key = generate_slugable(event.val());
+        //if (key != "") {
+        //    isSearch = true;
+        //} else {
+        //    isSearch = false;
+        //}
+        $("table#user-join-process tr[data-type=user] td.user-name").each(function () {
+            var $td = $(this);
+            var $tr = $td.parent();
+            var name = generate_slugable($td.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $tr.show();
+            }
+            else {
+                $tr.hide();
+            }
+        });
+    }
+
+    $("td.user-name").click(function () {
+
+        var tdCheck = $(this).prev();
+
+        var inpCheck = tdCheck.find("input");
+        if (inpCheck.prop("checked")) {
+            inpCheck.prop("checked", false);
+        } else {
+            inpCheck.prop("checked", true);
+        }
+    })
+
+
+</script>

@@ -1,0 +1,61 @@
+﻿@using Web.Areas.HSCV_VANBANPHATHANHArea.Models
+@model DonViNhanModel
+<div class="modal-dialog">
+    <div class="modal-content" style="width:750px">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">Danh sách đơn vị nhận</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="form-horizontal">
+                <div class="row form-group">
+                    <div class="col-sm-2">
+                        <label>Số/Ký hiệu:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        @Model.VanBan.SOHIEU
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Người ký:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        @(Model.VanBan.NGUOIKY + (string.IsNullOrEmpty(Model.VanBan.CHUCVU) ? "" : " (" + Model.VanBan.CHUCVU + ")"))
+                    </div>
+                </div>
+                <div class="row form-group">
+                    @{
+                        if (Model.ListDonVi.Any())
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Đơn vị/ phòng ban nhận văn bản</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        foreach (var item in Model.ListDonVi)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" name="department-choose">@item.CODE - @item.TEN_DONVI
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    }
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+    }
+</div>

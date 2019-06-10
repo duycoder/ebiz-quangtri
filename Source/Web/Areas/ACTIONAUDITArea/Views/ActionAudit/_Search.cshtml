@@ -1,0 +1,77 @@
+﻿@model Web.Areas.ACTIONAUDITArea.Models.ActionAuditLogVM
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("searchData", "ActionAudit",
+                    new AjaxOptions()
+                    {
+                        HttpMethod = "POST",
+                        OnFailure = "failure1",
+                        OnSuccess = "searchSuccess",
+                    }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-2 txt-label">Tài khoản:</div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("TENDANGNHAP", Model.ListUser, "--- Chọn tài khoản ---", new { @class = "width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                    </div>
+                    <div class="col-md-3">
+                    </div>
+                </div>
+
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function failure1(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-vanbanden").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $(".selectpicker1").selectpicker();
+        //$("#collapseDiv .select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Content/select/js/bootstrap-select.js", function () {
+            loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+        });
+    })
+</script>
+<style>
+    .select2 {
+        width: 100%;
+    }
+</style>

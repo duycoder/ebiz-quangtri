@@ -1,0 +1,368 @@
+﻿@using Web.Areas.QL_DANGKY_XEArea.Models;
+@using Business.CommonModel.CONSTANT;
+@using Newtonsoft.Json
+@model DangKyXeIndexViewModel
+@{
+    ViewBag.Title = "Quản lý đăng ký xe";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var data = Html.Raw(JsonConvert.SerializeObject(Model.listDangKyXeBenhViens.ListItem));
+}
+@*<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>*@
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style type="text/css">
+    #btn--car-group-function a {
+        margin: 0 5px;
+    }
+
+    #tbl-xebenhvien {
+        padding: 0;
+    }
+
+    #tbl-dangky-xebenhvien table tbody i {
+        font-size: 15px !important;
+    }
+</style>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6" id="btn--car-group-function">
+        <a class="btn btn-default pull-right" href="@Url.Action("Create")">
+            <i class="fa fa-plus"></i>&nbsp;<span>Thêm mới</span>
+        </a>
+
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button">
+            <i class="fa fa-search"></i>&nbsp;<span>Tìm kiếm</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="widget-t-body no-padding">
+        <div class="jarviswidget">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fas fa-cab txt-color-darken"></i>
+                </span>
+
+                <h2 class="group-title mt10">
+                    Quản lý đăng ký xe tỉnh ủy
+                </h2>
+            </header>
+
+            <div class="widget-t-body no-padding">
+                <div id="tbl-dangky-xebenhvien" class="hntbl-cover">
+                    <table class="hinet-table table table-striped table-hover" cellspacing="0" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mục đích</th>
+                                <th>Số người</th>
+                                @*<th>Loại xe</th>*@
+                                <th>Thời gian xuất phát</th>
+                                <th>Người đăng ký</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" id="modal--confirm-car-register"></div>
+
+<div class="modal fade" role="dialog" id="modal--reject-car-register"></div>
+
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    var data = eval(@data);
+    function pageFunction(){
+        var config = [
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'MUCDICH',
+                content: function (data) {
+                    return "<a href='/QL_DANGKY_XEArea/QL_DANGKY_XE/Details/"+data.ID+"' title='Thông tin chi tiết'>"+data.MUCDICH+"</a>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'SONGUOI',
+                content: function (data) {
+                    return data.SONGUOI + " người";
+                }
+            },
+            //,
+            //{
+            //    isSort:true,
+            //   nameModel:'TEN_LOAIXE',
+            //    content: function (data) {
+            //        return data.TEN_LOAIXE;
+            //    }
+            //},
+            {
+                isSort:true,
+                nameModel:'NGAY_XUATPHAT',
+                content: function (data) {
+                    return "<b>"+data.THOIGIAN_XUATPHAT+"</b>";
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'NGUOIDANGKY',
+                content: function (data) {
+                    return data.NGUOIDANGKY
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'TRANGTHAI',
+                content: function (data) {
+                    return "<span style='color:"+ data.MAU_TRANGTHAI+";font-size:14px;'><b>"+ data.TEN_TRANGTHAI +"</b></span>";
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'ID',
+                content: function (data) {
+                    var html = '<div class="btn-group">';
+                    if(data.NGUOITAO == @Model.currentUserId){
+                        if(data.TRANGTHAI == @TRANGTHAI_DANGKY_XE_CONSTANT.MOITAO_ID){
+                            html += '<a href="javascript:void(0)" onclick="edit('+data.ID+')" title="Chỉnh sửa"><i class="glyphicon glyphicon-edit"> </i></a>&nbsp;';
+                            html += '<a href="javascript:void(0)" onclick="deleteRegister('+data.ID+')" title="Xóa"><i class=" glyphicon glyphicon-remove" style="color:red"> </i></a>&nbsp;';
+                            html += '<a href="javascript:void(0)" onclick="sendRegister('+data.ID+')" title="Gửi yêu cầu"><i class="fa fa-arrow-right"></i></a>&nbsp;';
+                        }else if(data.TRANGTHAI == @TRANGTHAI_DANGKY_XE_CONSTANT.DAGUI_ID || data.TRANGTHAI == @TRANGTHAI_DANGKY_XE_CONSTANT.DA_TIEPNHAN_ID){
+                            html += '<a href="javascript:void(0)" onclick="cancel('+data.ID+')" title="Hủy yêu cầu"><i class="fa fa-power-off"> </i></a>&nbsp;';
+                        }
+                    }
+                    if('@Model.canReceiveRegistration' == 'True' && data.TRANGTHAI == @TRANGTHAI_DANGKY_XE_CONSTANT.DAGUI_ID){
+                         html += '<a href="javascript:void(0)" onclick="receive('+data.ID+')" title="Tiếp nhận"><i class="fa fa-check text-success"> </i></a>&nbsp;';
+                         html += '<a href="javascript:void(0)" onclick="reject('+data.ID+')" title="Không tiếp nhận"><i class="fa fa-times-circle text-danger"></i></a>&nbsp;';
+                    }
+                    html += '</div>';
+                    return html;
+                }
+            }
+        ]
+
+        var getDataFunction = function (page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("GetData")',
+                type: 'post',
+                cache: false,
+                data: {"pageIndex":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-dangky-xebenhvien").hinetTable("data",{
+                        pageSize: pageSize!= -1 ? pageSize:data.Count,
+                        pageIndex: page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem
+                    });
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+
+        var tblData=$("#tbl-dangky-xebenhvien").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.listDangKyXeBenhViens.TotalPage,
+            recordCount: @Model.listDangKyXeBenhViens.Count,
+            getData:getDataFunction,
+            listItem:data,
+            config: config
+        });
+    }
+
+    function reloadData() {
+        $("#tbl-dangky-xebenhvien").hinetTable("reload");
+    }
+
+    $(function(){
+        loadScript("/Scripts/jquery-hinet-table.js", function(){
+            pageFunction();
+        });
+    });
+
+    function edit(id){
+        location.href= '/QL_DANGKY_XEArea/QL_DANGKY_XE/Edit/'+id;
+    }
+
+    function cancel(id){
+        $.confirm({
+                'title': 'Xác nhận hủy yêu cầu',
+                'message': 'Bạn có chắc chắn muốn hủy yêu cầu đăng ký xe này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("CancelRegistration")',
+                                data: { 'registrationId': id },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess(rs.Message);
+                                        reloadData();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+
+    function sendRegister(id){
+        $.confirm({
+                'title': 'Xác nhận gửi yêu cầu',
+                'message': 'Bạn có chắc chắn muốn gửi yêu cầu đăng ký xe này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("SendCarRegistration")',
+                                data: { 'registrationId': id },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess(rs.Message);
+                                        reloadData();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+
+    function deleteRegister(id){
+        $.confirm({
+                'title': 'Xác nhận xóa',
+                'message': 'Bạn có chắc chắn muốn xóa đăng ký xe này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("Delete")',
+                                data: { 'id': id },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess('Xóa đăng ký xe thành công');
+                                        reloadData();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+
+    function receive(id){
+        $.post('/QL_DANGKY_XEArea/QL_DANGKY_XE/ConfirmCarRegistration', {"registrationId": id}, function(result){
+            $('#modal--confirm-car-register').html(result);
+            $('#modal--confirm-car-register').modal('show');
+        });
+    }
+
+    function reject(id){
+        $.post('/QL_DANGKY_XEArea/QL_DANGKY_XE/ConfirmRejectCarRegistration', {"registrationId": id}, function(result){
+            $('#modal--reject-car-register').html(result);
+            $('#modal--reject-car-register').modal('show');
+        });
+    }
+
+    function onRejectSuccess(rs){
+        if(rs.Status){
+            $('#modal--reject-car-register').modal('hide');
+            NotiSuccess(rs.Message);
+            setTimeout(function(){
+                reloadData();
+            }, 1000);
+        } else{
+            NotiError(rs.Message);
+        }
+    }
+
+    function onRejectFailure(rs){
+        NotiError('Không thể thực hiện thao tác');
+    }
+
+    function onAcceptCarSuccess(result) {
+        if (result.Status) {
+            $('#modal--confirm-car-register').modal('hide');
+            NotiSuccess(result.Message);
+            setTimeout(function () {
+                reloadData();
+            }, 1000);
+        } else {
+            NotiError(result.Message);
+        }
+    }
+
+    function onAcceptCarFailure(result) {
+        NotiError('Không thể tiếp nhận yêu cầu đăng ký xe');
+    }
+</script>

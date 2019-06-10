@@ -1,0 +1,258 @@
+﻿@model Web.Areas.HSCV_VANBANPHATHANHArea.Models.HscvVanBanPhatHanhModel
+@{
+    ViewBag.Title = "Chi tiết văn bản phát hành";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("Index")">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+<div id="content">
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">Chi tiết văn bản phát hành</h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div class="loading-ajax" style="display:none">Đang xử lý...</div>
+            @Html.AntiForgeryToken()
+            <div class="form-horizontal">
+                <table class="table table-striped table-bordered custom-table">
+                    <tr>
+                        <td>
+                            <label>Số/ Ký hiệu</label>
+                        </td>
+                        <td>
+                            @Model.VanBanBO.SOHIEU
+                        </td>
+                        <td>
+                            <label>Số trang</label>
+                        </td>
+                        <td>
+                            @Model.VanBanBO.SOTRANG
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Loại văn bản</label>
+                        </td>
+                        <td>
+                            @Model.VanBanBO.TEN_HINHTHUC
+                        </td>
+                        <td>
+                            <label>Lĩnh vực</label>
+                        </td>
+                        <td>
+                            @Model.VanBanBO.TEN_LINHVUC
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> <label>Độ khẩn</label></td>
+                        <td> @Model.VanBanBO.TEN_DOKHAN</td>
+                        <td>  <label>Độ mật</label></td>
+                        <td> @Model.VanBanBO.TEN_DOMAT</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Ngày có hiệu lực</label>
+                        </td>
+                        <td>
+                            @{
+                                if (Model.VanBanBO.NGAY_HIEULUC.HasValue)
+                                {
+                                    <span>@Model.VanBanBO.NGAY_HIEULUC.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <i>Đang cập nhật</i>
+                                }
+                            }
+                        </td>
+                        <td>
+                            <label>Ngày hết hiệu lực</label>
+                        </td>
+                        <td>
+                            @{
+                                if (Model.VanBanBO.NGAYHET_HIEULUC.HasValue)
+                                {
+                                    <span>@Model.VanBanBO.NGAYHET_HIEULUC.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <i>Đang cập nhật</i>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Ngày văn bản</label>
+                        </td>
+                        <td>
+                            @{
+                                if (Model.VanBanBO.NGAY_VANBAN.HasValue)
+                                {
+                                    <span>@Model.VanBanBO.NGAY_VANBAN.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <i>Đang cập nhật</i>
+                                }
+                            }
+                        </td>
+                        <td>
+                            <label>Ngày ban hành</label>
+                        </td>
+                        <td>
+                            @{
+                                if (Model.VanBanBO.NGAY_BANHANH.HasValue)
+                                {
+                                    <span>@Model.VanBanBO.NGAY_BANHANH.Value.ToString("dd/MM/yyyy")</span>
+                                }
+                                else
+                                {
+                                    <i>Đang cập nhật</i>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> <label>Người ký</label></td>
+                        <td>
+                            @{
+                                if (!string.IsNullOrEmpty(Model.VanBanBO.NGUOIKY))
+                                {
+                                    <span>@Model.VanBanBO.NGUOIKY</span>
+                                }
+                                else
+                                {
+                                    <i>Đang cập nhật</i>
+                                }
+                            }
+                        </td>
+                        <td> <label>Chức vụ</label></td>
+                        <td>
+                            @{
+                                if (!string.IsNullOrEmpty(Model.VanBanBO.CHUCVU))
+                                {
+                                    <span>@Model.VanBanBO.CHUCVU</span>
+                                }
+                                else
+                                {
+                                    <i>Đang cập nhật</i>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Trích yếu</label>
+                        </td>
+                        <td colspan="3">
+                            @Model.VanBanBO.TRICHYEU
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Nội dung</label>
+                        </td>
+                        <td colspan="3">
+                            @if (!string.IsNullOrEmpty(Model.VanBanBO.NOIDUNG))
+                            {
+                                <span>@Html.Raw(Model.VanBanBO.NOIDUNG)</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Đơn vị nhận</label>
+                        </td>
+                        <td>
+                            @{
+                                string DonViId = "";
+                                if (Model.ListDonVi.Any())
+                                {
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Đơn vị/ phòng ban nhận văn bản</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                foreach (var item in Model.ListDonVi)
+                                                {
+                                                    DonViId += item.ID + ",";
+                                                    <tr>
+                                                        <td style="text-align:left !important">
+                                                            <input type="hidden" name="department-choose" value="@item.ID">@item.CODE - @item.NAME
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                        </td>
+                    </tr>
+                </table>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @Html.Partial("../Common/UploadFile", Model.ListTaiLieu, new ViewDataDictionary() { { "detail", 1 }, { "allowviewpdf", 1 } })
+                    </div>
+                </div>
+                <div class="form-group">&nbsp;</div>
+                <div class="form-group" style="text-align:center">
+                    <button class="btn btn-default" type="button" onclick="location.href='@Url.Action("Index")'">Quay lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .txt-select2 {
+        width: 100%
+    }
+
+    .form-horizontal {
+        padding: 30px
+    }
+
+    .form-group .col-sm-2 label {
+        font-weight: bold
+    }
+
+    .mes-note-error {
+        display: block !important;
+    }
+
+    .form-group .col-sm-2 {
+        vertical-align: middle;
+        text-align: right
+    }
+
+    .table-bordered tr td:nth-child(2n+1) label {
+        font-weight: bold !important;
+        text-align: right
+    }
+
+    .table-bordered tr td:nth-child(2n+1) {
+        font-weight: bold !important;
+        text-align: right;
+        width: 16.66666667%;
+        vertical-align: middle;
+    }
+
+    /*.custom-table td {
+        border: 1px solid #808080 !important;
+    }*/
+</style>

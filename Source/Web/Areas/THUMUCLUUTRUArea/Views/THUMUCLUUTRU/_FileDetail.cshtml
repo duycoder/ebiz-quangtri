@@ -1,0 +1,510 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models
+@model ThuMucLuuTruModel
+@if (Model.IsDetail)
+{
+    bool isMedia = (Model.TaiLieu.DINHDANG_FILE == "video/mp4" || Model.TaiLieu.DINHDANG_FILE == ".mp4"
+        || Model.TaiLieu.DINHDANG_FILE == "audio/mpeg" || Model.TaiLieu.DINHDANG_FILE == ".mp3" || Model.TaiLieu.DINHDANG_FILE == "audio/mp3"
+        || Model.TaiLieu.DINHDANG_FILE == ".png" || Model.TaiLieu.DINHDANG_FILE == ".jpg" || Model.TaiLieu.DINHDANG_FILE == "image/jpeg" || Model.TaiLieu.DINHDANG_FILE == "image/png");
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Chi tiết tài liệu</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-sm-5">
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Tên tài liệu:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    @Model.TaiLieu.TENTAILIEU
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Tải xuống:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <a href="javascript:void(0)" title="Tải xuống tài liệu" onclick="DownloadFileIndex('@Model.TaiLieu.TAILIEU_ID','null')">Tải xuống</a>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Mô tả tài liệu:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    @Model.TaiLieu.MOTA
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Phiên bản:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    @Model.TaiLieu.VERSION
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label>Loại tài liệu:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    @(Model.LoaiTaiLieu != null ? Model.LoaiTaiLieu.TEXT : "")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            @if (isMedia)
+                            {
+                                if (Model.TaiLieu.DINHDANG_FILE == "video/mp4" || Model.TaiLieu.DINHDANG_FILE == ".mp4")
+                                {
+                                    <video style="max-height:100%;max-width:100%" controls autoplay loop="loop">
+                                        <source type="video/mp4" src="@(Model.UrlNavigation +"/Uploads" +Model.TaiLieu.DUONGDAN_FILE.Replace("\\","/") )" />
+                                    </video>
+                                }
+                                else if (Model.TaiLieu.DINHDANG_FILE == "audio/mpeg" || Model.TaiLieu.DINHDANG_FILE == ".mp3" || Model.TaiLieu.DINHDANG_FILE == "audio/mp3")
+                                {
+                                    <audio id="PLAY_MUSIC" controls autoplay loop="loop">
+                                        <source type="audio/mp3" src="@(Model.UrlNavigation +"/Uploads" +Model.TaiLieu.DUONGDAN_FILE.Replace("\\","/") )" />
+                                    </audio>
+                                }
+                                else if (Model.TaiLieu.DINHDANG_FILE == ".png" || Model.TaiLieu.DINHDANG_FILE == ".jpg" || Model.TaiLieu.DINHDANG_FILE == "image/jpeg" || Model.TaiLieu.DINHDANG_FILE == "image/png")
+                                {
+                                    <img class="imgDetail" src="@(Model.UrlNavigation +"/Uploads" +Model.TaiLieu.DUONGDAN_FILE.Replace("\\","/") )" />
+                                }
+                            }
+                        </div>
+                    </div>
+                    @{
+                        if (Model.ListThuocTinhBO.Any())
+                        {
+                            <div class="form-group">
+                                <h3 class="group-tittle mt10" style="margin-top:0px;">Danh sách thuộc tính của tài liệu</h3>
+                            </div>
+                            int size = Model.ListThuocTinhBO.Count;
+                            for (int i = 0; i < size; i += 2)
+                            {
+                                if (i + 1 < size)
+                                {
+                                    <div class="form-group">
+                                        <div class="col-sm-2">
+                                            <label>@(Model.ListThuocTinhBO[i].TEN_THUOCTINH): </label>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            @(Model.ListThuocTinhBO[i].GIATRI)
+                                            <div class="note-error">
+                                                <span class="error mes-note-error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label>@(Model.ListThuocTinhBO[i + 1].TEN_THUOCTINH): </label>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            @(Model.ListThuocTinhBO[i + 1].GIATRI)
+                                            <div class="note-error">
+                                                <span class="error mes-note-error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <div class="col-sm-2">
+                                            <label>@(Model.ListThuocTinhBO[i].TEN_THUOCTINH): </label>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            @(Model.ListThuocTinhBO[i].GIATRI)
+                                            <div class="note-error">
+                                                <span class="error mes-note-error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">&nbsp;</div>
+                                        <div class="col-sm-4">&nbsp;</div>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+                </div>
+                <div id="file-detail-body" style="overflow-y:auto;overflow-x:hidden">
+                    @if (!isMedia)
+                    {
+                        <h3 class="group-tittle mt10" style="margin-bottom:10px">Chi tiết tài liệu</h3>
+                        <table style="width:100%">
+                            <tr>
+                                <td>
+                                    @if (Model.TaiLieu.DINHDANG_FILE == "application/pdf" || Model.TaiLieu.DINHDANG_FILE == ".pdf" || Model.TaiLieu.DINHDANG_FILE == "application/download" || !string.IsNullOrEmpty(Model.TaiLieu.PDF_VERSION))
+                                    {
+                                        if (!string.IsNullOrEmpty(Model.TaiLieu.PDF_VERSION))
+                                        {
+                                            <object data="@(Model.UrlNavigation +"/Uploads" +Model.TaiLieu.PDF_VERSION.Replace("\\","/") )" type="application/pdf" style="height:400px;width:100%"></object>
+                                        }
+                                        else
+                                        {
+                                            <object data="@(Model.UrlNavigation +"/Uploads" +Model.TaiLieu.DUONGDAN_FILE.Replace("\\","/") )" type="application/pdf" style="height:400px;width:100%"></object>
+                                        }
+                                    }
+                                    else if (Model.TaiLieu.DINHDANG_FILE == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || Model.TaiLieu.DINHDANG_FILE == "application/vnd.ms-word.document.12" || Model.TaiLieu.DINHDANG_FILE == "application/msword" || Model.TaiLieu.DINHDANG_FILE == ".docx" || Model.TaiLieu.DINHDANG_FILE == ".doc")
+                                    {
+                                        <iframe style="width:100%;height:400px" src="http://docs.google.com/gview?url=@(Model.UrlNavigation + "/Uploads" + Model.TaiLieu.DUONGDAN_FILE.Replace("\\", "/"))&embedded=true"></iframe>
+                                    }
+                                    else if (Model.TaiLieu.DINHDANG_FILE == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || Model.TaiLieu.DINHDANG_FILE == "application/vnd.ms-word.document.12" || Model.TaiLieu.DINHDANG_FILE == "application/vnd.ms-excel" || Model.TaiLieu.DINHDANG_FILE == ".xls" || Model.TaiLieu.DINHDANG_FILE == ".xlsx")
+                                    {
+                                        <iframe style="width:100%;height:400px" src="http://docs.google.com/gview?url=@(Model.UrlNavigation + "/Uploads" + Model.TaiLieu.DUONGDAN_FILE.Replace("\\", "/"))&embedded=true"></iframe>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                    @if (Model.ListVersion.Count > 0)
+                    {
+                        <h3 class="group-tittle mt10" style="margin-bottom:10px">Danh sách các phiên bản cũ hơn</h3>
+                        <table class="table table-bordered VersionFile">
+                            <thead>
+                                <tr class=" head">
+                                    <th>Tên tài liệu</th>
+                                    <th>Phiên bản</th>
+                                    <th>Người tải</th>
+                                    <th>Ngày tải</th>
+                                    <th style="width:90px">Tải xuống</th>
+                                    <th style="width:50px">Xóa</th>
+                                    <th style="width:90px">Khôi phục</th>
+                                </tr>
+                            </thead>
+                            @foreach (var item in Model.ListVersion)
+                            {
+                                <tr>
+                                    <td>@item.TEN_TAILIEU</td>
+                                    <td>@item.VERSION</td>
+                                    <td>@item.TENNGUOITAI</td>
+                                    <td>@String.Format("{0:dd-MM-yyyy}", @item.NGAYTAI)</td>
+                                    <td><a class="btnDownload" href="javascript:void(0)" onclick="DownloadFile(@item.ID)"></a></td>
+                                    <td><a href="javascript:void(0)" onclick="RemoveFile(@item.ID,@item.TAILIEU_ID)" class="btnDelete" title="Xóa tài liệu"></a></td>
+                                    <td><a href="javascript:void(0)" onclick="RestoreFile(@item.ID,@item.TAILIEU_ID)" title="Sử dụng phiên bản này" class="btnRestore"></a></td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    //string SL_THUOCTINH = "";
+    using (Html.BeginForm("SaveSingleFile", "ThuMucLuuTru", FormMethod.Post, new { id = "UploadFileFrm", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Chỉnh sửa tài liệu</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" value="@Model.TaiLieu.FOLDER_ID" name="FOLDER_ID" id="FOLDER_ID" />
+                    <input type="hidden" name="TAILIEU_ID" value="@Model.TaiLieu.TAILIEU_ID" />
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 no-padding"> Đường dẫn:</label>
+                            <label class="col-sm-10 no-padding" id="DUONGDAN"></label>
+                        </div>
+                        <div class="form-group">
+                            <h3 class="group-tittle mt10" style="margin-bottom:10px">Thông tin tài liệu đã số hóa</h3>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label>Tên tài liệu:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input value="@Model.TaiLieu.TENTAILIEU" maxlength="500" type="text" class="form-control" placeholder="Nhập tên tài liệu" name="filename" id="filename" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Số hiệu:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input value="@Model.TaiLieu.MATAILIEU" maxlength="50" type="text" class="form-control" placeholder="Nhập mã tài liệu" name="filecode" id="filecode" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label>Chọn tài liệu: <span class="error">*</span></label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="file" value="Chọn tài liệu" id="filebase" name="filebase" style="width:100%;float:left;border:none" />
+                                <input type="hidden" value="@Model.FileSize" id="FILESIZE" />
+                                <input type="hidden" value="@Model.Extension" id="EXTENSION" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Số phiên bản:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input value="@Model.TaiLieu.VERSION" type="text" class="form-control" id="VERSION" placeholder="Nhập phiên bản của tài liệu" name="VERSION" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label>Mô tả:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <textarea class="form-control" id="filedescription" placeholder="Nhập mô tả cho tài liệu" name="filedescription" rows="2">@Model.TaiLieu.MOTA</textarea>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Phiên bản tài liệu:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <select class="select2" style="width:100%" name="IS_ORIGINAL" id="IS_ORIGINAL">
+                                    <option value="true">Bản chính</option>
+                                    <option value="false">Bản copy</option>
+                                </select>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label>Loại tài liệu:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <select id="LOAITAILIEU_ID" style="width:100%" class="select2" name="LOAITAILIEU_ID">
+                                    <option value="0">Chọn loại tài liệu</option>
+                                    @{
+                                        foreach (var item in Model.ListLoaiTaiLieu)
+                                        {
+                                            <option @(Model.TaiLieu.DM_LOAITAILIEU_ID.HasValue && Model.TaiLieu.DM_LOAITAILIEU_ID.Value == item.ID ? "selected='selected'" : "") value="@item.ID">@item.TEXT</option>
+                                        }
+                                    }
+                                </select>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Trạng thái:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <select name="TRANGTHAI" id="TRANGTHAI" class="select2" style="width:100%">
+                                    <option value="">Trạng thái</option>
+                                </select>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="DanhSachThuocTinh">
+                            <div class="form-group">
+                                <h3 class="group-tittle mt10" style="margin-top:0px;">Danh sách thuộc tính của tài liệu</h3>
+                            </div>
+                            @{
+                                int size = Model.ListThuocTinhBO.Count;
+                                for (int i = 0; i < size; i += 2)
+                                {
+                                    if (i + 1 < size)
+                                    {
+                                        <div class="form-group">
+                                            <div class="col-sm-2">
+                                                <label>@(Model.ListThuocTinhBO[i].TEN_THUOCTINH): </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="hidden" name="ListThuocTinh[@i].ID" value="@Model.ListThuocTinhBO[i].ID" />
+                                                <input type="hidden" name="ListThuocTinh[@i].THUOCTINH_ID" value="@Model.ListThuocTinhBO[i].THUOCTINH_ID" />
+                                                <input type="text" value="@Model.ListThuocTinhBO[(i)].GIATRI" name="ListThuocTinh[@i].GIATRI" id="" class="form-control" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <label>@(Model.ListThuocTinhBO[i + 1].TEN_THUOCTINH): </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="hidden" name="ListThuocTinh[@(i+1)].ID" value="@Model.ListThuocTinhBO[i+1].ID" />
+                                                <input type="hidden" name="ListThuocTinh[@(i+1)].THUOCTINH_ID" value="@Model.ListThuocTinhBO[i+1].THUOCTINH_ID" />
+                                                <input value="@Model.ListThuocTinhBO[(i+1)].GIATRI" type="text" name="ListThuocTinh[@(i+1)].GIATRI" id="" class="form-control" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="form-group">
+                                            <div class="col-sm-2">
+                                                <label>@(Model.ListThuocTinhBO[i].TEN_THUOCTINH): </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <input type="hidden" name="ListThuocTinh[@i].ID" value="@Model.ListThuocTinhBO[i].ID" />
+                                                <input type="hidden" name="ListThuocTinh[@i].THUOCTINH_ID" value="@Model.ListThuocTinhBO[i].THUOCTINH_ID" />
+                                                <input type="text" value="@Model.ListThuocTinhBO[(i)].GIATRI" name="ListThuocTinh[@i].GIATRI" id="" class="form-control" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">&nbsp;</div>
+                                            <div class="col-sm-4">&nbsp;</div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="Lưu lại" id="btnCreateSingle" class="btn btn-success" />
+                    <input type="button" value="Đóng" data-dismiss="modal" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+}
+<style>
+    img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    #CreateThuMuc .col-sm-3 label, #CreateThuMuc .col-sm-2 label {
+        font-weight: bold;
+    }
+
+    #CreateThuMuc .col-sm-3, #CreateThuMuc .col-sm-2 {
+        padding: 0px !important;
+    }
+</style>
+<script>
+    $(function () {
+        $(document).on('click', '.TENDANHMUCTAILIEU', function () {
+            $("#filename").val($(this).html());
+        });
+        var parent = $("#FOLDER_ID").val();
+        GetFullPath(parent);
+        $('#Uploadfile_TM').on('hidden.bs.modal', function () {
+            $("#Uploadfile_TM").html("");
+            $("#Uploadfile_TM").modal('hide');
+        });
+        $(".close,#btnClose").click(function () {
+            $("#UploadSingle").modal("hide");
+            $("#UploadSingle").html("");
+        });
+        $("#btnCreateSingle").click(function () {
+            var size = 0;
+            //if ($("#filebase").val().length > 0) {
+            //    var fSize = $("#filebase")[0].files[0].size;
+            //    var name = $("#filebase")[0].files[0].name;
+            //    var extension = name.substr((name.lastIndexOf('.') + 1));
+            //    if ($("#EXTENSION").val().indexOf(extension) < 0 || fSize > parseInt($("#FILESIZE").val())) {
+            //        $("#FILE_ERROR").html("Vui lòng kiểm tra định dạng file hoặc dung lượng file cho phép");
+            //        return false;
+            //    }
+            //    size = fSize;
+            //    $("#FILE_ERROR").html("");
+            //} else {
+            //    $("#FILE_ERROR").html("Chưa có file nào được lựa chọn");
+            //    return false;
+            //}
+            if (/<[a-z][\s\S]*>/i.test($("#filecode").val())) {
+                $("#filecode").focus();
+                $("#FILECODE_ERROR").show();
+                return false;
+            } else {
+                $("#FILECODE_ERROR").hide();
+            }
+            if ($("#filebase").val() != "") {
+                if (/<[a-z][\s\S]*>/i.test($("#filename").val())) {
+                    $("#filename").focus();
+                    $("#FILENAME_ERROR").show();
+                    return false;
+                } else {
+                    $("#FILENAME_ERROR").hide();
+                }
+            } else {
+                //var fname = $('#filebase')[0].files[0].name;
+                //$("#filename").val(fname);
+                $("#FILENAME_NULL").hide();
+                $("#FILENAME_ERROR").hide();
+            }
+            if (/<[a-z][\s\S]*>/i.test($("#TACGIA").val())) {
+                $("#TACGIA").focus();
+                $("#TACGIA_HTML").show();
+                return false;
+            } else {
+                $("#TACGIA_HTML").hide();
+            }
+            if (/<[a-z][\s\S]*>/i.test($("#filedescription").val())) {
+                $("#filedescription").focus();
+                $("#filedescription_html").show();
+                return false;
+            } else {
+                $("#filedescription_html").hide();
+            }
+            if ($("#VERSION").val().trim().length > 0) {
+                if (/<[a-z][\s\S]*>/i.test($("#VERSION").val())) {
+                    $("#VERSION").focus();
+                    $("#VERSION_HTML").show();
+                    return false;
+                } else {
+                    $("#VERSION_HTML").hide();
+                }
+            }
+            return true;
+        });
+    });
+    $("form").ajaxForm({
+        beforeSend: function () {
+            $("#loading").show();
+            $("#btnCreateFileSingle").prop('disabled', true);
+            $("#btnClose").prop('disabled', true);
+        },
+        uploadProgress: function () {
+        },
+        success: function (data) {
+            console.log(data);
+            $("#loading").hide();
+            $("#CreateThuMuc").html("");
+            LoadDataByID($("#FOLDER_ID").val());
+            NotiSuccess(data);
+        },
+        complete: function () {
+            $("#CreateThuMuc").modal('hide');
+            $("#CreateThuMuc").html("");
+        }, error: function (data) {
+            console.log(data);
+            NotiError(data);
+        }
+    });
+    $(document).ready(function () {
+        //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                $(".select2").select2();
+            });
+            //});
+        });
+    });
+</script>

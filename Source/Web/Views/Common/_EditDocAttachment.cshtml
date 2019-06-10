@@ -1,0 +1,173 @@
+﻿@using Web.Models;
+@model VanBanModel
+<form action="@Url.Action("UpdateDocAttachment")" method="post" enctype="multipart/form-data" id="form--update-document">
+    <input type="hidden" name="ITEM_TYPE" value="@Model.ItemType" />
+    <input type="hidden" name="ITEM_ID" value="@Model.ItemId" />
+    <input type="hidden" name="ROOT_ITEM_ID" value="@Model.RootItemType" />
+    <input type="hidden" name="ROLL_BACK_ID" id="ROLL_BACK_ID" />
+    <div class="modal-dialog" style="width:50%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 style="font-weight: bold; text-transform: uppercase;" class="modal-title" id="myModalLabel">
+                    Cập nhật tài liệu<span id="detail" style="color: yellow; text-transform: none"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="jarviswidget" id="wid-id-0">
+                        <table class="webGrid table-bordered files-table" style="width:100% !important">
+                            <thead>
+                                <tr class="head">
+                                    <th style="height:40px;text-align:left;width:50%" scope="col">
+                                        Tài liệu hiện tại:
+                                    </th>
+                                    <th style="height:40px;text-align:left" scope="col">
+                                        <a href="/Uploads/@Model.Attachment.DUONGDAN_FILE" title="Xem file" target="_self">
+                                            @Model.Attachment.TENTAILIEU&nbsp;<i class="glyphicon glyphicon-download"></i>
+                                        </a>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                        <header role="heading">
+                            <span class="widget-icon">
+                                <i class="fa  fa-list-alt txt-color-darken"></i>
+                            </span>
+                            <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+                                Cập nhật tài liệu mới
+                            </h2>
+                            <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                        </header>
+                        <table class="webGrid table-bordered files-table" style="width:100% !important">
+                            <thead>
+                                <tr class="head">
+                                    <th style="height:40px;text-align:left;width:50%" scope="col">
+                                        Tên tài liệu mới
+                                    </th>
+                                    <th style="height:40px;text-align:left" scope="col">
+                                        Chọn tài liệu
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr id="UpLoadFile_file_1">
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="text" maxlength="500" class="form-control" placeholder="Nhập tên tài liệu" name="filename">
+                                            <div class="note-error">
+                                                <span class="error mes-note-error"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:left">
+                                        <div class="form-group">
+                                            <input type="file" class="form-control required" id="files" value="Chọn tài liệu" name="files">
+                                            <div class="note-error">
+                                                <span class="error mes-note-error"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    @if (Model.GroupAttachments.Any())
+                    {
+                        int attatchsCount = 0;
+                        <div class="jarviswidget" id="wid-id-0" style="margin-top:20px;">
+                            <header role="heading">
+                                <span class="widget-icon">
+                                    <i class="fa  fa-list-alt txt-color-darken"></i>
+                                </span>
+                                <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+                                    Danh sách tài liệu phiên bản cũ
+                                </h2>
+                                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                            </header>
+
+                            <table class="webGrid table-bordered files-table" style="width:100% !important">
+                                <thead>
+                                    <tr class="head">
+                                        <th style="height:40px" scope="col" class="center">
+                                            Phiên bản
+                                        </th>
+                                        <th style="height:40px" scope="col" class="center">
+                                            Tên tài liệu
+                                        </th>
+                                        <th>Người tạo</th>
+                                        <th>Ngày tạo</th>
+                                        <th style="height:40px" scope="col" class="center">
+                                            Thao tác
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var item in Model.GroupAttachments)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(++attatchsCount)
+                                            </td>
+                                            <td>
+                                                @item.TENTAILIEU
+                                            </td>
+                                            <td>
+                                                @item.TENTACGIA
+                                            </td>
+                                            <td>
+                                                @string.Format("{0:dd/MM/yyyy HH:mm:ss}", item.NGAYTAO)
+                                            </td>
+                                            <td class="center">
+                                                <a class="btn btn-default" href="javascript:void(0)" onclick="DowloadFile(@item.TAILIEU_ID)" title="Tải xuống">
+                                                    <i class="glyphicon glyphicon-save"></i>
+                                                </a>
+                                                <a class="btn btn-default" href="javascript:void(0)" onclick="rollBack(@item.TAILIEU_ID)" title="Trở về phiên bản">
+                                                    <i class="fa fa-repeat"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default">
+                    <i class="fa fa-save"></i>&nbsp;Lưu thông tin
+                </button>
+                <a href="javascript:void(0)" class="btn btn-default" data-dismiss="modal">
+                    Đóng
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function rollBack(id){
+        $('#ROLL_BACK_ID').val(id);
+        $('#form--update-document').submit();
+    }
+
+    $(function(){
+        $('#form--update-document').on('submit', function(){
+            var rollBackID = $('#ROLL_BACK_ID').val();
+            if(rollBackID == ''){
+                var isValid = checkForm('form--update-document');
+                if(!isValid){
+                    return false;
+                }
+            }
+        });
+    })
+</script>

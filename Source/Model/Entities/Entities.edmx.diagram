@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="3ddce21cbb8f4c42997c9204b9343795" Name="Diagram1" ZoomLevel="30">
+        <EntityTypeShape EntityType="DBModel.ACTION_AUDIT" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.CCTC_THANHPHAN" Width="1.5" PointX="5.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DBModel.CHAT_GROUP" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.CHAT_GROUP_USER" Width="1.5" PointX="7.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DBModel.CHAT_NOIDUNG" Width="1.5" PointX="7.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DBModel.CHIASE_TAILIEU" Width="1.5" PointX="9.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.DM_CHUCNANG" Width="1.5" PointX="9.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DBModel.DM_DANHMUC_DATA" Width="1.5" PointX="9.75" PointY="10.75" />
+        <EntityTypeShape EntityType="DBModel.DM_DANHMUC_DATA_VAITRO" Width="1.5" PointX="11.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.DM_LOAI_DONVI" Width="1.5" PointX="11.75" PointY="3.75" />
+        <EntityTypeShape EntityType="DBModel.DM_NGUOIDUNG" Width="1.5" PointX="11.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DBModel.DM_NGUOIDUNG_THAOTAC" Width="1.5" PointX="5.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DBModel.DM_NHOMDANHMUC" Width="1.5" PointX="13.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.DM_THAOTAC" Width="1.5" PointX="13.75" PointY="3.75" />
+        <EntityTypeShape EntityType="DBModel.DM_VAITRO" Width="1.5" PointX="13.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DBModel.DUNGLUONG_LUUTRU" Width="1.5" PointX="11.75" PointY="13.75" />
+        <EntityTypeShape EntityType="DBModel.EFILE_CHIASE" Width="1.5" PointX="13.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DBModel.EFILE_CHIASE_NGUOIDUNG" Width="1.5" PointX="7.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DBModel.FCM_NOTIFICATION" Width="1.5" PointX="15.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_CONGTAC" Width="1.5" PointX="3" PointY="10.875" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_DAOTAO" Width="1.5" PointX="3" PointY="4.625" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEBANTHAN" Width="1.5" PointX="3" PointY="13.625" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEKETHON" Width="1.5" PointX="3" PointY="1.5" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUATRINH_LUONG" Width="1.5" PointX="3" PointY="8" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_THONGTINCHUNG" Width="1.5" PointX="0.75" PointY="2" />
+        <EntityTypeShape EntityType="DBModel.HSCV_CAPNHATTIENDO_CV" Width="1.5" PointX="15.75" PointY="3.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_CONGVIEC" Width="1.5" PointX="15.75" PointY="7.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_CONGVIEC_LAPKEHOACH" Width="1.5" PointX="0.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_CONGVIEC_NGUOITHAMGIAXULY" Width="1.5" PointX="2.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_CONGVIEC_NOIDUNGTRAODOI" Width="1.5" PointX="4.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_CONGVIEC_XINLUIHAN" Width="1.5" PointX="17.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_READVANBAN" Width="1.5" PointX="17.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_SUBTASK" Width="1.5" PointX="6.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_TRINHDUYETCONGVIEC" Width="1.5" PointX="17.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_TRINHDUYETKEHOACH" Width="1.5" PointX="8.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_VANBANDEN" Width="1.5" PointX="10.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_VANBANDEN_DONVINHAN" Width="1.5" PointX="17.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_VANBANDI" Width="1.5" PointX="12.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_VANBANDI_DONVINHAN" Width="1.5" PointX="17.75" PointY="15.75" />
+        <EntityTypeShape EntityType="DBModel.HSCV_VANBANDI_TRAODOI" Width="1.5" PointX="14.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DBModel.HUYEN" Width="1.5" PointX="16.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DBModel.LICHCONGTAC" Width="1.5" PointX="18.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DBModel.LOAITAILIEU_THUOCTINH" Width="1.5" PointX="19.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.LOGSMS" Width="1.5" PointX="19.75" PointY="3.75" />
+        <EntityTypeShape EntityType="DBModel.NGUOIDUNG_VAITRO" Width="1.5" PointX="19.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DBModel.PHIEUDANHGIACONGVIEC" Width="1.5" PointX="19.75" PointY="11.75" />
+        <EntityTypeShape EntityType="DBModel.QL_DANGKY_XE" Width="1.5" PointX="2.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DBModel.QL_DANGKYXE_LAIXE" Width="1.5" PointX="20.75" PointY="18.75" />
+        <EntityTypeShape EntityType="DBModel.QL_LAIXE" Width="1.5" PointX="21.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.QL_NGUOINHAN_VANBAN" Width="1.5" PointX="21.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DBModel.QL_PHONGHOP" Width="1.5" PointX="21.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DBModel.QL_TOKEN" Width="1.5" PointX="21.75" PointY="11.75" />
+        <EntityTypeShape EntityType="DBModel.QL_XE" Width="1.5" PointX="14.75" PointY="21.75" />
+        <EntityTypeShape EntityType="DBModel.QUANLY_HOSO" Width="1.5" PointX="4.75" PointY="22.75" />
+        <EntityTypeShape EntityType="DBModel.QUANLY_HOSO_NGUOINHAP" Width="1.5" PointX="21.75" PointY="14.75" />
+        <EntityTypeShape EntityType="DBModel.QUANLY_PHONGHOP" Width="1.5" PointX="6.75" PointY="22.75" />
+        <EntityTypeShape EntityType="DBModel.QUANLY_VANBAN" Width="1.5" PointX="22.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DBModel.SYS_TINNHAN" Width="1.5" PointX="23.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.TAILIEU_THUOCTINH" Width="1.5" PointX="23.75" PointY="5.75" />
+        <EntityTypeShape EntityType="DBModel.TAILIEUDINHKEM" Width="1.5" PointX="23.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DBModel.TAILIEUDINHKEM_VERSION" Width="1.5" PointX="16.75" PointY="23.75" />
+        <EntityTypeShape EntityType="DBModel.THONGBAO" Width="1.5" PointX="22.75" PointY="23.75" />
+        <EntityTypeShape EntityType="DBModel.THUMUC_LUUTRU" Width="1.5" PointX="24.75" PointY="16.75" />
+        <EntityTypeShape EntityType="DBModel.TINH" Width="1.5" PointX="18.75" PointY="24.75" />
+        <EntityTypeShape EntityType="DBModel.VAITRO_THAOTAC" Width="1.5" PointX="24.75" PointY="22.75" />
+        <EntityTypeShape EntityType="DBModel.WF_FUNCTION" Width="1.5" PointX="25.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.WF_FUNCTION_DONE" Width="1.5" PointX="25.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DBModel.WF_ITEM_USER_PROCESS" Width="1.5" PointX="25.75" PointY="8.75" />
+        <EntityTypeShape EntityType="DBModel.WF_LOG" Width="1.5" PointX="26.75" PointY="12.75" />
+        <EntityTypeShape EntityType="DBModel.WF_MODULE" Width="1.5" PointX="26.75" PointY="17.75" />
+        <EntityTypeShape EntityType="DBModel.WF_PROCESS" Width="1.5" PointX="26.75" PointY="21.75" />
+        <EntityTypeShape EntityType="DBModel.WF_REVIEW" Width="1.5" PointX="24.75" PointY="26.75" />
+        <EntityTypeShape EntityType="DBModel.WF_STATE" Width="1.5" PointX="26.75" PointY="25.75" />
+        <EntityTypeShape EntityType="DBModel.WF_STATE_FUNCTION" Width="1.5" PointX="27.75" PointY="0.75" />
+        <EntityTypeShape EntityType="DBModel.WF_STEP" Width="1.5" PointX="27.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DBModel.WF_STEP_CONFIG" Width="1.5" PointX="8.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DBModel.WF_STEP_USER_PROCESS" Width="1.5" PointX="14.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DBModel.WF_STREAM" Width="1.5" PointX="16.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DBModel.WF_USER_REVIEW" Width="1.5" PointX="18.75" PointY="27.75" />
+        <EntityTypeShape EntityType="DBModel.XA" Width="1.5" PointX="27.75" PointY="9.75" />
+        <AssociationConnector Association="DBModel.FK_HOSO_CANBO_CONGTAC_HOSO_CANBO_THONGTINCHUNG" />
+        <AssociationConnector Association="DBModel.FK_HOSO_CANBO_DAOTAO_HOSO_CANBO_THONGTINCHUNG" />
+        <AssociationConnector Association="DBModel.FK_HOSO_CANBO_QUANHEBANTHAN_HOSO_CANBO_THONGTINCHUNG" />
+        <AssociationConnector Association="DBModel.FK_HOSO_CANBO_QUANHEKETHON_HOSO_CANBO_THONGTINCHUNG" />
+        <AssociationConnector Association="DBModel.FK_HOSO_CANBO_QUATRINH_LUONG_HOSO_CANBO_THONGTINCHUNG" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

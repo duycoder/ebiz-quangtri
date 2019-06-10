@@ -1,0 +1,105 @@
+﻿@charset "utf-8";
+/* reset */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, sub, sup, tt, var, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+     /*border: 0pt none;*/
+     font: inherit;
+     margin: 0pt;
+     padding: 0pt;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
+body {line-height:18px;}
+ol, ul {list-style: none outside none;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after, q:before, q:after {content: none;}
+table {border-spacing: 0pt;}
+a{text-decoration:none;}
+.clearfix:before,
+    .clearfix:after,
+    .row:before,
+    .row:after {
+      content: '.';
+      display: block;
+      overflow: hidden;
+      visibility: hidden;
+      width: 0;
+      height: 0; }
+    .row:after,
+    .clearfix:after {
+      clear: both; }
+    .row,
+    .clearfix {
+      zoom: 1; }
+
+.clear {
+  clear: both;
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
+/* Commom */
+.fl {float:left !important}
+.fr {float:right !important}
+.fn {float:none}
+.txt_l {text-align:left !important}
+.txt_r {text-align:right !important}
+.txt_c {text-align:center !important}
+.txt_b {font-weight:bold}
+.txt_n {font-weight:normal !important}
+.txt_u {text-decoration:underline}
+.dn {display:none}
+.db {display:block !important;}
+.pr {position:relative}
+.pa {position:absolute}
+.pf {position:fixed}
+.bgw {background:#fff !important}
+.noBg{background:none !important}
+.bd0{border:0 !important}
+a {text-decoration:none;}
+a:hover {text-decoration:underline}
+a:focus, *:focus {noFocusLine: expression(this.onFocus=this.blur());}
+.fs11 {font-size:11px}.fs12 {font-size:12px}.fs14 {font-size:14px}.fs16 {font-size:16px}.fs18 {font-size:18px}.fs20 {font-size:20px}.fs22 {font-size:22px}.fs24 {font-size:24px}.fs26 {font-size:26px}.fs28 {font-size:28px}.fs30 {font-size:30px}
+.mg0{margin:0px !important}
+.mgr0{margin-right:0px !important}
+.pdr0{padding-right:0px !important}
+.mg{margin:10px !important}
+.mgt5{margin-top:2px !important}
+.mgt {margin-top:10px !important}
+.mgt15 {margin-top:15px !important}
+.mgt20 {margin-top:20px !important}
+.mgb5{margin-bottom:5px !important}
+.mgb {margin-bottom:10px !important}
+.mgb15{margin-bottom:15px !important}
+.mgb20{margin-bottom:20px !important}
+.mgl5 {margin-left: 5px !important;}
+.mgl {margin-left:10px !important}
+.mgl15 {margin-left:15px !important}
+.mgl20 {margin-left:20px !important}
+.mgl30 {margin-left:30px !important}
+.mgr5 {margin-right: 5px !important;}
+.mgr {margin-right:10px !important}
+.mgr15 {margin-right: 15px !important;}
+.mgr20 {margin-right: 20px !important;}
+
+.pd0 {padding:0px !important}
+.pd{padding:10px !important}
+.pdt5{padding-top:5px !important}
+.pdt {padding-top:10px !important}
+.pdt15 {padding-top:15px !important}
+.pdt20 {padding-top:20px !important}
+.pdb5{padding-bottom:5px !important}
+.pdb {padding-bottom:10px !important}
+.pdb15{padding-bottom:15px !important}
+.pdb20{padding-bottom:20px !important}
+.pdl5 {padding-left: 5px !important;}
+.pdl {padding-left:10px !important}
+.pdl15 {padding-left:15px !important}
+.pdl20 {padding-left:20px !important}
+.pdr5 {padding-right: 5px !important;}
+.pdr {padding-right:10px !important}
+.pdr15 {padding-right: 15px !important;}
+.pdr20 {padding-right: 20px !important;}
+/* CSS Document */
+

@@ -1,0 +1,267 @@
+﻿@{
+    ViewBag.Title = "Quản lý văn bản đã phát hành";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Web.Areas.HSVanBanDiArea.Models
+@using Newtonsoft.Json
+@model VanBanDiVM
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListResult.ListItem));
+}
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+    #tbl-vanbanden table {
+        font-weight: bolder;
+    }
+</style>
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading" style="height: 40px; line-height: 35px;">
+            <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10">
+                Quản lý văn bản đi đã xử lý
+            </h2>
+            <div class="render-table-info" style="float: right">
+
+            </div>
+        </header>
+        <div role="content" style="padding:0px; border: 0px;">
+            <div class="widget-body">
+                <div id="tbl-vanbanden">
+                    <table class="hinet-table table table-hover congviec index-vbdaxuly" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã hiệu</th>
+                                <th>Trích yếu</th>
+                                <th>Thể loại</th>
+                                <th>Lĩnh vực</th>
+                                <th>Độ mật</th>
+                                @*<th>Độ ưu tiên</th>*@
+                                <th>Người ký</th>
+                                <th>Chức vụ</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    var typeId = 0;
+    var lstData = eval(@lstData);
+    var HasRoleThuHoi = '@Model.HasRoleThuHoi';
+    var BeginState = '@Model.STATEBEGIN';
+    var STARTSTATEBYUSER = '@Model.STARTSTATEBYUSER';
+    function pagefunction() {
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'SOHIEU',
+                content: function (data) {
+                    var html = "<a href='/HSVanBanDiArea/VanBanDaXuLy/DetailVanBan/" + data.ID + "' title = 'Chi tiết'>" + data.SOHIEU + "</a>";
+                    if(HasRoleThuHoi == 'True' && data.CURRENT_STATE != BeginState && data.CURRENT_STATE != STARTSTATEBYUSER){
+                        html += '<br>'
+                        html += '<a title="Thu hồi văn bản" href="javascript:thuhoivanban('+data.ID+')"><i class="fa fa-cloud-download" style="font-size:24px"></i></a>';
+                    }
+                    return html;
+                }
+            },
+            {
+                tdClass: "text-justify",
+                isSort:false,
+                nameModel:'TRICHYEU',
+                content: function (data) {
+                    var html = "<a href='/HSVanBanDiArea/VanBanDaXuLy/DetailVanBan/" + data.ID + "' title = '" + data.TRICHYEU + "' class='text-ellipsis'>" + data.TRICHYEU + "</a>";
+                    return html;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_LOAIVANBAN',
+                content: function (data) {
+                    return data.TEN_LOAIVANBAN;
+                }
+            },
+
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_LINHVUC',
+                content: function (data) {
+                    return data.TEN_LINHVUC;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOKHAN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOKHAN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOKHAN + '" title="' + data.TEN_DOKHAN + '" />';
+                    } else {
+                        return data.TEN_DOKHAN;
+                    }
+                }
+            },
+            //{
+            //    tdClass: "center",
+            //    isSort: true,
+            //    nameModel: 'TEN_DOUUTIEN',
+            //    content: function (data) {
+            //        if (data.ICON_DOUUTIEN != null && data.ICON_DOUUTIEN != "") {
+            //            return '<img class="division-icon" src="' + data.ICON_DOUUTIEN + '" title="' + data.TEN_DOUUTIEN + '" />';
+            //        } else {
+            //            return data.TEN_DOUUTIEN;
+            //        }
+            //    }
+            //},
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_NGUOIKY',
+                content: function (data) {
+                    return data.TEN_NGUOIKY;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'CHUCVU',
+                content: function (data) {
+                    return data.CHUCVU;
+                }
+            },
+            //{
+            //    isSort:false,
+            //    tdClass:"center",
+            //    content: function (data) {
+
+            //           return result;
+            //    }
+            //}
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.ListResult.TotalPage,
+            recordCount: @Model.ListResult.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+    }
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+    function thuhoivanban(id){
+        $.confirm({
+            'title': 'Xác nhận thu hồi',
+            'message': 'Bạn có chắc chắn muốn thu hồi văn bản trình ký này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("ThuHoiVanBan")',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Type == "SUCCESS") {
+                                    NotiSuccess(rs.Message);
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+                            }
+                        });
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+
+    .hinet-table td:nth-child(3) {
+        width: 28% !important;
+    }
+
+    .text-justify, .text-justify a {
+        text-align: justify !important;
+    }
+</style>

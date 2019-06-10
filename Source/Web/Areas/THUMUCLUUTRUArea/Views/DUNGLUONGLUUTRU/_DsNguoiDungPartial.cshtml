@@ -1,0 +1,140 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models;
+@model DungLuongLuuTruModel
+<h3>Danh sách nhân viên - @Model.Item.NAME</h3>
+<div style="margin:10px;" class="row">
+    <div class="col-sm-4 no-padding">
+        <input class="form-control" id="search-box-nv" style="margin:5px;" placeholder="tìm kiếm" />
+    </div>
+</div>
+<div class="col-sm-12">
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Đơn vị</th>
+                <th>Họ tên</th>
+                <th>Tài khoản</th>
+                <th>Dung lượng</th>
+                <th>Trạng thái</th>
+                <th>Thiết lập</th>
+            </tr>
+        </thead>
+        <tbody id="ListNguoiDung">
+            @{
+                int size = Model.ListNguoiDung.Count;
+            }
+            @for (int i = 0; i < size; i++)
+            {
+                var item = Model.ListNguoiDung[i];
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@item.TEN_DONVI</td>
+                    <td>@item.HOTEN</td>
+                    <td>@item.TENDANGNHAP</td>
+                    <td>
+                        @{
+                            if (item.DUNGLUONG.HasValue)
+                            {
+                                switch (item.TYPE)
+                                {
+                                    case ThuMucLuuTruConstant.Gigabyte:
+                                        <span>@(item.DUNGLUONG) Gb</span>
+                                        break;
+                                    case ThuMucLuuTruConstant.Megabyte:
+                                        <span>@(item.DUNGLUONG) Mb</span>
+                                        break;
+                                    case ThuMucLuuTruConstant.Terabyte:
+                                        <span>@(item.DUNGLUONG) Tb</span>
+                                        break;
+                                    case ThuMucLuuTruConstant.Kilobyte:
+                                        <span>@(item.DUNGLUONG) Kb</span>
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch (ThuMucLuuTruConstant.DetaultType)
+                                {
+                                    case ThuMucLuuTruConstant.Gigabyte:
+                                        <span>@(ThuMucLuuTruConstant.DefaultStorage) Gb</span>
+                                        break;
+                                    case ThuMucLuuTruConstant.Megabyte:
+                                        <span>@(ThuMucLuuTruConstant.DefaultStorage) Mb</span>
+                                        break;
+                                    case ThuMucLuuTruConstant.Terabyte:
+                                        <span>@(ThuMucLuuTruConstant.DefaultStorage) Tb</span>
+                                        break;
+                                    case ThuMucLuuTruConstant.Kilobyte:
+                                        <span>@(ThuMucLuuTruConstant.DefaultStorage) Kb</span>
+                                        break;
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{
+                            if (Model.ListNguoiDung[i].TRANGTHAI_2.HasValue && !Model.ListNguoiDung[i].TRANGTHAI_2.Value)
+                            {
+                                <span style='color:red'>Không sử dụng</span>
+                            }
+                            else
+                            {
+                                <span class='text-success'>Sử dụng</span>
+
+                            }
+                        }
+                    </td>
+                    <td class="center">
+                        <a href='javascript:void(0)' onclick='EditStorage(@Model.ListNguoiDung[i].ID)' title='Cập nhật'><i class='glyphicon glyphicon-edit' style="color:cornflowerblue"> </i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function reloadModel()
+    {
+        UserModalOpen(@Model.Item.ID);
+    }
+    $("#search-box-nv").keypress(function (e) {
+        if (e.which == 13) {
+            permissionLiveSearch($("#search-box-nv"));
+        }
+    });
+    function permissionLiveSearch(event) {
+        var key = generate_slugable(event.val());
+        console.log(key);
+        $("#ListNguoiDung tr").each(function () {
+            var $row = $(this);
+            var hoten = generate_slugable($row.find("td:eq(2)").text());
+            var taikhoan = generate_slugable($row.find("td:eq(3)").text());
+            if (hoten.toLowerCase().indexOf(key.toLowerCase()) > -1 || taikhoan.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $row.show();
+            }
+            else {
+                $row.hide();
+            }
+        });
+    }
+    function EditStorage(id) {
+         $.ajax({
+                            url: '@Url.Action("EditStorage")',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                $("#modal_create").html(rs);
+                                $("#modal_create").modal("show");
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+                            }
+                        });
+        @*AjaxCall("@Url.Action("EditStorage")", 'get', null, function (rs) {
+            $("#modal_create").html(rs);
+            $("#modal_create").modal("show");
+        });*@
+    }
+</script>

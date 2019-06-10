@@ -1,0 +1,364 @@
+﻿@using Web.FwCore
+@model Web.Areas.BaoCaoThongKe.Models.ReportViewModel
+@{
+    ViewBag.Title = "TheoDoiCongViec";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .control-label {
+        text-align: right;
+        padding-top: 7px;
+    }
+</style>
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+    </div>
+</div>
+<div id="content">
+    <div class="jarviswidget col-sm-12" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+        <header>
+            <span class="widget-icon"><i class="glyphicon glyphicon-stats txt-color-darken"></i></span>
+            <h2>Báo cáo tổng hợp tình trạng xử lý công việc</h2>
+        </header>
+        <div class="no-padding">
+            <div class="form-group col-sm-12" style="margin-top: 20px;margin-bottom:0px">
+                @{
+                    if (Model.HasRoleAssignUnit || Model.HasRoleAssignDepartment)
+                    {
+                        <label class="col-md-2 control-label">
+                            Chọn khối đơn vị
+                        </label>
+                        <div class="col-md-4">
+                            @Html.DropDownList("KHOIDONVI_ID", Model.LstCoCauToChuc, new { @class = "selectpicker1", @title = "Chọn khối đơn vị", @data_actions_box = "true", @data_live_search = "true" })
+                        </div>
+                        <label class="col-md-2 control-label">
+                            Chọn phòng ban
+                        </label>
+                        <div class="col-md-4" id="DONVI_DIV_ID">
+                            @Html.DropDownList("DONVI_ID", Model.LstDonVi, new { @class = "selectpicker1", @title = "Chọn phòng ban", @data_actions_box = "true", @data_live_search = "true", @multiple = "multipel" })
+                        </div>
+                    }
+                    else if (Model.HasRoleAssignChuyenVien)
+                    {
+                        <label class="col-md-2 control-label">
+                            Chọn khối đơn vị
+                        </label>
+                        <div class="col-md-4">
+                            @Html.DropDownList("DONVI_ID", Model.LstDonVi, new { @class = "selectpicker1", @title = "Chọn khối đơn vị", @data_actions_box = "true", @data_live_search = "true" })
+                        </div>
+                        <label class="col-md-2 control-label">
+                            Chọn nhân viên
+                        </label>
+                        <div class="col-md-4" id="DONVI_DIV_ID">
+                            @Html.DropDownList("NHANVIEN_ID", Model.LstNhanVien, new { @class = "selectpicker1", @title = "Chọn nhân viên", @data_actions_box = "true", @data_live_search = "true", @multiple = "multipel" })
+                        </div>
+                    }
+                }
+            </div>
+            <div class="form-group col-sm-12" style="margin-top: 20px;margin-bottom:0px">
+                <label class="col-md-2 control-label">
+                    Từ ngày
+                </label>
+                <div class="col-md-4">
+                    <input class="form-control txt_datepicker" placeholder="Từ ngày" type="text" id="FROM_QUERY_DATE">
+                </div>
+                <label class="col-md-2 control-label">
+                    Đến ngày
+                </label>
+                <div class="col-md-4">
+                    <input class="form-control txt_datepicker" placeholder="Đến ngày" type="text" id="TO_QUERY_DATE">
+                </div>
+            </div>
+            <div class="form-group col-sm-12" style="text-align: center; margin-bottom: 20px; margin-top: 20px">
+                <button class="btn btn-default" onclick="showResult()">Xem báo cáo</button>
+                @*<a class="btn btn-default" href="">Quay lại</a>*@
+                <a class="btn btn-default" href="javascript:void(0)" onclick="ExportResult();"><i class="fa fa-file-archive-o"></i> Kết xuất</a>
+            </div>
+        </div>
+    </div>
+    <div class="JStableOuter" id="result-thong-ke" style="background:#fff">
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                });
+            });
+        });
+        loadScript("/Content/select/js/bootstrap-select.js", pageFunction);
+    });
+    var pageFunction = function () {
+        $(".selectpicker1").selectpicker();
+        $(".txt_datepicker").datepicker({
+            dateFormat: 'dd/mm/yy',
+            changeMonth: true,
+
+            changeYear: true, yearRange: "-5:+5",
+            showWeek: false, weekHeader: "Tuần",
+            language: 'vi-VN',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            //minDate: 0
+        });
+        $("#KHOIDONVI_ID").change(function () {
+            $.ajax({
+                url: '/Report/Report/ChangeKhoiDonVi',
+                type: 'POST',
+                data: {
+                    'KHOIDONVI_ID': $("#KHOIDONVI_ID").val(),
+                },
+                success: function (result) {
+                    $("#DONVI_DIV_ID").html(result);
+                    $("#DONVI_ID").selectpicker('refresh');
+                    $("#DONVI_ID").selectpicker();
+                }, error: function (result) {
+                    $('#modal--insert-donvi-banhanh').modal('hide');
+                }
+            })
+        });
+        $(document).ready(function () {
+            if ($("#KHOIDONVI_ID").val() != null) {
+                $.ajax({
+                    url: '/Report/Report/ChangeKhoiDonVi',
+                    type: 'POST',
+                    data: {
+                        'KHOIDONVI_ID': $("#KHOIDONVI_ID").val(),
+                    },
+                    success: function (result) {
+                        $("#DONVI_DIV_ID").html(result);
+                        $("#DONVI_ID").selectpicker();
+                    },
+                    error: function (result) {
+                        $('#modal--insert-donvi-banhanh').modal('hide');
+                    }
+                });
+            }
+        })
+    }
+    
+
+    function showResult() {
+        if ($("#DONVI_ID").val() == "") {
+            NotiError("Bạn phải chọn đơn vị");
+        } else if ($("#FROM_QUERY_DATE").val() == "" || $("#TO_QUERY_DATE").val() == "") {
+            NotiError("Bạn phải chọn ngày bắt đầu và ngày kết thúc thời điểm báo cáo");
+        }
+        else {
+            var DONVI_ID = "";
+            if ($("#DONVI_ID").val() != null) {
+                DONVI_ID = $("#DONVI_ID").val()  + "";
+            }
+            var NHANVIEN_ID = "";
+            if ($("#NHANVIEN_ID").val() != null) {
+                NHANVIEN_ID = $("#NHANVIEN_ID").val();
+            }
+            $.ajax({
+                url: '/Report/Report/ResultTheoDoiCongViec',
+                type: 'POST',
+                data: {
+                    'FROM_QUERY_DATE': $("#FROM_QUERY_DATE").val(),
+                    'TO_QUERY_DATE': $("#TO_QUERY_DATE").val(),
+                    'DONVI_ID': DONVI_ID,
+                    'NHANVIEN_ID': NHANVIEN_ID
+                },
+                success: function (result) {
+                    $("#result-thong-ke").html(result);
+                }, error: function (result) {
+                    $('#modal--insert-donvi-banhanh').modal('hide');
+                }
+            })
+        }
+    }
+    function ExportResult() {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ExportCongViec")',
+                data: {},
+                dataType: "json",
+                contentType: "application/json",
+
+                success: function (rs) {
+                    if (rs.Status) {
+                        NotiSuccess("Export dữ liệu thành công");
+                        var win1= window.open(rs.PathStore, '_self');
+                        if (win1) {
+                        } else {
+                            alert('Hãy cho phép website mở popup');
+                        }
+                        $("#block-sai").css("display", "none");
+                        $("#block-sai input:checkbox.global_checkbox").prop("checked", false);
+                    } else {
+                        NotiError(rs.Message);
+                    }
+                },
+                error: failureAjax,
+            });
+    }
+</script>
+<style>
+    .job-parent td {
+        background-color: #92d050 !important;
+        font-weight: bold;
+    }
+
+    .report-table td:nth-child(2) div, .report-table td:nth-child(3) div, .report-table td:nth-child(4) div,
+    .report-table td:nth-child(5) div {
+        width: 180px !important;
+    }
+
+    /*.JStableOuter table {
+        position: relative;
+        width: 100%;
+        background-color: #fff;
+        border-collapse: collapse;
+        font-family: arial;
+        display: block;
+        height: 650px;
+        overflow: scroll;
+    }
+
+    .JStableOuter {
+        max-width: 1170px;
+        margin: auto;
+        border: 1px solid #999;
+    }
+
+        .JStableOuter thead {
+            position: relative;
+            overflow: visible;
+        }
+
+            .JStableOuter thead th {
+                background-color: #fff;
+                height: 32px;
+                padding: 3px 15px 0;
+                font-size: 13px;
+                vertical-align: top;
+                position: relative;
+                box-shadow: 0 1px 0px 1px #999;
+            }
+
+                .JStableOuter thead th p {
+                    margin: 5px 0;
+                    font-weight: normal;
+                }
+
+            .JStableOuter thead .first-child, .JStableOuter thead .second-child {
+                position: relative;
+                background-color: #fff;
+                z-index: 99;
+                border-right: 1px solid #999;
+                box-shadow: 0 1px 1px 1px #999;
+                min-width: 120px;
+            }
+
+            .JStableOuter thead tr {
+                position: relative;
+            }
+
+        .JStableOuter tbody td {
+            background-color: #fff;
+            border: 1px solid #999;
+            padding: 0 15px;
+            min-width: 100px;
+            font-size: 13px;
+            box-shadow: 0 1px 0px 1px #999;
+        }
+
+        .JStableOuter tbody tr td:nth-child(1), .JStableOuter tbody tr td:nth-child(2) {
+            position: relative;
+            height: 40px;
+            background-color: #fff;
+            box-shadow: 0 0px 1px 1px #999;
+        }
+
+    .tableOuter {
+        max-width: 800px;
+        overflow: auto;
+    }
+
+    .negativeCost {
+        color: #f10;
+    }
+
+    .profitCol {
+        color: #81a65c;
+    }
+
+    .revenueCol {
+        color: #5484bf;
+    }
+
+    .JStableOuter thead th.blueHead {
+        background-color: #7b7b7b;
+        color: #fff;
+    }
+
+    .JStableOuter thead th.lightBlueBox, .JStableOuter tbody td.lightBlueBox {
+        background: #efefef;
+        border-color: #999;
+    }
+
+    .JStableOuter p {
+        margin: 5px 0;
+    }*/
+
+    .btnRed {
+        background: #b51a01;
+        color: #fff;
+        border-radius: 50px;
+        padding: 5px 15px;
+    }
+
+    .colorOrange {
+        color: #f6984a;
+    }
+
+    .contBox {
+        min-width: 150px;
+    }
+
+    /*.JStableOuter td:first-child {
+        width: 40px !important
+    }*/
+
+    /*.JStableOuter thead .first-child, .JStableOuter tbody td:first-child {
+        min-width: 40px !important
+    }*/
+    .table-bordered{
+        background:#FFFFFF;
+    }
+    .level-1{
+
+    }
+    .level-2 {
+        background-color: #FAEBD7 !important;
+        color: black;
+    }
+    .level-3 {
+        background-color: #E6E6FA !important;
+        color: black;
+    }
+</style>

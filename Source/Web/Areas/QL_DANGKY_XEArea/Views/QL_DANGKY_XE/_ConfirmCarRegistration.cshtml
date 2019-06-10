@@ -1,0 +1,143 @@
+﻿@using Web.Areas.QL_DANGKY_XEArea.Models
+@model DangKyXeEditViewModel
+<style type="text/css">
+    #form--accept-car-registration .modal-dialog {
+        width: 50% !important;
+    }
+
+        #form--accept-car-registration .modal-dialog .modal-body {
+            overflow: visible !important;
+            min-height: 150px !important;
+        }
+
+    #form--accept-care-registration-note {
+        font-style: italic;
+        font-size: 13px;
+    }
+
+    #form--accept-car-registration .select2 {
+        width: 100%;
+    }
+</style>
+@using (Ajax.BeginForm("AcceptCarRegistration", "QL_DANGKY_XE", new { @area = "QL_DANGKY_XEArea" }, new AjaxOptions()
+{
+    HttpMethod = "POST",
+    OnSuccess = "onAcceptCarSuccess",
+    OnFailure = "onAcceptCarFailure"
+}, new { @id = "form--accept-car-registration" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="DANGKY_XE_ID" value="@Model.dangKyXeEntity.ID" />
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    PHÊ DUYỆT YÊU CẦU ĐĂNG KÝ XE
+                </h5>
+            </div>
+
+            <div class="modal-body">
+                <fieldset>
+                    <div class="row">
+                        <section class="col col-lg-12">
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-3">
+                                        <label class="lbl control-label" for="LAIXE_ID">
+                                            Lái xe:&nbsp;<span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownList("LAIXE_ID", Model.groupOfDrivers,
+                                       new {@class= "width-100 select2 requiredDropDownList", @data_action_box="true", @data_live_search="true", @multiple="multiple" })
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-3">
+                                        <label class="lbl control-label" for="XE_ID">
+                                            Xe:&nbsp;<span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownList("XE_ID", Model.groupOfCars,
+                                       new {@class= "width-100 select2 requiredDropDownList", @data_action_box="true", @data_live_search="true", @multiple="multiple" })
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-3">
+                                        <label class="lbl control-label" for="GHICHU">
+                                            Ghi chú:
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <textarea name="GHICHU" id="GHICHU" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <span class="text-info" id="form--accept-care-registration-note">
+                                            (*) Lái xe sẽ được sắp xếp vào xe theo thứ tự đã chọn
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="btn--accept-car-registration">Cập nhật</a>
+                <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/js/plugin/select2/select2.min.js"></script>
+<script>
+    $(function(){
+        $("select.select2").select2();
+
+        $('#btn--accept-car-registration').on('click',function(){
+            var isValid = onSubmit();
+            if(isValid){
+                $('#form--accept-car-registration').submit();
+            }
+        });
+    });
+
+    function onSubmit(){
+        var formName = 'form--accept-car-registration';
+        var isValidSelectField = RequireDropDownlist(formName);
+        if(isValidSelectField){
+            var selectedDriversLength = $('#LAIXE_ID option:selected').length;
+            var selectedCarsLength = $('#XE_ID option:selected').length;
+
+            if(selectedDriversLength == selectedCarsLength){
+                return true;
+            } else{
+                var errText = $('#XE_ID').parents('.form-group').first().find('.error');
+                errText.html("Lựa chọn số lượng tài xế và xe bằng nhau");
+                errText.css('display', 'inline');
+            }
+        }
+        return false;
+    }
+
+</script>

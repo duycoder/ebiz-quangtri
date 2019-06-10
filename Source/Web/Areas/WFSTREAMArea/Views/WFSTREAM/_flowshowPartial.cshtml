@@ -1,0 +1,305 @@
+﻿@using Web.Areas.WFSTREAMArea.Models;
+@using Business.CommonModel.WFSTREAM;
+@model FlowBO
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+    .cssPhongBan {
+        background-color: #16a085 !important;
+        color: white;
+    }
+
+    .modal-body {
+        max-height: 450px;
+        overflow: auto;
+    }
+</style>
+
+@{
+    /**/
+
+    var isNgXuLyChinh = Model.Step.NguoiXuLyChinh != null;
+    var isNgThamGiaXuLy = @Model.Step.NguoiThamGiaXuLy != null;
+    long logId = 0;
+    if (Model.Log != null)
+        logId = Model.Log.ID;
+
+}
+<div class="modal-dialog" style="width: 80%">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">@Model.Step.NAME</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row nomargin">
+                <div class="row">
+                    @if (Model.dsNgNhanChinh != null)
+                    {
+                        var checkedstr = (Model.dsNgNhanChinh.Count == 1) ? "checked" : "";
+                        <div class="col-sm-@(Model.dsNgThamGia == null ? "12":"6") nopadding nomargin">
+                            <div class="form-group">
+
+                                <div class="col-sm-12" style="text-align:center">
+                                    <label class="control-label"><strong>Người xử lý chính</strong></label>
+                                </div>
+                                <div class="col-sm-12">
+                                    <input type="text" id="txtMainprocessSeach" class="form-control" placeholder="Tìm kiếm ..." />
+                                </div>
+                                <div class="col-sm-12">
+                                    <table class="hinet-table table  table-hover table-striped" id="user-main-process">
+                                        @foreach (var item in Model.dsNgNhanChinh)
+                                        {
+                                            <tr data-id="@item.PhongBan.ID" class="cssPhongBan">
+                                                <td colspan="3"><strong> @item.PhongBan.NAME</strong></td>
+                                            </tr>
+                                            foreach (var ngdung in item.LstNguoiDung)
+                                            {
+                                                <tr class="child-@item.PhongBan.ID">
+                                                    <td class="width-30">
+                                                        <input type="radio" @checkedstr value="@ngdung.ID" id="mainProcess-@ngdung.ID" name="mainProcess" class="mainProcess"/>
+                                                    </td>
+                                                    <td class="user-name">
+                                                        <label for="mainProcess-@ngdung.ID" class="label-workflow">
+                                                            @ngdung.HOTEN
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <label for="mainProcess-@ngdung.ID" class="label-workflow">
+                                                            @ngdung.ChucVu
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.dsNgThamGia != null)
+                    {
+                        long disabledID = 0;
+                        if(Model.dsNgNhanChinh.Count == 1)
+                        {
+                            disabledID = Model.dsNgNhanChinh.First().LstNguoiDung.OrderByDescending(x => x.ID).Select(x => x.ID).FirstOrDefault();
+                        }
+                        <div class="col-sm-6 nopadding nomargin">
+                            <div class="form-group">
+                                <div class="col-sm-12" style="text-align:center">
+                                    <label class="control-label"><strong>Người tham gia xử lý</strong></label>
+                                </div>
+                                <div class="col-sm-12">
+                                    <input type="text" id="txtJoinprocessSearch" class="form-control" placeholder="Tìm kiếm ..." />
+                                </div>
+                                <div class="col-sm-12">
+                                    <table class="hinet-table table  table-hover table-striped" id="user-join-process">
+                                        @foreach (var item in Model.dsNgThamGia)
+                                        {
+                                            <tr data-id="@item.PhongBan.ID" class="cssPhongBan">
+                                                <td colspan="3"><strong> @item.PhongBan.NAME</strong></td>
+                                            </tr>
+                                            foreach (var ngdung in item.LstNguoiDung)
+                                            {
+                                                <tr class="child-@item.PhongBan.ID">
+                                                    <td class="width-30">
+                                                        @if (disabledID == ngdung.ID)
+                                                        {
+                                                            <input type="checkbox" class="joinUser" value="@ngdung.ID" id="joinUser-@ngdung.ID"disabled />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" class="joinUser" value="@ngdung.ID" id="joinUser-@ngdung.ID" />
+                                                        }
+                                                    </td>
+                                                    <td class="user-name">
+                                                        <label for="joinUser-@ngdung.ID" class="label-workflow">
+                                                            @ngdung.HOTEN
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <label for="joinUser-@ngdung.ID" class="label-workflow">
+                                                            @ngdung.ChucVu
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.IsBack == true)
+                {
+                    <div class="center">
+                        <h4>Trả về cho @Model.Log.TenNguoiXuLy</h4>
+                    </div>
+                }
+                <div class="form-group">
+                    <label class="control-label"><strong>Tin nhắn</strong></label>
+                    <div class="col-sm-12" style="padding:0px">
+                        <textarea class="form-control resize-vertical" id="txtMessage" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer center">
+
+            <button type="button" class="btn btn-primary" onclick="submitAction()">Xong</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        if($('input.joinUser').length > 0 ){
+            $('.joinUser').change(function(){
+                var checked = $(this).is(':checked') ? false : true;
+                var value = $(this).val();
+
+                $(this).prop('checked', checked);
+                if(checked){
+                    $("input[name='mainProcess'][value='"+value+"']").attr('disabled', 'disabled');
+                }else{
+                    $("input[name='mainProcess'][value='"+value+"']").removeAttr('disabled');
+                }
+            });
+        }
+    })
+
+     $("input[name='mainProcess']").change(function(){
+        var value = $(this).val();
+        var checked = $(this).is(':checked');
+        if($('input.joinUser').length > 0){
+            if(checked){
+                $("input.joinUser[value='"+value+"']").attr('disabled', 'disabled');
+                $("input.joinUser[value!='"+value+"']").removeAttr('disabled');
+            }else{
+                $("input.joinUser[value='"+value+"']").removeAttr('disabled');
+            }
+        }
+     });
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+
+    function submitAction() {
+        var err=0;
+        var idMainProcess = $("input[name=mainProcess]:checked").val();
+        if ("@Model.IsBack"=="False"&&"@isNgXuLyChinh"=="True" && idMainProcess==null) {
+            NotiError("Bạn chưa chọn người xử lý chính");
+            err++;
+        }
+        var idJoinProcess = [];
+        $("input.joinUser:checked").each(function () {
+            idJoinProcess.push($(this).val());
+        })
+
+        if (!err) {
+            $.ajax({
+                url:'/wfstreamarea/wfstream/SaveFlow',
+                type:'post',
+                data:JSON.stringify({"processID":@Model.Process.ID,
+                    "stepID":@Model.Step.ID,
+                    "mainUser":(idMainProcess!=null?idMainProcess:0),
+                    "joinUser":idJoinProcess,
+                    "message":$("#txtMessage").val(),
+                    "IsBack":"@Model.IsBack",
+                    "LogID":@logId}),
+                dataType:'json',
+                contentType:'application/json',
+                success:function (rs) {
+                    if (rs.Status) {
+                        NotiSuccess("Đã chuyển xử lý");
+                        setTimeout(function () {
+                            location.reload()
+                        },1000);
+                    }else {
+                        NotiError(rs.Message);
+                    }
+                },
+                error:function () {
+                    NotiError("Không chuyển xử lý được");
+                }
+            })
+        }
+    }
+
+    $("#txtMainprocessSeach").keypress(function (e) {
+        if (e.which == 13) {
+            mainLiveSearch($("#txtMainprocessSeach"));
+        }
+    })
+    $("#txtJoinprocessSearch").keypress(function (e) {
+        if (e.which == 13) {
+            joinLiveSearch($("#txtJoinprocessSearch"));
+        }
+    })
+
+    function mainLiveSearch(event) {
+        var key = generate_slugable(event.val());
+        $("table#user-main-process tr[data-type=user] td.user-name").each(function () {
+            var $td = $(this);
+            var $tr = $td.parent();
+            var name = generate_slugable($td.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $tr.show();
+            }
+            else {
+                $tr.hide();
+            }
+        });
+    }
+
+    function joinLiveSearch(event) {
+        var key = generate_slugable(event.val());
+        $("table#user-join-process tr[data-type=user] td.user-name").each(function () {
+            var $td = $(this);
+            var $tr = $td.parent();
+            var name = generate_slugable($td.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $tr.show();
+            }
+            else {
+                $tr.hide();
+            }
+        });
+        $("table#user-join-process .cssPhongBan").each(function () {
+            var $tr = $(this);
+            var idx = $tr.data("id");
+            if($("table#user-join-process .child-"+idx+":visible").length == 0){
+                $tr.hide();
+            }else{
+                $tr.show();
+            }
+        });
+
+    }
+
+    $("td.user-name").click(function () {
+
+        var tdCheck = $(this).prev();
+
+        var inpCheck = tdCheck.find("input");
+        if (inpCheck.prop("checked")) {
+            inpCheck.prop("checked", false);
+        } else {
+            inpCheck.prop("checked", true);
+        }
+    })
+</script>

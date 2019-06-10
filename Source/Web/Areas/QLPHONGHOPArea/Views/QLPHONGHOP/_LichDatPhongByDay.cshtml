@@ -1,0 +1,173 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@using CommonHelper.DateExtend;
+@model LichHopByDayViewModel
+
+<div class="widget-t-body no-padding">
+    <div class="well">
+        <h2 class="txt-color-blueDark">
+            @Model.title
+        </h2>
+
+        <div class="row">
+            <div class="col-sm-6 col-md-6">
+                <div class="form-group row">
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control txt-picker" id="txt--start-day" placeholder="Ngày bắt đầu" value="@(string.Format("{0:dd/MM/yyyy}", Model.startDate))">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control txt-picker" id="txt--end-day" placeholder="Ngày kết thúc" value="@(string.Format("{0:dd/MM/yyyy}", Model.endDate))">
+                    </div>
+
+                    <div class="col-sm-4">
+                        <button class="btn btn-default" id="btn-search">
+                            <i class="fa fa-search"></i>&nbsp;Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-6">
+                <div class="btn-group" role="group" aria-label="Calendar Type" style="float:right;">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <table class="table table-striped table-bordered calendar--table--data-day">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Mục đích</th>
+                            <th>Thành phần tham dự</th>
+                            <th>Lãnh đạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.groupOfEntities.Any() == false)
+                        {
+                            <tr>
+                                <td colspan="5">
+                                    <center>
+                                        <span class="text-info">
+                                            HIỆN KHÔNG CÓ LỊCH HỌP NÀO
+                                        </span>
+                                    </center>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model.groupOfEntities)
+                            {
+                                <tr>
+                                    <th colspan="5" class="calendar--cell--time-title @(item.isToday ? "calendar--cell--highlight" : "")">
+                                        @(item.title)
+                                    </th>
+                                </tr>
+
+                                foreach (var child in item.groupOfCalendars)
+                                {
+                                    <tr>
+                                        <td>
+                                            @(child.GIOBATDAU.GetValueOrDefault().ToString("D2") + "h" + child.PHUTBATDAU.GetValueOrDefault().ToString("D2") + " - " + child.GIOKETTHUC.GetValueOrDefault().ToString("D2") + "h" + child.PHUTKETTHUC.GetValueOrDefault().ToString("D2"))
+                                        </td>
+                                        <td>
+                                            @(child.MUCDICH)
+                                        </td>
+                                        <td>
+                                            @(child.THANHPHANTHAMDU)
+                                        </td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(child.TEN_LANHDAO) == false && child.USER_ID > 0)
+                                            {
+                                                <b style="color:#B50101">@child.TEN_LANHDAO</b>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="javascript:void(0)" class="text-success" onclick="showInfo(@child.ID)" title="Xem thông tin lịch đặt phòng">
+                                                    <i class="fa fa-search fa-lg">
+                                                    </i>&nbsp;&nbsp;
+                                                </a>
+                                                @if (Model.currentUserId == child.CREATED_BY && child.NGAYDAT.Value.IsOldWeek() == false && child.PHONG_ID <= 0)
+                                                {
+                                                    <a href="javascript:void(0)" onclick="edit(@child.ID)" title="Chỉnh sửa lịch đặt phòng">
+                                                        <i class="fa fa-pencil-square fa-lg">
+                                                        </i>&nbsp;&nbsp;
+                                                    </a>
+
+                                                    <a href="javascript:void(0)" onclick="deleteCalendar(@child.ID)" title="Xóa lịch đặt phòng">
+                                                        <i class=" glyphicon glyphicon-remove fa-lg"></i>&nbsp;&nbsp;
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(function(){
+        $(".txt-picker").datepicker({
+            dateFormat: 'dd/mm/yy',
+            changeMonth: true,
+            changeYear: true, yearRange: "-50:+20",
+            showWeek: false, weekHeader: "Tuần",
+            language: 'vi',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            onSelect: function (date) {
+                //tìm kiếm
+            }
+        });
+
+        $('#btn-search').on('click',function(){
+            searchLichByDay();
+        });
+    })
+
+    function searchLichByDay(){
+            var startDateStr = $('#txt--start-day').val().trim();
+            var endDateStr = $('#txt--end-day').val().trim();
+            var pattern = /^[0-3][0-9]\/[01][0-9]\/[12][0-9][0-9][0-9]$/;
+
+            if(startDateStr !='' && !pattern.test(startDateStr)){
+                $('#txt--start-day').focus();
+                NotiError('Vui lòng nhập đúng định dạng dd/mm/yyyy');
+                return false;
+            }
+
+            if(endDateStr !='' && !pattern.test(endDateStr)){
+                $('#txt--end-day').focus();
+                NotiError('Vui lòng nhập đúng định dạng dd/mm/yyyy');
+                return false;
+            }
+
+            var searchModel = {
+                queryStartDate : startDateStr != '' ? convertToDate(startDateStr)  : null,
+                queryEndDate : endDateStr != ''? convertToDate(endDateStr) : null,
+                calendarType: $('#CALENDAR_TYPE').val(),
+                calendarDay: new Date(),
+                queryUserId: $('#select--leader').val() != '' ? parseInt($('#select--leader').val()) : null
+            }
+
+            search(searchModel);
+        }
+
+    function convertToDate(dateStr) {
+        var parts = dateStr.split("/")
+        return new Date(parts[2], parts[1] - 1, parts[0])
+    }
+</script>

@@ -1,0 +1,181 @@
+﻿@using Newtonsoft.Json;
+@using Business.CommonModel.CONSTANT;
+@using Web.Areas.QL_NGUOINHAN_VANBANArea.Models;
+@model QLNguoiNhanVanBanIndexViewModel
+@{
+    ViewBag.Title = "Quản lý nhóm người nhận văn bản";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var recipientJSON = Html.Raw(JsonConvert.SerializeObject(Model.GroupRecipients.ListItem));
+}
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" id="button--open-create">
+            <i class="fa fa-plus"></i>&nbsp;<span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            <i class="fa fa-search"></i>&nbsp;<span>Tìm kiếm</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    @Html.Partial("_SearchRecipient")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                <text>Quản lý nhóm người nhận văn bản</text>
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div id="table--recipients" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped  table-hover" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th class="center">STT</th>
+                            <th>Tên nhóm</th>
+                            <th>Thành viên</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal--recipients-edit" class="modal fade"data-backdrop="static" data-keyboard="false" role="dialog"></div>
+
+<script>
+    var data = eval(@recipientJSON);
+
+    $(function(){
+        $('#button--open-create').on('click', function(){
+            $.get('/QL_NGUOINHAN_VANBANArea/QL_NGUOINHAN_VANBAN/EditRecipients', function(result){
+                $('#modal--recipients-edit').html(result);
+                $('#modal--recipients-edit').modal('show');
+        });
+    });
+
+        loadScript("/Scripts/jquery-hinet-table.js", onConfigDataTable);
+    })
+
+    function refreshData(){
+        $("#table--assignment").hinetTable("reload");
+    }
+
+    function onConfigDataTable(){
+        var config =[]
+        config = [{
+                    tdClass:"center",
+                    isSort:false,
+                    nameModel:"",
+                    isCounter:true,
+                    content: function (data) {
+                        return "<input type='checkbox'/>"
+                    }
+                },
+                  {
+                     isSort:true,
+                     nameModel:'TEN_NHOM',
+                     content: function (data) {
+                        return data.TEN_NHOM
+                     }
+                },
+                {
+                     isSort:false,
+                     nameModel:'Members',
+                     content: function (data) {
+                        return data.Members
+                     }
+                },
+                 {
+                     isSort:false,
+                     nameModel:"",
+                     content: function (data) {
+                        var result = "<div class='btn-group'>";
+                        result += "<a href='javascript:void(0)' onclick='onEdit(" + data.ID + ")' title = 'Chỉnh sửa nhóm người nhận văn bản'><i class='glyphicon glyphicon-edit'></i></a>";
+                        result += "<a href='javascript:void(0)' onclick='onDelete(" + data.ID + ")' title = 'Xóa nhóm người nhận văn bản'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>";
+                        result += "</div>";
+                        return result;
+                    }
+                }
+            ];
+            var onGetData = function(page,sortQuery,pageSize){
+                $.ajax({
+                    url: '@Url.Action("GetDataPerPage")',
+                    type: 'post',
+                    cache: false,
+                    data:{"pageSize":pageSize,"pageIndex":page, "sortQuery":sortQuery},
+                    success: function (data) {
+                        $("#table--recipients").hinetTable("data",{
+                            pageSize:pageSize!=-1?pageSize:data.Count,
+                            pageIndex:page,
+                            pagecount: data.TotalPage,
+                            recordCount: data.Count,
+                            listItem: data.ListItem});
+                    },
+                    error: function (err) {
+                        CommonJS.alert(xhr.responseText);
+                    }
+                });
+            }
+           var tableData = $("#table--recipients").hinetTable("init",{
+                pageSizeList:{
+                    size:[20,50,100,-1],
+                    label:['20','50','100','Tất cả']
+                },
+                pagecount: @Model.GroupRecipients.TotalPage,
+                recordCount: @Model.GroupRecipients.Count,
+                getData: onGetData,
+                listItem: data,
+                config: config
+               });
+           }
+    function onEdit(id){
+        $.get("/QL_NGUOINHAN_VANBANArea/QL_NGUOINHAN_VANBAN/EditRecipients?id="+id, function(result){
+            $('#modal--recipients-edit').html(result);
+            $('#modal--recipients-edit').modal('show');
+        });
+    }
+
+   function onDelete(id){
+        $.confirm({
+            title: 'Xác nhận xóa nhóm người nhận văn bản',
+            message: 'Bạn muốn xóa nhóm người nhận văn bản này?',
+            buttons: {
+                'Xóa':{
+                    class: 'btn-confirm-yes btn-primary',
+                    action: function(){
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            type: 'post',
+                            cache: false,
+                            data: { id: id },
+                            success: function(result){
+                                if(result.Status){
+                                    NotiSuccess(result.Message);
+                                    refreshData();
+                                }else{
+                                    NotiError(result.Message);
+                                }
+                            },error: function(result){
+                                NotiError('Xóa thất bại');
+                            }
+                        });
+                    }
+                },
+                'Thoát': {
+                    'class': 'btn-default',
+                    'action': function () {
+                    }
+                }
+            }
+        })
+    }
+</script>

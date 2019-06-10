@@ -1,0 +1,222 @@
+﻿@using Web.Areas.DMNGUOIDUNGArea.Models;
+@model CreateVM
+<div class="modal-dialog" style="width:1000px;">
+    @using (Ajax.BeginForm("Create", "DMNguoiDung", new { @area = "DMNguoiDungArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "createNguoidungForm" }))
+    {
+        @Html.AntiForgeryToken()
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Thêm mới người dùng</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="row nomargin">
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Tên đăng nhập <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control required" autocomplete="off" name="TENDANGNHAP" id="TENDANGNHAP">
+                                <div class="note-error">
+                                    <span class="error mes-note-error" id="errTaiKhoan"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Tên người dùng <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control required" name="HOTEN">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Mật khẩu <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control required" autocomplete="off" name="MATKHAU" id="MATKHAU">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Nhập lại mật khẩu <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control required" autocomplete="off" id="REMATKHAU">
+                                <div class="note-error">
+                                    <span class="error mes-note-error" id="errReMatKhau"></span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Điện thoại</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control " name="DIENTHOAI">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Email <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control validateEmail" name="EMAIL" id="EMAIL">
+                                <div class="note-error">
+                                    <span class="error mes-note-error" id="errEmail"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Ngày sinh</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control txt-picker" name="NGAYSINH">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Chức vụ <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("CHUCVU_ID", Model.DsChucVu, new { @class = " width100 txt-select2" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Phòng ban <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("ID_PHONGBAN", Model.LstDonViHienTai, "-Chọn phòng ban-", new { @class = " width100 requiredDropDownList  txt-select2" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4">Địa chỉ</label>
+                            <div class="col-sm-8">
+                                <textarea type="text" class="form-control resize-vertical" rows="3" name="DIACHI"></textarea>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $("#TENDANGNHAP").change(function () {
+        var ten = $(this).val();
+        if (ten.trim().length > 0) {
+            AjaxCall('/dmnguoidungarea/dmnguoidung/checkTaiKhoan', 'post', { 'taikhoan': $("#TENDANGNHAP").val() }, function (rs) {
+                if (rs.Status == true) {
+                    $("#TENDANGNHAP").val("");
+                    $("#errTaiKhoan").html("Tên đăng nhập này đã được sử dụng");
+                    $("#errTaiKhoan").css("display", "block");
+                } else {
+                    $("#errTaiKhoan").css("display", "none");
+                }
+            }, failureAjax);
+        }
+
+    })
+
+    $("#EMAIL").change(function () {
+        var ten = $(this).val();
+        if (ten.trim().length > 0) {
+            AjaxCall('/dmnguoidungarea/dmnguoidung/checkEmail', 'post', { 'email': $("#EMAIL").val(), 'iduser': 0 }, function (rs) {
+                if (rs.Status == true) {
+                    $("#EMAIL").val("");
+                    $("#errEmail").html("Email đã được sử dụng");
+                    $("#errEmail").css("display", "block");
+                } else {
+                    $("#errEmail").css("display", "none");
+                }
+            }, failureAjax);
+        }
+
+    })
+
+    $(".txt-picker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-50:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onSelect: function (date) {
+
+        }
+    });
+    function successAjaxCreate(rs) {
+        if (rs.Status) {
+            $("#tbl-nguoidung").hinetTable("reload");
+            $("#modal_create").modal("hide");
+            $("#modal_create").empty();
+            NotiSuccess("Thêm mới thành công");
+        } else {
+
+            NotiError("Không thể thêm mới");
+        }
+    }
+
+    function checkSubmid() {
+        var err = checkForm('createNguoidungForm');
+        if (err) {
+            var mk = $("#MATKHAU").val();
+            var reMK = $("#REMATKHAU").val();
+            if (mk == reMK) {
+                $("#createNguoidungForm").submit();
+            } else {
+                $("#REMATKHAU").val("");
+                $("#errReMatKhau").html("Mật khẩu phải giống nhau");
+                $("#errReMatKhau").css("display", "inline")
+            }
+
+
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                $(".txt-select2").select2();
+            });
+        });
+    })
+</script>

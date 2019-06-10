@@ -1,0 +1,114 @@
+﻿.menu_tree_ul {
+    list-style: none;
+}
+
+.menu_tree_li {
+    padding-top: 10px;
+}
+
+
+.menu_tree_ul, .menu_tree_li, .menu_tree_div {
+    float: left;
+    /*padding-left: 10px;*/
+}
+
+.menu_left_tree_ul {
+    padding-left: 25px;
+}
+
+.menu_tree_ul, .menu_tree_li {
+    width: 97%;
+}
+
+
+.menu_root_tree {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/van_ban_den/folder-open.png') no-repeat scroll 15px 1px;
+}
+
+.create_vb_den {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/van_ban_den/create_vb.png') no-repeat scroll;
+}
+
+.list_vb_den {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/van_ban_den/list.png') no-repeat scroll;
+}
+
+.approve_vb_den {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/van_ban_den/approve.png') no-repeat scroll;
+}
+
+.list_book_vb_den {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/van_ban_den/book.png') no-repeat scroll;
+}
+
+.delete_vb_den {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/Delete.png') no-repeat scroll;
+}
+
+.setting_vb_den {
+    background: rgba(0, 0, 0, 0) url('/Content/Images/van_ban_den/setting.png') no-repeat scroll;
+}
+
+.menu_root_tree label {
+    margin-left: 35px;
+    font-weight: bold;
+}
+
+.menu_item_tree a {
+    margin-left: 20px;
+}
+
+.webGrid {
+    margin: 0;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #B4CFC3;
+}
+.webGrid .head{
+    border-bottom: 1px solid #cccccc;
+}
+
+table.webGrid tr.head th, table.webGrid tr.head td{
+    padding: 0;
+    height: 51px;
+}
+.btnDelete {
+    background: url('/Content/Images/Delete.png') no-repeat;
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+}
+
+/*.btnAdd {
+    display: block;
+    width: 160px;
+    height: 26px;
+    margin-left: 23px;
+    margin-top: -23px;
+    text-decoration: none;
+    font-weight: 700;
+    color: black !important;
+}*/
+
+.btnImport {
+    display: block;
+    width: 110px;
+    height: 26px;
+    margin-left: 23px;
+    margin-top: -23px;
+    text-decoration: none;
+    font-weight: 700;
+    background-color: green;
+    color: #FFF !important;
+    padding: 8px 5px 4px 20px;
+    border-radius: 4px;
+}
+
+    .btnImport:hover {
+        background-color: #4cff00;
+    }
+
+.center{
+    text-align: center;
+}

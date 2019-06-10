@@ -1,0 +1,15 @@
+﻿@using Web.Areas.DMVAITROArea.Models
+
+@model PhanQuyenVM
+<input type="hidden" name="VAITRO_ID" id="VAITRO_ID" value="@Model.VaiTroID" />
+@Html.DropDownList("USER_ID", Model.ListUserNotInRole, new { @class = "requiredDropDownList", @style = "width: 100%", @multiple = "multiple" })
+<div class="note-error">
+    <span class="error mes-note-error"></span>
+</div>
+<script>
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $("#USER_ID").select2();
+        });
+    });
+</script>

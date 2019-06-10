@@ -1,0 +1,50 @@
+﻿@using Web.Models
+@model ChatViewModel
+
+@if (Model.listChat != null && Model.listChat.Count > 0)
+{
+    foreach (var chat in Model.listChat)
+    {
+        if (Model.currentUserName == chat.TOUSER)
+        {
+            <div class="fbChatConvItem">
+                <div class="messages">
+                    <div class="direction_ltr">
+                        <b class="st">@chat.FROMFULLNAME</b>
+                        @if (chat.NGAYGUI.Value.Year == DateTime.Now.Year && chat.NGAYGUI.Value.Month == DateTime.Now.Month && chat.NGAYGUI.Value.Day == DateTime.Now.Day)
+                        {
+                            <span class="s-date">@string.Format("{0:hh:mm:ss}", chat.NGAYGUI)</span>
+                        }
+                        else
+                        {
+                            <span class="s-date">@string.Format("{0:dd/MM/yyyy | hh:mm:ss}", chat.NGAYGUI)</span>
+                        }
+                        <p>@Html.Raw(chat.NOIDUNG)</p>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.currentUserName == chat.FROMUSER)
+        {
+            <div class="fbChatConvItem">
+                <div class="messages">
+                    <div class="direction_ltr">
+                        <b class="cl">Bạn</b>
+                        @if (chat.NGAYGUI.Value.Year == DateTime.Now.Year && chat.NGAYGUI.Value.Month == DateTime.Now.Month && chat.NGAYGUI.Value.Day == DateTime.Now.Day)
+                        {
+                            <span class="s-date">@string.Format("{0:hh:mm:ss}", chat.NGAYGUI)</span>
+                        }
+                        else
+                        {
+                            <span class="s-date">@string.Format("{0:dd/MM/yyyy | hh:mm:ss}", chat.NGAYGUI)</span>
+                        }
+                        <p>@Html.Raw(chat.NOIDUNG)</p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+<script>
+    $("#MAXITEM").val('@(Model.listChat!=null && Model.listChat.Count > 0 ? Model.listChat[0].ID : 0)');
+</script>

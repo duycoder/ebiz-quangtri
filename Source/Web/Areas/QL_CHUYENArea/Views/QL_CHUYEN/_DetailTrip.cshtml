@@ -1,0 +1,118 @@
+﻿@using Web.Areas.QL_CHUYENArea.Models;
+@using Business.CommonModel.QLCHUYEN;
+@using Business.CommonModel.CONSTANT;
+@model ChuyenDetailViewModel
+@{
+    ChuyenBO trip = Model.tripEntity;
+}
+
+<style>
+    #modal--dialog--trip-info tbody tr td:first-child b {
+        color: #3276b1;
+    }
+</style>
+
+<div class="modal-dialog" style="width:70%" id="modal--dialog--trip-info">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                THÔNG TIN CHUYẾN
+            </h5>
+
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered table-striped table-condensed">
+                <tbody>
+                    <tr>
+                        <td>
+                            <b>Tên chuyến</b>
+                        </td>
+                        <td>
+                            @trip.TEN_CHUYEN
+                        </td>
+
+                        <td>
+                            <b>Tên xe</b>
+                        </td>
+                        <td>
+                            @trip.TENXE
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b>Lái xe</b>
+                        </td>
+                        <td>
+                            @trip.TEN_LAIXE
+                        </td>
+
+                        <td>
+                            <b>Số điện thoại lái xe</b>
+                        </td>
+                        <td>
+                            @trip.DIENTHOAI_LAIXE
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b>Mục đích</b>
+                        </td>
+                        <td>
+                            @trip.MUCDICH
+                        </td>
+                        <td>
+                            <b>Nội dung</b>
+                        </td>
+                        <td>
+                            @trip.NOIDUNG
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b>Tên cán bộ</b>
+                        </td>
+                        <td colspan="3">
+                            @trip.TEN_CANBO
+                        </td>
+                    </tr>
+
+                    @if (trip.LICHCONGTAC_ID > 0)
+                    {
+                        <tr>
+                            <td>
+                                <b>Lịch công tác</b>
+                            </td>
+                            <td colspan="3">
+                                @trip.TEN_LICHCONGTAC
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>
+                            <b>
+                                Trạng thái
+                            </b>
+                        </td>
+
+                        <td colspan="3">
+                            <b style="color:@trip.MAU_TRANGTHAI;font-size:14px;">
+                                @trip.TEN_TRANGTHAI
+                            </b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                Đóng
+            </button>
+        </div>
+    </div>
+</div>

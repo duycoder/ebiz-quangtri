@@ -1,0 +1,182 @@
+﻿@{
+    ViewBag.Title = "Phân quyền cho người dùng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using Model.Entities;
+@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Web.FwCore;
+@using Business.CommonModel.DMVAITRO;
+@using Web.Areas.DMNguoiDungArea.Models;
+@model PhanQuyenVM
+
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+
+</style>
+
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6">
+
+        <a href="/dmnguoidungarea/dmnguoidung/index" class="btn btn-default pull-right" style="float: right; margin-right:5px;">
+            Quay lại
+        </a>
+    </div>
+</div>
+<div id="content">
+
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Phân quyền cho - @Model.NguoiDung.HOTEN
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+            <div class="panel-group" id="accordion" style=" width:100%; padding:20px; float:left">
+                @foreach (var item in Model.ListAllChucNang)
+                {
+                    var listThaoTac = new List<long>();
+
+                    var isOpen = "";
+                    <div class="col-sm-12 col-md-6 col-lg-4 panel-item">
+                        <div class="panel panel-info ">
+                            <div class="panel-heading">
+                                <a data-toggle="collapse" href="#collapse-@item.DM_CHUCNANG_ID ">
+                                    <h4 class="panel-title">
+                                        @item.TEN_CHUCNANG
+                                    </h4>
+                                </a>
+                            </div>
+                            <div id="collapse-@item.DM_CHUCNANG_ID" class="panel-collapse collapse @isOpen">
+                                <div class="panel-body">
+                                    <table class="table table-hover table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="center width-30">STT</th>
+                                                <th class="center">Thao tác</th>
+                                                <th class="center width-50">Kế thừa</th>
+                                                <th class="center width-50">Bật</th>
+                                                <th class="center width-50">Tắt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i < item.ListThaoTac.Count; i++)
+                                            {
+                                                var obj = Model.NguoiDungThaoTac.Where(x => x.DM_THAOTAC == item.ListThaoTac[i].DM_THAOTAC_ID).FirstOrDefault();
+                                                var isKeThua = "";
+                                                var isBat = "";
+                                                var isTat = "";
+                                                if (obj == null)
+                                                {
+                                                    isKeThua = " checked ";
+                                                }
+                                                else
+                                                {
+                                                    if (obj.TRANGTHAI == true)
+                                                    {
+                                                        isBat = " checked ";
+                                                    }
+                                                    else
+                                                    {
+                                                        isTat = " checked ";
+                                                    }
+                                                }
+                                                <tr>
+                                                    <td class="center">@(i + 1)</td>
+                                                    <td>@item.ListThaoTac[i].TEN_THAOTAC</td>
+                                                    <td class="center">
+                                                        <input type="radio" data-check="none" @isKeThua name="thaotac-@item.ListThaoTac[i].DM_THAOTAC_ID" value="@item.ListThaoTac[i].DM_THAOTAC_ID" />
+                                                    </td>
+                                                    <td class="center">
+                                                        <input type="radio" data-check="enable" @isBat name="thaotac-@item.ListThaoTac[i].DM_THAOTAC_ID" value="@item.ListThaoTac[i].DM_THAOTAC_ID" />
+                                                    </td>
+                                                    <td class="center">
+                                                        <input type="radio" data-check="disable" @isTat name="thaotac-@item.ListThaoTac[i].DM_THAOTAC_ID" value="@item.ListThaoTac[i].DM_THAOTAC_ID" />
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
+
+            </div>
+
+            <div class="center " style=" margin:20px 0px; clear:both">
+                <button class="btn btn-primary " onclick="SavePermission()">Hoàn thành</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    var SavePermission = function () {
+        var listThaoTac =[];
+        var listStatus =[];
+
+        $("#accordion input:radio[data-check=none]:checked").each(function () {
+            listThaoTac.push(parseInt($(this).val()));
+            listStatus.push(2);
+        });
+        $("#accordion input:radio[data-check=enable]:checked").each(function () {
+            listThaoTac.push(parseInt($(this).val()));
+            listStatus.push(1);
+        });
+        $("#accordion input:radio[data-check=disable]:checked").each(function () {
+            listThaoTac.push(parseInt($(this).val()));
+            listStatus.push(0);
+        })
+
+        $.ajax({
+            url: '/dmnguoidungarea/dmnguoidung/SaveQuyen',
+            type: 'post',
+            dataType:'json',
+            contentType:'application/json',
+            data:JSON.stringify({'nguoidungid':@Model.NguoiDung.ID, 'ArrThaoTac': listThaoTac,'ArrTrangThai': listStatus}),
+            success:function (rs) {
+                if(rs.Status)
+                {
+                    NotiSuccess("Cập nhật quyền thành công");
+                }else {
+                    NotiError(rs.Message);
+                }
+            },
+            error:function () {
+                NotiError("Không thực hiện được thao tác");
+            }
+
+        })
+    }
+
+
+
+    var pagefunction = function () {
+
+    }
+
+
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    })
+
+</script>
+

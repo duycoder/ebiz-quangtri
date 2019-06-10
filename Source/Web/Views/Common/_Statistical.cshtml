@@ -1,0 +1,82 @@
+﻿@model Web.Models.Statistical
+<div class="col-sm-6">
+    <div class="alert alert-block alert-success">
+        <input type="hidden" id="soluong-vanbanden-chuaxuly" value="@Model.ListResultVanBanDen.Count" />
+        <strong><i class="fa fa-check-square-o"></i>Văn bản đến chưa xử lý xong (@(Model.ListResultVanBanDen.Count))</strong>
+    </div>
+    <div id="quick-report-vanbanden">
+        @{
+            int count = 0;
+                if (Model.ListResultVanBanDen.ListItem != null)
+                {
+                    foreach (var item in Model.ListResultVanBanDen.ListItem)
+                    {
+                        count++;
+                        <p>
+                            <a style="color:#006bff !important" class="notif-ellipsis" href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen?id=@item.ID" data-toggle="tooltip" title="@item.TRICHYEU">
+                                <strong>@(count).</strong> <b>@item.SOHIEU </b> @item.TRICHYEU
+                            </a>
+                            <i class="fa fa-bolt"></i>Độ khẩn:
+                            @if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                            {
+                                <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                            }
+                            else
+                            {
+                                <span>@item.TEN_DOKHAN</span>
+                            }                            
+                        </p>
+                    }
+                }
+        }
+    </div>
+</div>
+<div class="col-sm-6">
+    <div class="alert alert-block alert-success">
+        <input type="hidden" id="soluong-vanbandi-chuaxuly" value="@Model.ListResultVanBan.Count" />
+        <strong><i class="fa fa-check-square-o"></i>Văn bản đi chưa xử lý(@Model.ListResultVanBan.Count)</strong>
+    </div>
+    <div id="quick-report-vanbanden">
+        @{
+            count = 0;
+            foreach (var item in Model.ListResultVanBan.ListItem)
+            {
+                count++;
+                <p>
+                    <a style="color:#006bff !important" class="notif-ellipsis" href="/HSVanBanDiArea/VanBanChuaXuLy/DetailVanBan/@item.ID" data-toggle="tooltip" title="@item.TRICHYEU">
+                        <strong>@(count).</strong> @item.TRICHYEU
+                    </a>
+                    <i class="fa fa-bolt"></i>Độ khẩn:
+                    @if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                    {
+                        <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                    }
+                    else
+                    {
+                        <span>@item.TEN_DOKHAN</span>
+                    }
+                </p>
+            }
+        }
+    </div>
+</div>
+<style>
+    .notif-ellipsis {
+        font-size: 13px !important;
+        display: -webkit-box;
+        max-height: 22.2px;
+        margin: 0 auto;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: initial !important;
+        float: none !important;
+        transform: initial !important;
+        color: blue !important;
+    }
+
+    #quick-report-vanbanden > p {
+        border-bottom: 1px solid #CCC;
+    }
+</style>

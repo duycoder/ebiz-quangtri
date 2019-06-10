@@ -1,0 +1,307 @@
+﻿@model Web.Areas.HoSoCanBoArea.Models.HoSoCanBoChiTietVM
+<style>
+    .modal-dialog {
+        width: 70% !important;
+    }
+    #ThongTinQuaTrinhLuongCanBo td{
+        padding:5px;
+    }
+    #table-quatrinh-luongcanbo{
+        width:100%;
+    }
+    #edite-qua-trinh-luong{
+          width:100%;
+    }
+    #FormEditQuaTrinhLuongCanBo td{
+         padding:5px;
+    }
+</style>      
+<p dir="ltr" class="pt-Normal-000030">
+    <span lang="en-GB" class="pt-DefaultParagraphFont-000001">31) Diễn biến quá trình lương của cán bộ, công chức</span>
+    <a href="javascript:createThongTinQuaTrinhLuongCanBo()">
+        <i class="fa fa-plus"></i>Thêm mới
+    </a>
+</p>
+<div align="left">
+    <table dir="ltr" class="pt-000004">
+        <tbody>
+            <tr>
+                <td class="pt-000043">
+                    <p dir="ltr" class="pt-Normal-000006">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Tháng/Năm</span>                       
+                    </p>
+                </td>   
+                @foreach (var item in Model.ThongTinChung.HOSO_CANBO_QUATRINH_LUONG)
+                {
+                    <td class="pt-000043">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001" id="THANG_NAM_@item.ID">@item.THANG_NAM</span>
+                            <a href="javascript:editQuaTrinhLuongRow(@item.ID)">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a href="javascript:removeLuongRow(@item.ID)">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                        </p>
+                    </td>
+                }
+               
+             </tr>  
+            <tr>
+                <td class="pt-000043">
+                    <p dir="ltr" class="pt-Normal-000006">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Mã ngạch/bậc</span>
+                    </p>
+                </td>
+                @foreach (var item in Model.ThongTinChung.HOSO_CANBO_QUATRINH_LUONG)
+                {
+                    <td class="pt-000043">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001" id="MANGACH_BAC_@item.ID">@item.MANGACH_BAC</span>
+                        </p>
+                    </td>
+                }                                           
+            </tr>  
+            <tr>
+                <td class="pt-000043">
+                    <p dir="ltr" class="pt-Normal-000006">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Hệ số lương</span>
+                    </p>
+                </td>
+                @foreach (var item in Model.ThongTinChung.HOSO_CANBO_QUATRINH_LUONG)
+                {
+                    <td class="pt-000043">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001" id="HESOLUONG_@item.ID">@item.HESOLUONG</span>
+                        </p>
+                    </td>
+                }                                                       
+            </tr>           
+                                 
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" role="dialog" id="ThongTinQuaTrinhLuongCanBo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Diễn biến quá trình lương của cán bộ, công chức</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="FormDaoQuaTrinhLuongCanBo" action="/HoSoCanBoArea/HoSoCanBo/SaveQuaTrinhLuongCanBo" method="post">
+                    <input type="hidden" name="HOSOID" value="@Model.ThongTinChung.ID" />
+                    <table class="hinet-table table-bordered" id="table-quatrinh-luongcanbo">
+                        <tr>
+                            <td>
+                                Từ tháng, năm - đến tháng, năm
+                            </td>
+                            <td>
+                                Mã ngạch/bậc
+                            </td>
+                            <td>
+                                Hệ số lương
+                            </td>
+                            <td>
+                                <a href="javascript:addNewRow()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="THANG_NAM" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="MANGACH_BAC" class="required form-control" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="HESOLUONG" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="removeRow">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveQuaTrinhLuongTac('FormDaoQuaTrinhLuongCanBo')">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" role="dialog" id="editThongTinQuaTrinhLuongCanBo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Diễn biến quá trình lương của cán bộ, công chức</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="FormEditQuaTrinhLuongCanBo" action="/HoSoCanBoArea/HoSoCanBo/SaveQuaTrinhLuongCanBo" method="post">
+                    <input type="hidden" name="HOSOID" value="@Model.ThongTinChung.ID" />
+                    <input type="hidden" name="DAOTAO_ID" id="DAOTAO_ID" />
+                    <table class="hinet-table table-bordered" id="edite-qua-trinh-luong">
+                        <tr>
+                            <td>
+                                Từ tháng, năm - đến tháng, năm
+                            </td>
+                            <td>
+                                Mã ngạch/bậc
+                            </td>
+                            <td>
+                                Hệ số lương
+                            </td>
+                            <td>
+                                <a href="javascript:addNewRow()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="THANG_NAM" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="MANGACH_BAC" class="required form-control" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="HESOLUONG" class="required form-control" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="">
+                                    <i class="fa fa-remove" style="display:none"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveQuaTrinhLuongTac('FormEditQuaTrinhLuongCanBo')">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<table style="display: none" id="HIDDENQUATRINHLUONG">
+    <tr>
+        <td>
+            <input type="text" name="THANG_NAM" class="required form-control " />
+            <div class="note-error ">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="MANGACH_BAC" class="required form-control" />
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="HESOLUONG" class="required form-control" />
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <a href="javascript:void(0)" class="removeRow">
+                <i class="fa fa-remove"></i>
+            </a>
+        </td>
+    </tr>
+</table>
+<script>
+    function createThongTinQuaTrinhLuongCanBo() {
+        $("#ThongTinQuaTrinhLuongCanBo").modal();
+    }
+    function addNewRow() {
+        $("#table-quatrinh-luongcanbo").append($("#HIDDENQUATRINHLUONG").html());
+    }
+    function editQuaTrinhLuongRow(id) {
+        $("#editThongTinQuaTrinhLuongCanBo").modal();
+        $("#editThongTinQuaTrinhLuongCanBo #DAOTAO_ID").val(id);
+        $("#editThongTinQuaTrinhLuongCanBo input[name=THANG_NAM]").val($("#THANG_NAM_" + id).html().trim());
+        $("#editThongTinQuaTrinhLuongCanBo input[name=MANGACH_BAC]").val($("#MANGACH_BAC_" + id).html().trim());
+        $("#editThongTinQuaTrinhLuongCanBo input[name=HESOLUONG]").val($("#HESOLUONG_" + id).html().trim());
+    }
+    function removeLuongRow(id) {
+        $.confirm({
+            'title': 'Xác nhận xử lý',
+            'message': 'Bạn có chắc chắn muốn xóa thông tin quá trình lương cán bộ, lương cán bộ này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '/HoSoCanBoArea/HoSoCanBo/XoaQuaTrinhLuongCanBo',
+                            type: 'post',
+                            cache: false,
+                            data: { id: id },
+                            success: function (data) {
+                                if (data.Type == "SUCCESS") {
+                                    NotiSuccess("Xóa thành công");
+                                    setTimeout(location.reload(), 2000);
+                                } else {
+                                    NotiError(data.Message);
+                                }
+
+                            },
+                            error: function (err) {
+                                NotiError(err.responseText);
+                            }
+                        });
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-danger',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    function saveQuaTrinhLuongTac(formid) {
+        var is_submit = onSubmit(formid);
+        if (is_submit) {
+            $("#" + formid).submit();
+        } else {
+            return false;
+        }
+    }
+    function onSubmit(formid) {
+        var err = 0;
+        var require = requiredFieldForFormId(formid);
+        if (!require) {
+            err++;
+        }
+
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Bạn vui lòng điền đầy đủ thông tin");
+            return false;
+        }
+    }
+</script>

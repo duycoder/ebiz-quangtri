@@ -1,0 +1,44 @@
+﻿@using Web.Areas.CongViecArea.Models
+@model CongViecViewModel
+<tr class="trsubtask_@Model.IdxTr" data-index="@Model.IdxTr">
+    <td>
+        <textarea class="form-control required" id="task-content-@Model.IdxTr" name="TASKCONTENT-@Model.IdxTr"></textarea>
+    </td>
+    <td>
+        @Html.DropDownList("MUCDOUUTIEN-"+Model.IdxTr.ToString(), Model.ListDoUuTien, new { @class = "selectpicker1" })
+    </td>
+    <td>
+        @Html.DropDownList("DOKHAN-" + Model.IdxTr.ToString(), Model.ListDoKhan, new { @class = "selectpicker1" })
+    </td>
+    <td>
+        <input class="form-control required hanhoanthanh" id="hanhoanthanh-@Model.IdxTr" name="HANHOANTHANH-@Model.IdxTr" />
+    </td>
+    <td>
+        <label class="checkbox-inline" style="padding: 0px">
+            <input type="radio" class="radio radio-inline" value="1" name="IS_HASPLAN-@Model.IdxTr">
+            Có lập
+        </label>
+        <label class="checkbox-inline" style="padding: 0px">
+            <input checked type="radio" class="radio radio-inline" value="2" name="IS_HASPLAN-@Model.IdxTr">
+            Không lập
+        </label>
+    </td>
+    <td>
+        <a title="Xóa công việc" href="javascript:XoaCongViec(@Model.IdxTr)" onclick="XoaCongViec(@Model.IdxTr)"><i class="red glyphicon glyphicon-remove"></i></a>
+    </td>
+</tr>
+<script>
+    $(function () {
+        $(".selectpicker1").selectpicker();
+        $(".hanhoanthanh").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "0:+3",
+            maxDate: $("#HIDDEN_NGAYKETTHUC").val(),
+        });
+
+    });
+</script>

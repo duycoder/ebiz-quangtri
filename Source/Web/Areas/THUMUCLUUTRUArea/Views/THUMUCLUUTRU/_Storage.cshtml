@@ -1,0 +1,27 @@
+﻿@model Web.Areas.THUMUCLUUTRUArea.Models.ThuMucLuuTruModel
+<div class="form-group row">
+    <div class="col-sm-2">
+        <label>Dung lượng lưu trữ:</label>
+    </div>
+    <div class="col-sm-10">
+        <div class="progress" style="margin-bottom:0px !important">
+            @{
+                float percent = ((float)((float)Model.DungLuong.CONLAI.Value / Model.DungLuong.DUNGLUONG.Value)) * 100;
+                if (percent >= 70)
+                {
+                    <div class="progress-bar progress-bar-success" style=";width:@(percent.ToString().Replace(',','.'))%">@(percent)%</div>
+                }
+                else if (percent >= 30 && percent <= 70)
+                {
+                    <div class="progress-bar progress-bar-info" style=";width:@(percent.ToString().Replace(',','.'))%">@(percent)%</div>
+                }
+                else if (percent <= 10)
+                {
+                    <div class="progress-bar progress-bar-danger" style=";width:@(percent.ToString().Replace(',','.'))%">@(percent)%</div>
+                }
+            }
+
+        </div>
+        <div style="font-size:15px;font-style:italic !important;">Còn @Model.DungLuong.CONLAI.Value (Mb) trên tổng số @Model.DungLuong.DUNGLUONG.Value (Mb)</div>
+    </div>
+</div>

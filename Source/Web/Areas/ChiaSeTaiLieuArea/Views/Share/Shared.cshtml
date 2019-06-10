@@ -1,0 +1,198 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using Model.Entities;
+@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Web.Areas.ChiaSeTaiLieuArea.Models;
+@model ChiaSeTaiLieuViewModel
+
+
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.PageList.ListItem));
+
+}
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<script src="~/Scripts/CommonValidation.js"></script>
+<style>
+</style>
+
+<div id="ribbon">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6 padding-0">
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<div id="content">
+
+
+    @Html.Partial("_SearchShared", Model)
+
+
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <span class="widget-icon">
+                <i class="fa fa-th-large"></i>
+            </span>
+            <h2 class="group-tittle mt10">
+                Quản lý chia sẻ tài liệu
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div id="tbl_share" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Stt</th>
+                            <th>Yêu cầu chia sẻ</th>
+                            <th>Người yêu cầu</th>
+                            <th>Ngày yêu cầu</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="modal_share" class="modal fade" role="dialog">
+
+</div>
+<script>
+
+    var lstData = eval(@lstData);
+    function ShareForm(id)
+    {
+        AjaxCall("/ChiaSeTaiLieuArea/Share/FormShare", 'get', {id:id},function (rs) {
+            $("#modal_share").html(rs);
+            $("#modal_share").modal("show");
+
+        })
+    }
+    function DetailShare(id) {
+        AjaxCall("/ChiaSeTaiLieuArea/Share/DetailShare", "get", { id: id }, function (rs) {
+            $("#modal_share").html(rs);
+            $("#modal_share").modal("show");
+        });
+    }
+    function pagefunction(){
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel:"",
+                isCounter:true,
+                //content: function (data) {
+                //    return "<input type='checkbox'/>"
+                //}
+            },
+
+            {
+                isSort:true,
+                nameModel:'TIEUDE',
+                content: function (data) {
+                    return "<a href='javascript:DetailShare("+data.ID+")'>"+ data.TIEUDE+"</a>"
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'USER_NAME_YEU_CAU',
+                content: function (data) {
+                    return data.USER_NAME_YEU_CAU
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'DATE_YEU_CAU',
+                content: function (data) {
+                    return ToDate(data.DATE_YEU_CAU);
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'STR_STATUS',
+                content: function (data) {
+                    return data.STR_STATUS;
+                }
+            },
+               {
+                   isSort:false,
+                   //tdClass:"center",
+                   content: function (data) {
+                       var result = "<div class='btn-group'>";
+                       if (data.STATUS == '@Business.CommonModel.CONSTANT.SHARE_STATUS_CONSTANT.PHE_DUYET_CHIA_SE')
+                       {
+                           result += "<a href='javascript:void(0)' onclick='ShareForm(" + data.ID + ")'   title = 'Chia sẻ tài liệu'><i class='fa fa-share-alt fa-lg' style='color: #dfb56c; font-size: 1.5em; line-height: 0.5em;'> </i>&nbsp;&nbsp;</a> ";
+                       }
+                       result += "</div>";
+                       return result;
+                   }
+               },
+
+        ];
+
+
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '/ChiaSeTaiLieuArea/Share/getDataShared',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl_share").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+
+        }
+
+        var tblData=$("#tbl_share").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.PageList.TotalPage,
+            recordCount: @Model.PageList.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+
+    }
+    function reloadData() {
+        $("#tbl_share").hinetTable("reload");
+    }
+    function CloseShareModel() {
+        $("#modal_share").html("");
+        $("#modal_share").modal("hide");
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+        loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", null)
+    })
+
+</script>

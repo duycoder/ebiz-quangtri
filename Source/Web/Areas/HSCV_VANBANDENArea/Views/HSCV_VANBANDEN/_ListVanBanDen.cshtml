@@ -1,0 +1,306 @@
+﻿@using Business.CommonBusiness
+@using Newtonsoft.Json
+@using Web.Areas.HSCV_VANBANDENArea.Models;
+@using Business.CommonModel.CONSTANT;
+@using Web.FwCore
+@model ListVanBanDenViewModel
+@{
+    var data = Html.Raw(JsonConvert.SerializeObject(Model.groupOfVanBanDens.ListItem));
+}
+
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+
+<div id="ribbon" style=" background-color:#57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+    <div class="col-md-6 col-sm-6">
+        @if (Model.canCreate)
+        {
+            <a class="btn btn-default pull-right" href="@Url.Action("CreateVanBanDen", "HSCV_VANBANDEN", new {type = Model.typeOfLoaiVanBan})">
+                <i class="fa fa-plus"></i> <span>Thêm mới</span>
+            </a>
+        }
+
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right: 5px;">
+            <i class="fa fa-search"></i> <span>Tìm kiếm</span>
+        </a>
+        <a class="btn btn-default pull-right" href="@Url.Action("ExportExcel", "HSCV_VANBANDEN", new {type = Model.typeOfLoaiVanBan})" style="float: right; margin-right: 5px;">
+            <i class="fa fa-file-excel-o"></i> <span>Kết xuất</span>
+        </a>
+    </div>
+</div>
+<style>
+    #tbl-vanbanden table tr {
+        font-weight: bolder;
+    }
+</style>
+<div id="content">
+    @Html.Partial("_Search")
+    @*<div class="widge-t-body no-padding">*@
+    <div class="jarviswidget" id="wid-id-0">
+
+        <header role="heading" style="height: 40px; line-height: 35px;">
+            <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10">
+                @Model.title
+            </h2>
+            <div class="render-table-info" style="float: right">
+
+            </div>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div id="tbl-vanbanden" class="hntbl-cover" style="padding: 10px;">
+                <table class="hinet-table table table-striped table-hover lst-vbden" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th style="width: 4%">STT</th>
+                            <th style="width: 7%">Số hiệu</th>
+                            <th style="width: 7%">Số theo sổ</th>
+                            <th style="width: 8%">Sổ văn bản</th>
+                            <th style="width: 22%">Trích yếu</th>
+                            <th style="width: 10%">Loại văn bản</th>
+                            <th style="width: 11%">Lĩnh vực văn bản</th>
+                            <th style="width: 7%">Độ mật</th>
+                            <th style="width: 8%">Độ khẩn</th>
+                            <th>Người ký</th>
+                            <th>Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    @*</div>*@
+</div>
+
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    var typeId = 0;
+    function Remove(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa văn bản trình ký này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Type == "SUCCESS") {
+                                    NotiSuccess(rs.Message);
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+                            }
+                        });
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    var data = eval(@data);
+    function pagefunction() {
+        var config=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'SOHIEU',
+                content: function (data) {
+                    return "<a href='/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen?id=" + data.ID + "&type=@Model.typeOfLoaiVanBan' title = 'Chi tiết'>" + data.SOHIEU + "</a>";
+
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'SODITHEOSO_NUMBER',
+                content: function (data) {
+                    return data.SODITHEOSO;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'SOVANBANDEN_ID',
+                content: function (data) {
+                    return data.TENSOVANBAN;
+                }
+            },
+
+            {
+                tdClass: "text-justify",
+                isSort:true,
+                nameModel:'TRICHYEU',
+                content: function (data) {                    
+                    var result = "<div class='btn-group col-sm-12 no-padding'>";
+                    if(('@Model.typeOfLoaiVanBan' == '@VANBANDEN_CONSTANT.CHUA_XULY') && parseInt('@Model.userInfo.ID') == data.NGUOITAO && data.NGUOITAO == data.PROCESS_USER_ID){
+                        result += "<a href='/HSCV_VANBANDENArea/HSCV_VANBANDEN/EditVanBanDen?id=" + data.ID + "&type=@Model.typeOfLoaiVanBan' title = 'Chỉnh sửa'><i class='fa fa-pencil-square-o fa-lg bigger-150 cl-primary'></i></a> ";
+                        result += "<a href='javascript:void(0)' onclick='Remove(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-trash bigger-150 cl-primary'> </i></a>";
+                    }
+                    if (data.CAN_CREATE_CALENDAR) {
+                        result += "<a href='javascript:void(0)' onclick='CreateCalendar(" + data.ID + ")'  title = 'Tạo lịch công tác'><i class=' glyphicon glyphicon-calendar bigger-150 cl-primary'> </i></a>";
+                    }
+
+                    result += "</div>";
+                    var html = "<a class='text-ellipsis' href='/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen?id=" + data.ID + "&type=@Model.typeOfLoaiVanBan' title = '" + data.TRICHYEU + "'>" + formatLongText(data.TRICHYEU, 50) + "</a>" + result;
+                    return html;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_HINHTHUC',
+                content: function (data) {
+                    return data.TEN_HINHTHUC;
+                }
+            },
+
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_LINHVUC',
+                content: function (data) {
+                    return data.TEN_LINHVUC;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOKHAN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOKHAN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOKHAN + '" title="' + data.TEN_DOKHAN + '" />';
+                    } else {
+                        return data.TEN_DOKHAN;
+                    }
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOMAT',
+                content: function (data) {
+                    return data.TEN_DOMAT;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'NGUOIKY',
+                content: function (data) {
+                    return data.NGUOIKY;
+                }
+            },
+             {
+                 tdClass: "center",
+                 isSort: true,
+                 nameModel: 'NGAY_BANHANH',
+                 content: function (data) {
+                     var html = "";
+                     if(data.NGAY_BANHANH != null){
+                         html += '<p><span>Ngày ban hành:</span>'+ ToDate(data.NGAY_BANHANH) +'</p>';
+                     }
+                     if(data.NGAY_VANBAN != null){
+                         html += '<p><span>Ngày văn bản:</span>'+ ToDate(data.NGAY_VANBAN) +'</p>';
+                     }
+                     if(data.NGAY_HIEULUC != null){
+                         html += '<p><span>Ngày hiệu lực:</span>'+ ToDate(data.NGAY_HIEULUC) +'</p>';
+                     }
+
+                     if(data.NGAYHET_HIEULUC != null){
+                         var tmpDate = ToDate(data.NGAYHET_HIEULUC);
+                         var dateParts= tmpDate.split("/");
+                         var day = dateParts[0];
+                         var month = dateParts[1] - 1;
+                         var year = dateParts[2];
+                         // set a date
+                         hethieuluc = new Date(year, month, day);
+                         var currentDate = new Date();
+                         if (currentDate > hethieuluc) {
+                             html += '<p class="hethieuluc"><span>Ngày hết hiệu lực:</span>'+ tmpDate +'</p>';
+                         }
+                         else {
+                             html += '<p><span>Ngày hết hiệu lực:</span>'+ tmpDate +'</p>';
+                         }
+                     }
+                     return html;
+
+                 }
+             },
+
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("GetData")',
+                type: 'post',
+                cache: false,
+                data: {"pageIndex":page,"sortQuery":sortQuery,"pageSize":pageSize, "type": @Model.typeOfLoaiVanBan},
+                success: function (data) {
+
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.groupOfVanBanDens.TotalPage,
+            recordCount: @Model.groupOfVanBanDens.Count,
+            getData:getdatafunc,
+            listItem:data,
+            config: config
+        });
+    }
+
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+
+    function CreateCalendar(id) {
+        location.href = '/LICHCONGTACArea/LICHCONGTAC/CreateLichCongTac?idVanBanDen=' + id;
+    }
+</script>

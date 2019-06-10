@@ -1,0 +1,249 @@
+﻿@using Web.FwCore;
+@model Web.Models.ChonNguoiDungModel
+
+@Html.AntiForgeryToken()
+@{
+    string[] LstNguoiDungSearch = (string[])SessionManager.GetValue("LstNguoiDungSearch");
+}
+@if (Model.TreeDonVi.Child != null && Model.TreeDonVi.Child.Count > 0)
+{
+    <div class="col-sm-6">
+        @Html.Partial("TreeDonViPartial", Model)
+    </div>
+    <div class="col-sm-6 jarviswidget">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Danh sách người dùng
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div style=" margin:7px;">
+                <input type="text" class="form-control" placeholder="Họ và tên nhân viên" onkeyup="NguoiDungSearchV2($(this))" />
+            </div>
+            <div class="smart-form">
+                <div id="SearchResult" style="height:430px;overflow:auto">
+                    <ul>
+                        @foreach (var item in Model.LstNguoiDung)
+                        {
+                            int tmp_check = Array.IndexOf(Model.IDS, item.ID.ToString());
+                            int tmp_check_display;
+                            if (LstNguoiDungSearch == null)
+                            {
+                                tmp_check_display = -1;
+                            }
+                            else
+                            {
+                                tmp_check_display = Array.IndexOf(LstNguoiDungSearch, item.ID.ToString());
+                            }
+                            <li>
+                                @if (Model.IS_MULTICHOICE == 1)
+                                {
+                                    <div class="checkbox">
+                                        <label class="text-fullname" data-text="@item.HOTEN">
+                                            <input @(tmp_check > -1 ? "checked" : "") id="nguoi_dung_@item.ID" type="checkbox" value="@item.ID" class="checkbox_chon_nguoi_dung " />@item.HOTEN
+                                        </label>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="radio">
+                                        <label class="text-fullname" data-text="@item.HOTEN">
+                                            <input @(tmp_check > -1 ? "checked" : "") id="nguoi_dung_@item.ID" type="radio" value="@item.ID" class="checkbox_chon_nguoi_dung " name="nguoi_dung_radio" />@item.HOTEN
+                                        </label>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-sm-12" id="SearchResult">
+        <ul>
+            @foreach (var item in Model.LstNguoiDung)
+            {
+                int tmp_check = Array.IndexOf(Model.IDS, item.ID.ToString());
+                int tmp_check_display;
+                if (LstNguoiDungSearch == null)
+                {
+                    tmp_check_display = -1;
+                }
+                else
+                {
+                    tmp_check_display = Array.IndexOf(LstNguoiDungSearch, item.ID.ToString());
+                }
+                <li>
+                    @if (Model.IS_MULTICHOICE == 1)
+                    {
+                        <div class="checkbox">
+                            <label class="text-fullname" data-text="@item.HOTEN">
+                                <input @(tmp_check > -1 ? "checked" : "") id="nguoi_dung_@item.ID" type="checkbox" value="@item.ID" class="checkbox_chon_nguoi_dung " />@item.HOTEN
+                            </label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="radio">
+                            <label class="text-fullname" data-text="@item.HOTEN">
+                                <input @(tmp_check > -1 ? "checked" : "") id="nguoi_dung_@item.ID" type="radio" value="@item.ID" class="checkbox_chon_nguoi_dung " name="nguoi_dung_radio" />@item.HOTEN
+                            </label>
+                        </div>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}
+<input type="hidden" id="LISTSELECTED_@(Model.INDEX)" />
+<script type="text/javascript" language="javascript">
+    $(".pop_expand").click(function () {
+        $(this).toggle();
+        $(this).next().toggle();
+        $(this).parent().parent().children().last().toggle();
+    });
+    $(".pop_collapse").click(function () {
+        $(this).toggle();
+        $(this).prev().toggle();
+        $(this).parent().parent().children().last().toggle();
+    });
+    $("#rootNodeV2 input[type='checkbox']").click(function () {
+        var isChecked = $(this).is(':checked');
+        $(this).closest("li").find("input:checkbox").each(function () {
+            this.checked = isChecked;
+        });
+        $("#SearchResult").find(".checkbox input:checkbox").each(function () {
+            this.checked = isChecked;
+        });
+    });
+    $("#btnSave_choose_nguoi_dung_ids_" + '@Model.INDEX').click(function () {
+        var textValue = "";
+        var idsValue = "";
+        var chuc_vu = "";
+        $("#nhan_su_dialog_" + '@Model.INDEX' + " .checkbox_chon_nguoi_dung").each(function () {
+            if (this.checked) {
+                textValue += $(this).closest("label").attr("data-text") + ", ";
+                idsValue += $(this).val() + ",";
+                chuc_vu = $("#chuc_vu_nguoi_dung_" + $(this).val()).html()
+            }
+        });
+        textValue = textValue.substr(0, textValue.length - 2);
+        idsValue = idsValue.substr(0, idsValue.length - 1);
+        if ($("#" + '@Model.TEXT_ID').attr("type") == "text") {
+            $("#" + '@Model.TEXT_ID').val(textValue);
+        } else {
+            $("#" + '@Model.TEXT_ID').html(textValue);
+        }
+        if ($("#" + '@Model.SHOW_CHUC_VU_ID').length > 0) {
+            if ($("#" + '@Model.SHOW_CHUC_VU_ID').attr("type") == "text") {
+                $("#" + '@Model.SHOW_CHUC_VU_ID').val(chuc_vu);
+            } else {
+                $("#" + '@Model.SHOW_CHUC_VU_ID').html(chuc_vu);
+            }
+        }
+        $("#" + '@Model.VALUE_ID').val(idsValue);
+
+        var call_back_function = '@Model.CALLBACK_FUNCTION';
+        if (call_back_function.length > 0) {
+            var cb_fn = window[call_back_function];
+            cb_fn();
+        }
+        $("#nhan_su_dialog_" + '@Model.INDEX').modal("hide");
+    });
+
+    $(".label_item_" + '@Model.INDEX').click(function () {
+        if ($(this).parent().parent().find(".active_input").prop("checked") == false) {
+            $(this).parent().parent().find(".active_input").prop("checked", true);
+        } else {
+            $(this).parent().parent().find(".active_input").prop("checked", false);
+        }
+    });
+    $(".parent_check_box_" + '@Model.INDEX').click(function () {
+        if ('@Model.IS_MULTICHOICE' == '1') {
+            if ($(this).parent().parent().find("input").first().prop("checked") == false) {
+                $(this).parent().parent().find("input").first().prop("checked", true);
+                $(this).parent().parent().find(".active_input").prop("checked", true);
+            } else {
+                $(this).parent().parent().find("input").first().prop("checked", false);
+                $(this).parent().parent().find(".active_input").prop("checked", false);
+            }
+        }
+    });
+    function LoadDataTable(data) {
+        var html = "<ul>";
+        var size = data.length;
+        if (size == 0) {
+            html = "<span class='error'>Không có nhân viên nào</span>";
+        } else {
+            var Ids = $("#LISTSELECTED_@(Model.INDEX)").val().split(',');
+            for (var i = 0; i < size; i++) {
+                html += "<li>";
+                if ('@Model.IS_MULTICHOICE' == '1') {
+                    html += '<div class="checkbox">';
+                    if (Ids.indexOf(data[i].ID + "") > 0) {
+                        html += "<label class='text-fullname' data-text='" + data[i].HOTEN + "'><input checked='checked' id='nguoi_dung_" + data[i].ID + "' type='checkbox' value='" + data[i].ID + "' class='checkbox_chon_nguoi_dung'>" + data[i].HOTEN + "</label>";
+                    } else {
+                        html += "<label class='text-fullname' data-text='" + data[i].HOTEN + "'><input id='nguoi_dung_" + data[i].ID + "' type='checkbox' value='" + data[i].ID + "' class='checkbox_chon_nguoi_dung'>" + data[i].HOTEN + "</label>";
+                    }
+                    html += '</div>';
+                } else {
+                    html += '<div class="radio">';
+                    html += "<label class='text-fullname' data-text='" + data[i].HOTEN + "'><input name='nguoi_dung_radio' id='nguoi_dung_" + data[i].ID + "' type='radio' value='" + data[i].ID + "' class='checkbox_chon_nguoi_dung'>" + data[i].HOTEN + "</label>";
+                    html += '</div>';
+                }
+                html += "</li>";
+            }
+            html += "</ul>";
+        }
+        //$("#nhan_su_result_dialog_" + '@Model.INDEX').html(data);
+        $("#nhan_su_result_dialog_" + '@Model.INDEX' + " #SearchResult").html(html);
+    }
+    function NguoiDungSearchV2(event) {
+        var key = generate_slugable(event.val());
+        if (key != "") {
+            isSearch = true;
+        } else {
+            isSearch = false;
+        }
+        $("#SearchResult .text-fullname").each(function () {
+            var $row = $(this);
+            var name = generate_slugable($row.attr("data-text"));
+            console.log(name);
+            if (name != null && name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $row.parents("li").show()
+            }
+            else {
+                $row.parent().parent().hide();
+            }
+        });
+    }
+</script>
+<style>
+    #SearchResult .checkbox, #SearchResult .radio {
+        margin-top: 5px !important;
+    }
+
+    #SearchResult .smart-form .checkbox, #SearchResult.smart-form .radio {
+        line-height: initial !important;
+    }
+
+    #SearchResult .checkbox input {
+        left: initial !important;
+        margin-top: 3px !important;
+    }
+
+    #SearchResult .checkbox label {
+        padding-left: 30px !important;
+    }
+
+    #SearchResult .checkbox {
+        padding-left: initial !important;
+    }
+
+    .text-fullname .checkbox_chon_nguoi_dung {
+        left: initial !important
+    }
+</style>

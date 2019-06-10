@@ -1,0 +1,82 @@
+﻿@using Web.Areas.WFSTREAMArea.Models;
+@model KeThuaVM
+<div class="modal-dialog" style="width:800px;">
+
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Kế thừa luồng xử lý</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+               
+                <div>
+                    <table class="hinet-table table table-hover table-striped table-wrapper" >
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên luồng</th>
+                                <th>Mô tả</th>
+                                <th>Tòa nhà</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.LstFlow)
+                            {
+                                <tr>
+                                    <td>@(Model.LstFlow.IndexOf(item) + 1)</td>
+                                    <td>@item.WF_NAME</td>
+                                    <td>@item.WF_DESCRIPTION</td>
+                                    <td>@item.TenToaNha</td>
+                                    <td>
+                                        <button class="btn btn-info btn-xs" onclick="KeThua(@item.ID)">Kế thừa</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                @*<button type="button" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>*@
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    
+</div>
+
+<script>
+    function KeThua(id) {
+        AjaxCall("/WFSTREAMArea/WFSTREAM/SaveKeThua", 'post', {idToaNha:@Model.ToaNhaID, idFlow:id}, function (rs) {
+            successAjaxCreate(rs);
+
+        })
+    }
+    function successAjaxCreate(rs) {
+        if (rs.Status) {
+            $("#tbl-wfstream").hinetTable("reload");
+            $("#modal_edit").modal("hide");
+            $("#modal_edit").empty();
+            NotiSuccess("Kế thừa thành công");
+        } else {
+
+            NotiError("Không thể kế thừa");
+        }
+    }
+
+    function checkSubmid() {
+        var err = checkForm('createwfstreamForm');
+        if (err) {
+            $("#createwfstreamForm").submit();
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+
+</script>

@@ -1,0 +1,137 @@
+﻿@using Business.CommonModel.QLCHUYEN
+@using Business.CommonModel.CONSTANT;
+@model ChuyenBO
+@using (Ajax.BeginForm("ReturnTrip", "QL_CHUYEN", new { @area = "QL_CHUYENArea" }, new AjaxOptions
+{
+    HttpMethod = "POST",
+    OnSuccess = "onReturnTripSuccess",
+    OnFailure = "onReturnTripFailure"
+}, new { @id = "form--return-trip" }))
+{
+    <input type="hidden" name="ID" value="@Model.ID" />
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    TRẢ XE
+                </h5>
+            </div>
+            <div class="modal-body">
+                <fieldset>
+                    <div class="row">
+                        <section class="col col-lg-12">
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-4">
+                                        <label class="lbl control-label" for="QUANGDUONG_DICHUYEN">
+                                            Quảng đường di chuyển:&nbsp;
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" name="QUANGDUONG_DICHUYEN" id="QUANGDUONG_DICHUYEN" class="form-control" />
+                                            <span class="input-group-addon">km</span>
+                                        </div>
+                                        <div class="note-error">
+                                            <span class="error mes-note-error" id="QUANGDUONG_DICHUYEN_ERROR"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-4">
+                                        <label class="lbl control-label" for="TONG_CHIPHI">
+                                            Tổng chi phí:&nbsp;
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" name="TONG_CHIPHI" id="TONG_CHIPHI" class="form-control" />
+                                            <span class="input-group-addon">vnđ</span>
+                                        </div>
+                                        <div class="note-error">
+                                            <span class="error mes-note-error" id="TONG_CHIPHI_ERROR"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-4">
+                                        <label class="lbl control-label" for="GHICHU">
+                                            Ghi chú:&nbsp;
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <textarea name="GHICHU" id="GHICHU" class="form-control"></textarea>
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="btn--return-trip">Cập nhật</a>
+                <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+            </div>
+        </div>
+    </div>
+
+}
+<script src="~/Scripts/autoNumeric.min.js"></script>
+<script>
+    $(function(){
+
+        $('#TONG_CHIPHI, #QUANGDUONG_DICHUYEN').autoNumeric();
+
+        $('#btn--return-trip').on('click',function(){
+            var formName = 'form--return-trip';
+            var isValid = validateNumberField(formName);
+
+            if(isValid){
+                var distance = parseInt($('#QUANGDUONG_DICHUYEN').val());
+                var cost = parseInt($('#TONG_CHIPHI').val());
+
+                if(distance != NaN && distance < 0){
+                    $('#QUANGDUONG_DICHUYEN_ERROR').text('Quãng đường di chuyển phải lớn hơn 0');
+                    $('#QUANGDUONG_DICHUYEN_ERROR').css('display', 'inline');
+                    return false;
+                }else{
+                    $('#QUANGDUONG_DICHUYEN_ERROR').css('display', 'none');
+                }
+
+                if(cost != NaN && cost <= 0){
+                    $('#TONG_CHIPHI_ERROR').text('Tổng chi phí phải lớn hơn 0');
+                    $('#TONG_CHIPHI_ERROR').css('display', 'inline');
+                    return false;
+                }else{
+                    $('#TONG_CHIPHI_ERROR').css('display', 'none');
+                }
+
+                $('#form--return-trip').submit();
+             }
+        })
+    })
+    function onReturnTripSuccess(rs){
+        if(rs.Status){
+            $('#modal--return-trip').modal('hide');
+            NotiSuccess(rs.Message);
+            setTimeout(function(){
+                reloadData();
+            }, 1000)
+        }else{
+            NotiError(rs.Message);
+        }
+    }
+
+    function onReturnTripFailure(rs){
+        NotiError('Không thực hiện được thao tác');
+    }
+</script>

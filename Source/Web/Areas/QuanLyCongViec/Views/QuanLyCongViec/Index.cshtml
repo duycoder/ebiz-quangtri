@@ -1,0 +1,398 @@
+﻿@{
+    ViewBag.Title = "Quản lý công việc";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Web.Areas.CongViecArea.Models
+@using Newtonsoft.Json
+@model CongViecIndexViewModel
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListResult.ListItem));
+}
+<style>
+    .congviecgoc {
+        font-weight: bolder;
+    }
+
+    .congviec-level-1 {
+        background-color: #FAEBD7 !important;
+        font-weight: bold;
+    }
+
+    .congviec-level-2 {
+        background-color: #E6E6FA !important;
+        font-weight: bold;
+    }
+
+    .expired {
+        color: red;
+    }
+
+    .quahan {
+        color: red;
+    }
+
+    .finish {
+        color: blue;
+    }
+</style>
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;padding-right: 0px">
+        <a class="btn btn-default pull-right" href="@Url.Action("Create")">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+        <a class="btn btn-default pull-right" href="/QuanLyCongViec/QuanLyCongViec/ImportCongViec" style="margin-right: 5px;">
+            <i class="fa fa-upload"></i> <span>Import</span>
+        </a>
+    </div>
+</div>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading" style="height: 40px; line-height: 35px;">
+            <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10">
+                Quản lý công việc cá nhân
+            </h2>
+            <div class="render-table-info" style="float: right">
+
+            </div>
+        </header>
+        <div role="content" style="padding:0px; border: 0px;">
+            <div class="widget-body">
+                <div id="tbl-vanbanden">
+                    <table class="hinet-table table table-hover congviec" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>STT</th>
+                                <th>Công việc</th>
+                                <th>Mức độ hoàn thành</th>
+                                <th>Người giao việc</th>
+                                <th>Người xử lý chính</th>
+                                <th>Độ quan trọng</th>
+                                <th>Độ ưu tiên</th>
+                                @*<th>Ngày nhận việc</th>*@
+                                <th>Ngày hoàn thành</th>
+                                <th>Thời gian còn lại</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    var typeId = 0;
+    function Remove(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa công việc này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Type == "SUCCESS") {
+                                    NotiSuccess(rs.Message);
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+                            }
+                        });
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    var lstData = eval(@lstData);
+    function pagefunction() {
+        var conf = [
+            {
+                tdClass: "center width-30 congviecgoc",
+                isSort: false,
+                nameModel: "",
+                isCounter: false,
+                content: function (data) {
+                    var html = "";
+                    if (data.HasChild) {
+                        html = "<i data-id='" + data.ID + "' class='fa fa-folder icon-hover fa-lg'></i>";
+                    }
+                    return html;
+                }
+            },
+            {
+                tdClass:"center width-30 congviecgoc",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                tdClass: "congviecgoc",
+                nameModel:'TENCONGVIEC',
+                content: function (data) {
+                    var html = "<a href='/QuanLyCongViec/QuanLyCongViec/Detail/" + data.ID + "' title = 'Chi tiết'>" + data.TENCONGVIEC + "</a>";
+                    if (parseInt('@Model.UserInfo.ID') == data.NGUOITAO) {
+                        html += "<div class='btn-group col-sm-12 no-padding'>";
+                        if (!data.IS_BATDAU) {
+                            html += "<a  class='' href='/QuanLyCongViec/QuanLyCongViec/Edit/" + data.ID + "' title = 'Chỉnh sửa'><i class='fa fa-pencil-square-o fa-lg bigger-150 cl-primary'></i></a> ";
+                            if (data.NGUOIXULYCHINH_ID == null || data.TRANGTHAI_ID == parseInt('@TrangThaiCongViecConstant.UNAPPROVAL')) {
+                                html += "<a href='javascript:void(0)' onclick='Remove(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-trash bigger-150 cl-primary'> </i></a>";
+                            }
+                        }
+
+                        html += "</div>";
+                    }
+                    return html;
+                }
+            },
+            {
+                tdClass: "text-justify congviecgoc",
+                isSort:false,
+                nameModel:'PHANTRAMHOANTHANH',
+                content: function (data) {
+                    var html = "<div class='progress progress-xs' data-progressbar-value='" + ((data.PHANTRAMHOANTHANH != null && data.PHANTRAMHOANTHANH != "") ? data.PHANTRAMHOANTHANH : "0") + "'><div class='progress-bar'></div></div>";
+                    return html;
+                }
+            },
+            {
+                tdClass: "center congviecgoc",
+                isSort: true,
+                nameModel: 'TEN_NGUOIGIAOVIEC',
+                content: function (data) {
+                    return data.TEN_NGUOIGIAOVIEC;
+                }
+            },
+            {
+                tdClass: "center congviecgoc",
+                isSort: true,
+                nameModel: 'TEN_NGUOIXULYCHINH',
+                content: function (data) {
+                    return data.TEN_NGUOIXULYCHINH;
+                }
+            },
+            {
+                tdClass: "center congviecgoc",
+                isSort: true,
+                nameModel: 'TEN_DOKHAN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOKHAN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOKHAN + '" title="' + data.TEN_DOKHAN+'" />';
+                    } else {
+                        return data.TEN_DOKHAN;
+                    }
+                }
+            },
+            {
+                tdClass: "center congviecgoc",
+                isSort: true,
+                nameModel: 'TEN_DOUUTIEN',
+                content: function (data) {
+                    if (data.ICON_DOUUTIEN != null && data.ICON_DOUUTIEN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOUUTIEN + '" title="' + data.TEN_DOUUTIEN + '" />';
+                    } else {
+                        return data.TEN_DOUUTIEN;
+                    }
+                }
+            },
+            {
+                tdClass: "center congviecgoc",
+                isSort: true,
+                nameModel: 'NGAYHOANTHANH_THEOMONGMUON',
+                content: function (data) {
+                    if (data.IS_HASPLAN && data.NGAYKETTHUC_KEHOACH != null) {
+                        return ToDate(data.NGAYKETTHUC_KEHOACH);
+                    } else {
+                        return ToDate(data.NGAYHOANTHANH_THEOMONGMUON);
+                    }
+                }
+            },
+            {
+                tdClass: "center congviecgoc",
+                isSort: true,
+                nameModel: 'SONGAYCONLAI',
+                content: function (data) {
+                    if(data.PHANTRAMHOANTHANH != null && data.PHANTRAMHOANTHANH != ""){
+                        if(data.PHANTRAMHOANTHANH == 100){
+                            return "<span class='finish'>Đã hoàn thành</span>";
+                        }
+                    }
+                    if(data.SONGAYCONLAI < 0){
+                        return "<span class='quahan'>Quá hạn "+data.SONGAYCONLAI * (-1)+" ngày</span>"
+                    }
+                    return "<span class='chuadenhan'>Còn lại "+data.SONGAYCONLAI+" ngày</span>"
+                }
+            },
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }, complete: function () {
+                    CheckTable();
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.ListResult.TotalPage,
+            recordCount: @Model.ListResult.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+        CheckTable();
+    }
+    function CheckTable() {
+        $(".hinet-table tbody tr").each(function () {
+            var value = $(this).find("td:last-child").html();
+            var tiendo = $(this).find(".progress-xs").attr("data-progressbar-value");
+            if (tiendo == null || tiendo == undefined || parseInt(tiendo) < 100) {
+                var parts = value.split("/");
+                var expired = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (expired < new Date()) {
+                    $(this).addClass("expired");
+                    $(this).find("td:last-child").html(value + "<div class='col-sm-12 no-padding'><i>(Quá hạn)</i></div>");
+                }
+            }
+        });
+    }
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+    $(document).on("click", ".icon-hover", function () {
+        var jobId = $(this).attr("data-id");
+        var parentId = $(this).closest("tr").attr("data-parent");
+        if (parentId == undefined) {
+            parentId = jobId;
+        }
+        var rowIndex = $(this).parent().next().html();
+        console.log(rowIndex);
+        var stt = $(this).attr("data-no") == undefined ? rowIndex : $(this).attr("data-no");
+        if ($(".list-child-" + jobId).length == 0) {
+            if ($(this).hasClass("fa-folder")) {
+                $(this).removeClass("fa-folder");
+                $(this).addClass("fa-folder-open");
+            }
+            if ($(this).hasClass('fa-plus-square-o')) {
+                $(this).removeClass("fa-plus-square-o");
+                $(this).addClass("fa-minus-square-o");
+            }
+            var this1 = $(this);
+            $.ajax({
+                url: '@Url.Action("LoadCongViecCon")',
+                type: 'post',
+                cache: false,
+                data: { id: jobId, RowNo: stt, RootId: parentId, rowIndex: rowIndex},
+                success: function (data) {
+                    $(data).insertAfter($(this1).closest("tr"));
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        } else if ($(".list-child-" + jobId).is(":visible")) {
+            $(".list-child-" + jobId).hide();
+
+            if ($(this).hasClass("fa-folder-open")) {
+                $(this).removeClass("fa-folder-open");
+                $(this).addClass("fa-folder");
+            }
+            if ($(this).hasClass('fa-minus-square-o')) {
+                $(this).removeClass("fa-minus-square-o");
+                $(this).addClass("fa-plus-square-o");
+            }
+        } else {
+            $(".list-child-" + jobId).show();
+            if ($(this).hasClass("fa-folder")) {
+                $(this).removeClass("fa-folder");
+                $(this).addClass("fa-folder-open");
+            }
+            if ($(this).hasClass('fa-minus-square-o')) {
+                $(this).removeClass("fa-minus-square-o");
+                $(this).addClass("fa-plus-square-o");
+            }
+        }
+    });
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+
+    .hinet-table td:nth-child(4), .table-child td:nth-child(4) {
+        width: 10.666667% !important;
+    }
+
+    .text-justify, .text-justify a {
+        text-align: justify !important;
+    }
+
+    .hinet-table td:nth-child(3), .table-child td:nth-child(3) {
+        width: 20% !important;
+    }
+
+    .table-child > td {
+        padding-left: 0px !important;
+        padding-right: 0px !important
+    }
+</style>

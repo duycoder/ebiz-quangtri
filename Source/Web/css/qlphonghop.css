@@ -1,0 +1,466 @@
+﻿body {
+    font-size: 12px;
+    color: #333333;
+    padding: 0;
+    margin: 0;
+    text-align: justify;
+    background-color: #f0f0f0;
+}
+
+#phonghop {
+    font-size: 14px;
+}
+
+#tbale-qlphong table tr td {
+    text-align: center;
+    font-weight: bold;
+    width: 250px;
+    position: relative;
+    padding: 5px 10px;
+    border: 1px solid #555;
+}
+
+#phonghop .pd0, #Modal_EditPhongHop .pd0, #Modal_DetailPhongHop .pd0 {
+    padding: 0;
+}
+
+.loigio {
+    box-shadow: 1px 1px 11px red;
+}
+
+.hienthi {
+    display: block;
+    margin-top: 5px;
+}
+
+#Modal_DetailPhongHop {
+    font-size: 14px;
+}
+
+/*#tbale-qlphong table tr td button{
+    display:none;
+    width: 100%;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	cursor: default;
+    background-color:#005ba9;
+    cursor: pointer;
+    z-index: 10;
+    border:0;
+    opacity: 0;
+  transition: all 2s ease-in-out 0s;
+    -moz-transition: all 2s ease-in-out 0s;
+    -webkit-transition: all 2s ease-in-out 0s;
+    -o-transition: all 2s ease-in-out 0s;
+    border-radius:0;
+    font-weight:bold;
+    text-transform:uppercase;
+}
+
+#tbale-qlphong table tr td:hover button{
+    padding:5px;
+    display:block;
+    cursor:pointer;
+   margin-top:0px;
+       position: absolute;
+    left: 0%;
+    opacity: 0.7;
+    box-shadow: 0px 0px 4px #000;
+    top: 0;
+}*/
+
+.actionPhong:before {
+    content: "";
+    background: #1f94d8;
+    width: 100%;
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 99;
+}
+
+.actionPhong {
+    position: relative;
+    padding: 1px 0;
+}
+
+    .actionPhong a {
+        font-size: 14px;
+        position: relative;
+        z-index: 999;
+        color: #fff;
+        left: 0;
+        top: 35%;
+    }
+
+#tbale-qlphong table tr td:nth-child(1), #tbale-qlphong table tr td:nth-child(2) {
+    font-weight: normal;
+    width: 50px;
+    background: #e1d54d;
+}
+
+.inpage span {
+    margin-right: 5px;
+    color: #5c5c5c;
+}
+
+#tbale-qlphong table tr:nth-child(1) td {
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #e1d54d;
+}
+
+#tbale-qlphong table tr:nth-child(2) td {
+    font-weight: bold;
+    text-transform: uppercase;
+    background: #e1d54d;
+}
+
+#lstt-lenh, .inpage, .chuyenpage, .thoigian {
+    display: inline-block;
+}
+
+.thoigian {
+    margin-left: 15px;
+    font-weight: bold;
+    color: #dc0000;
+}
+
+.chuyenpage a {
+    padding: 8px 15px !important;
+    background-color: #d8d8d8;
+    border: 1px solid #c7c7c7;
+}
+
+.user-phong > p {
+    font-weight: normal;
+    width: 100%;
+}
+
+.ng-xacnhan {
+    font-weight: normal;
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 15px;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+#lstt-lenh {
+    background: #eee;
+    width: 100%;
+    padding: 10px 15px;
+}
+
+.inpage {
+    float: right;
+}
+
+    .inpage ul {
+        list-style: none;
+        padding: 0;
+    }
+
+        .inpage ul li {
+            float: left;
+        }
+
+            .inpage ul li button:nth-child(2) {
+                border-radius: 0 !important;
+                border-left: 0;
+                border-right: 0;
+            }
+
+#lstt-lenh button {
+    background: #d8d8d8;
+    padding: 5px 15px;
+    border: 1px solid #c7c7c7;
+}
+
+    #lstt-lenh button a {
+        color: #333;
+    }
+
+#lstt-lenh {
+    font-size: 14px;
+}
+
+    #lstt-lenh button:hover, #lstt-lenh > .chuyenpage > a:hover {
+        background-color: #bdfff9;
+    }
+
+.header {
+    background-color: #118acb;
+    padding: 0 15px;
+}
+
+    .header h3 {
+        padding: 10px 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        color: #fff;
+        font-size: 18px;
+        text-transform: uppercase;
+    }
+
+#tbale-qlphong {
+    border-top: 1px solid #ccc;
+}
+
+.fal, .far {
+    font-family: "Font Awesome 5 Pro";
+}
+
+.lst-userphong {
+    background: #5fda80 !important;
+}
+
+.userphong-1 {
+    background-color: #d7f2fa;
+}
+
+#tbl_creatPhong .ThuHtai {
+    background: #15de42 !important;
+}
+
+#tbl_creatPhong .BuoiSang {
+    background-color: #dcf32e !important;
+}
+
+#tbl_creatPhong .BuoiChieu {
+    background-color: #f5bc63 !important;
+}
+
+.userphong-1 .user-phong {
+    position: relative;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #00549b;
+    margin-bottom: 10px;
+}
+
+.userphong-1 button {
+    padding: 5px;
+    font-size: 12px;
+    display: none;
+    position: absolute;
+    left: 15%;
+}
+#tbale-qlphong table tr td.userphong-1:hover button{
+    display:inline-block;
+}
+#Modal_ConfirmPhongHop .modal-footer {
+    text-align: center;
+}
+
+#phonghop select {
+    padding: 5px;
+}
+
+#phonghop form .form-group:nth-child(1),
+#phonghop form .form-group:nth-child(2), #Modal_EditPhongHop form .form-group:nth-child(1),
+#Modal_EditPhongHop form .form-group:nth-child(2) {
+    display: inline-block;
+    width: 50%;
+    float: left;
+}
+
+.btnDatPhong {
+    float: left;
+    width: 100%;
+    height: 40px;
+}
+
+.Cofirm-Ok p {
+    color: #0477bd !important;
+}
+
+.Cofirm-Ok .actionPhong {
+    display: none;
+}
+
+.modal-footer button {
+    text-transform: uppercase;
+}
+
+.gui-datphong button {
+    background: #009c03;
+    font-size: 14px;
+    color: #fff;
+    padding: 8px 20px;
+}
+
+    .gui-datphong button:hover {
+        background: #137600;
+        color: #fff;
+    }
+
+#Noidung_Xacnhan {
+    width: 100%;
+}
+
+#phonghop form .gui-datphong, #Modal_EditPhongHop form .gui-datphong, #Modal_ConfirmPhongHop .gui-datphong {
+    text-align: center;
+    display: inline-block;
+}
+
+#phonghop .modal-title, #Modal_EditPhongHop .modal-title, #Modal_DetailPhongHop .modal-title, #Modal_ConfirmPhongHop .modal-title {
+    text-transform: uppercase;
+}
+
+#phonghop textarea, #phonghop input, #Modal_EditPhongHop textarea, #Modal_EditPhongHop input {
+    width: 100%;
+    padding: 5px 15px;
+}
+
+#phonghop label {
+    width: 30%;
+}
+
+.thamduhop select, .chutri select {
+    width: 85%;
+    margin-bottom: 10px;
+}
+
+.actionPhong .fa-edit {
+    margin: 0 5px;
+}
+
+.chutri, .dattgian {
+    float: left;
+    width: 100%;
+}
+
+    .chutri .col-sm-2 {
+        width: 16% !important;
+    }
+
+    .chutri .col-sm-10 {
+        width: 84% !important;
+        padding-left: 15px;
+    }
+
+#phonghop .dattgian .col-sm-10, #Modal_EditPhongHop .dattgian .col-sm-10 {
+    width: 85% !important;
+}
+
+#phonghop .pdl-15, #Modal_EditPhongHop .pdl-15 {
+    padding-left: 15px;
+}
+
+#phonghop .modal-dialog, #Modal_EditPhongHop .modal-dialog {
+    width: 730px;
+}
+
+#So_Phong_Dat, #Ngay_Dat_Phong, #eSo_Phong_Dat, #eNgay_Dat_Phong, .content-detail .tenphong {
+    color: #1fa100;
+    font-weight: bold;
+}
+
+#phonghop .modal-dialog .modal-body, #Modal_EditPhongHop .modal-dialog .modal-body {
+    margin-right: 0;
+    max-height: none;
+    overflow: inherit;
+    font-size: 14px;
+}
+
+#phonghop .modal-footer, #Modal_EditPhongHop .modal-footer {
+    position: relative;
+    border: none;
+    padding: 10px;
+    text-align: center;
+}
+
+    #phonghop .modal-footer:before, #Modal_EditPhongHop .modal-footer:before, #Modal_DetailPhongHop .modal-footer:before {
+        content: ' ';
+        top: 0;
+        left: -3%;
+        bottom: -34%;
+        position: absolute;
+        border-left: 35px solid #f7b512;
+        border-bottom: 35px solid #f7b512;
+        border-top: 35px solid transparent;
+        border-right: 35px solid transparent;
+    }
+
+#Modal_DetailPhongHop .modal-dialog .modal-body {
+    width: 100%;
+    overflow: unset;
+    padding-bottom: 0;
+}
+
+#Modal_DetailPhongHop .modal-footer {
+    position: relative;
+    margin-top: 20px;
+}
+
+.user-phong p,.user-phong > a {
+    color: #dc0000;
+}
+
+    .user-phong p:last-child {
+        font-weight: normal;
+    }
+
+#phonghop .modal-footer:after, #Modal_EditPhongHop .modal-footer:after, #Modal_DetailPhongHop .modal-footer:after {
+    content: ' ';
+    bottom: -34%;
+    left: -3%;
+    position: absolute;
+    border-left: 33px solid #d99b00;
+    border-bottom: 33px solid #d99b00;
+    border-top: 33px solid transparent;
+    border-right: 33px solid transparent;
+}
+
+#Modal_DetailPhongHop .modal-footer:after, #Modal_DetailPhongHop .modal-footer:before {
+    bottom: 0 !important;
+    left: -3.5%;
+}
+
+#phonghop label span, #Modal_EditPhongHop label span, #Modal_ConfirmPhongHop label span {
+    color: #d40000;
+}
+
+#phonghop .form-group .col-sm-2 label, #Modal_EditPhongHop .form-group .col-sm-2 label {
+    width: 100%;
+}
+
+#phonghop .form-group .col-sm-2, #Modal_EditPhongHop .form-group .col-sm-2 {
+    padding: 0;
+    width: 15%;
+}
+
+#phonghop .form-group .col-sm-10, #Modal_EditPhongHop .form-group .col-sm-10 {
+    width: 69%;
+    padding: 0;
+}
+
+    #phonghop .form-group .col-sm-10 .col-sm-12, #Modal_EditPhongHop .form-group .col-sm-10 .col-sm-12 {
+        padding: 0;
+        margin-bottom: 15px;
+    }
+
+#phonghop .btn-danger, #Modal_EditPhongHop .btn-danger, #Modal_ConfirmPhongHop .btn-danger {
+    padding: 8px 20px;
+}
+
+.bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    width: unset !important;
+}
+@media print {
+    body {
+        -webkit-print-color-adjust: exact; /* This settings is used to print background color, but only works in Chrome browser*/
+    }
+    .featured .content-wrapper {
+        background-color: greenyellow !important;
+        color: #3e5667;
+        padding: 20px 40px 30px 40px;
+        background-image: -ms-linear-gradient(left, greenyellow 0%, greenyellow 100%);
+        background-image: -o-linear-gradient(left, greenyellow 0%, #greenyellow 100%);
+        background-image: -webkit-gradient(linear, left top, right top, color-stop(0, greenyellow), color-stop(1, greenyellow));
+        background-image: -webkit-linear-gradient(left, greenyellow 0%, greenyellow 100%);
+        background-image: linear-gradient(left, greenyellow 0%, greenyellow 100%);
+    }
+}

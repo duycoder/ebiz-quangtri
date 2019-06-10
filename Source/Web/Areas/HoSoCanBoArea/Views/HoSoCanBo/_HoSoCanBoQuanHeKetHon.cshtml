@@ -1,0 +1,335 @@
+﻿@model Web.Areas.HoSoCanBoArea.Models.HoSoCanBoChiTietVM
+<style>
+    #FormEditCanBoQuanHeKetHon td {
+        padding: 5px;
+    }
+
+    #ThongTinCanBoQuanHeKetHon td {
+        padding: 5px;
+    }
+    #detailCanBoQuanHeKetHon span {
+        white-space: pre-line !important;
+    }
+</style>
+<p dir="ltr" class="pt-Normal-000010">
+    <span lang="en-GB" class="pt-DefaultParagraphFont-000001">a)Về bên vợ (hoặc chồng): Cha, Mẹ, anh chị em ruột</span>
+    <a href="javascript:createThongTinCanBoQuanHeKetHon()">
+        <i class="fa fa-plus"></i>Thêm mới
+    </a>
+</p>
+<div align="left">
+    <table dir="ltr" class="pt-000004" id="detailCanBoQuanHeKetHon">
+        <tbody>
+            <tr>
+                <td class="pt-000020">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001"> Mối quan hệ</span>
+                    </p>
+                </td>
+                <td class="pt-000021">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001"> Họ và tên</span>
+                    </p>
+                </td>
+                <td class="pt-000020">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001"> Năm sinh</span>
+                    </p>
+                </td>
+                <td class="pt-000021">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001"> Quê quán, nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, ngoài nước); thành viên các tổ chức chính trị - xã hội ........)</span>
+                    </p>
+                </td>
+            </tr>
+            @foreach (var item in Model.ThongTinChung.HOSO_CANBO_QUANHEKETHON)
+            {
+                <tr>
+                    <td class="pt-000026">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="MOIQUANHE_@item.ID">
+                            @item.MOIQUANHE
+                        </span>
+                        </p>
+                    </td>
+                    <td class="pt-000026">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="HOTEN_@item.ID">
+                            @item.HOTEN
+                        </span>
+                        </p>
+                    </td>
+                    <td class="pt-000026">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="NAMSINH_@item.ID">
+                            @item.NAMSINH
+                        </span>
+                        </p>
+                    </td>
+                    <td class="pt-000029">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="QUEQUAN_@item.ID">
+                                @item.QUEQUAN
+                            </span>
+                            <a href="javascript:editCanBoQuanHeKetHonRow(@item.ID)">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a href="javascript:removeDaotaoRow(@item.ID)">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                        </p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" role="dialog" id="ThongTinCanBoQuanHeKetHon">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Về bên vợ: Cha, Mẹ, Vợ (hoặc chồng), anh chị em ruột</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="FormDaoCanBoQuanHeKetHon" action="/HoSoCanBoArea/HoSoCanBo/SaveThongTinQuanHeKetHon" method="post">
+                    <input type="hidden" name="HOSOID" value="@Model.ThongTinChung.ID" />
+                    <table class="hinet-table table-bordered" id="table-canbo-quanhe_kethon">
+                        <tr>
+                            <td>
+                                Mối quan hệ
+                            </td>
+                            <td>
+                                Họ và tên
+                            </td>
+                            <td>
+                                Năm sinh
+                            </td>
+                            <td>
+                                Quê quán, nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, ngoài nước); thành viên các tổ chức chính trị - xã hội ........)
+                            </td>
+                            <td>
+                                <a href="javascript:addNewRow()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="MOIQUANHE" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="HOTEN" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="NAMSINH" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="QUEQUAN" class="required form-control" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="removeRow">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveCanBoQuanHeKetHon('FormDaoCanBoQuanHeKetHon')">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" role="dialog" id="editThongTinCanBoQuanHeKetHon">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Về bên vợ: Cha, Mẹ, Vợ (hoặc chồng), anh chị em ruột</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="FormEditCanBoQuanHeKetHon" action="/HoSoCanBoArea/HoSoCanBo/SaveThongTinQuanHeKetHon" method="post">
+                    <input type="hidden" name="HOSOID" value="@Model.ThongTinChung.ID" />
+                    <input type="hidden" name="DAOTAO_ID" id="DAOTAO_ID" />
+                    <table class="hinet-table table-bordered">
+                        <tr>
+                            <td>
+                                Mối quan hệ
+                            </td>
+                            <td>
+                                Họ và tên
+                            </td>
+                            <td>
+                                Năm sinh
+                            </td>
+                            <td>
+                                Quê quán, nghề nghiệp, chức danh, chức vụ, đơn vị công tác, học tập, nơi ở (trong, ngoài nước); thành viên các tổ chức chính trị - xã hội ........)
+                            </td>
+                            <td>
+                                <a href="javascript:addNewRow()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="MOIQUANHE" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="HOTEN" class="required form-control" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="NAMSINH" class="required form-control " />
+                                <div class="note-error ">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="QUEQUAN" class="required form-control" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="">
+                                    <i class="fa fa-remove" style="display:none"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveCanBoQuanHeKetHon('FormEditCanBoQuanHeKetHon')">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<table style="display: none" id="HIDDENCANBOQUANHEKETHON">
+    <tr>
+        <td>
+            <input type="text" name="MOIQUANHE" class="required form-control " />
+            <div class="note-error ">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="HOTEN" class="required form-control " />
+            <div class="note-error ">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="NAMSINH" class="required form-control " />
+            <div class="note-error ">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="QUEQUAN" class="required form-control" />
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <a href="javascript:void(0)" class="removeRow">
+                <i class="fa fa-remove"></i>
+            </a>
+        </td>
+    </tr>
+</table>
+<script>
+    function createThongTinCanBoQuanHeKetHon() {
+        $("#ThongTinCanBoQuanHeKetHon").modal();
+    }
+    function addNewRow() {
+        $("#table-canbo-quanhe_kethon").append($("#HIDDENCANBOQUANHEKETHON").html());
+    }
+    function editCanBoQuanHeKetHonRow(id) {
+        $("#editThongTinCanBoQuanHeKetHon").modal();
+        $("#editThongTinCanBoQuanHeKetHon #DAOTAO_ID").val(id);
+        $("#editThongTinCanBoQuanHeKetHon input[name=MOIQUANHE]").val($("#MOIQUANHE_" + id).html().trim());
+        $("#editThongTinCanBoQuanHeKetHon input[name=HOTEN]").val($("#HOTEN_" + id).html().trim());
+        $("#editThongTinCanBoQuanHeKetHon input[name=NAMSINH]").val($("#NAMSINH_" + id).html().trim());
+        $("#editThongTinCanBoQuanHeKetHon input[name=QUEQUAN]").val($("#QUEQUAN_" + id).html().trim());
+    }
+    function removeDaotaoRow(id) {
+        $.confirm({
+            'title': 'Xác nhận xử lý',
+            'message': 'Bạn có chắc chắn muốn xóa thông tin cán bộ về bên vợ, về bên vợ này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '/HoSoCanBoArea/HoSoCanBo/XoaQuanHeKetHon',
+                            type: 'post',
+                            cache: false,
+                            data: { id: id },
+                            success: function (data) {
+                                if (data.Type == "SUCCESS") {
+                                    NotiSuccess("Xóa thành công");
+                                    setTimeout(location.reload(), 2000);
+                                } else {
+                                    NotiError(data.Message);
+                                }
+
+                            },
+                            error: function (err) {
+                                NotiError(err.responseText);
+                            }
+                        });
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-danger',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    function saveCanBoQuanHeKetHon(formid) {
+        var is_submit = onSubmit(formid);
+        if (is_submit) {
+            $("#" + formid).submit();
+        } else {
+            return false;
+        }
+    }
+    function onSubmit(formid) {
+        var err = 0;
+        var require = requiredFieldForFormId(formid);
+        if (!require) {
+            err++;
+        }
+
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Bạn vui lòng điền đầy đủ thông tin");
+            return false;
+        }
+    }
+</script>

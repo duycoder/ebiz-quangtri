@@ -1,0 +1,170 @@
+﻿@using Web.Areas.Report.Models;
+@using Business.CommonModel.CONSTANT;
+@model ReportVanBanDiFilterViewModel
+
+@using (Ajax.BeginForm("GetReportResult", "ReportVanBanDi", new AjaxOptions
+{
+    HttpMethod = "POST",
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "block--report--" + Model.reportType
+}, new { id = "form--report--" + Model.reportType }))
+{
+    <input type="hidden" name="timeFilterType" value="@Model.timeFilterType" class="input--time-filter-type" />
+    <input type="hidden" name="reportType" value="@Model.reportType" />
+    <fieldset>
+        <div class="row">
+            <div class="col col-sm-12">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryItemCategoryType">
+                        Đơn vị/phòng ban:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryDepartment", Model.groupOfDeparmtents, new { @class = "select2" })
+                </div>
+
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryItemCategoryType">
+                        @(Model.itemCategoryName + ":")
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryItemCategoryType", Model.groupOfItemCategoryFilter, "--- Chọn loại ---", new { @class = "select2" })
+                </div>
+            </div>
+
+            <div class="col col-sm-12">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryType">
+                        Kiểu thời gian:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryType", Model.groupOfTimeTypesFilter, new { @class = "select2" })
+                </div>
+            </div>
+
+            <section class="section--query-day col col-sm-12 @(Model.filterTimeByDay == true ? "" : "hide")">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryDateStart">
+                        Ngày bắt đầu:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <input type="text" class="datepicker form-control required checkDateValid checkHTMLInjection" id="queryDateStart@(Model.reportType)" name="queryDateStart" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryDateEnd">
+                        Ngày kết thúc:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <input type="text" class="datepicker form-control required checkDateValid checkHTMLInjection" id="queryDateEnd@(Model.reportType)" name="queryDateEnd" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section--query-month col col-sm-12 @(Model.filterTimeByMonth == true ? "" : "hide")">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryMonth">
+                        Tháng:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryMonth", Model.groupOfMonths, new { @class = "select2" })
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryYear">
+                        Năm:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryYear", Model.groupOfYears, new { @class = "select2" })
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section--query-year col col-sm-12 @(Model.filterTimeByYear == true ? "" : "hide")">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryYearOnly">
+                        Năm:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryYearOnly", Model.groupOfYears, new { @class = "select2" })
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-sm-12 block--button-submit">
+            <center>
+                <button class="btn btn-primary" type="submit">
+                    <i class="fa fa-bar-chart"></i>&nbsp;Báo cáo
+                </button>
+            </center>
+        </div>
+    </fieldset>
+}
+
+<div id="block--report--@Model.reportType">
+
+</div>
+
+<script>
+    $(function(){
+        var form = $('#form--report--@Model.reportType');
+        form.find('#queryType').on('change', function(){
+            form.find('section').addClass('hide');
+            form.find('.input--time-filter-type').val($(this).val());
+
+            if($(this).val() == '@LOAI_BAOCAO_THOIGIAN_CONSTANT.NGAY'){
+                form.find('.section--query-day').removeClass('hide');
+            }
+            else if($(this).val() == '@LOAI_BAOCAO_THOIGIAN_CONSTANT.THANG'){
+                form.find('.section--query-month').removeClass('hide');
+            }
+            else{
+                form.find('.section--query-year').removeClass('hide');
+            }
+        })
+
+        form.on('submit', function(){
+            var errorCount = 0;
+            var formId = form.attr('id');
+
+            if(form.find('.input--time-filter-type').val() == '@LOAI_BAOCAO_THOIGIAN_CONSTANT.NGAY'){
+                var isValidRequiredField = requiredFieldForFormId(formId);
+                if (!isValidRequiredField) {
+                    return false;
+                }
+
+                var isValidDateField = validateDateField(formId);
+                if (!isValidDateField) {
+                    return false;
+                }
+
+                var isValidHTMLInjection = validateHTMLInjectionField(formId);
+                if (!isValidHTMLInjection) {
+                    return false;
+                }
+            }
+            return true;
+        })
+    });
+</script>
+

@@ -1,0 +1,699 @@
+﻿#div-docx span {
+    white-space: pre-wrap;
+}
+
+#div-docx p.pt-Normal {
+    margin-bottom: 6pt;
+    text-align: center;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#div-docx span.pt-DefaultParagraphFont {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    font-style: italic;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+#div-docx p.pt-Normal-000000 {
+    margin-bottom: 6pt;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#div-docx span.pt-DefaultParagraphFont-000001 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+#div-docx p.pt-Normal-000002 {
+    margin-bottom: 6pt;
+    text-align: center;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 15pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#div-docx span.pt-DefaultParagraphFont-000003 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 15pt;
+    font-style: normal;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+#div-docx table.pt-000004 {
+    border-collapse: collapse;
+    border: none;
+    width: 100%;
+    margin-bottom: .001pt;
+}
+
+#div-docx td.pt-000005 {
+    vertical-align: top;
+    width: 16.7%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx p.pt-Normal-000006 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: .001pt;
+}
+
+#div-docx span.pt-000007 {
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+#div-docx p.pt-Normal-000008 {
+    text-align: center;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: .001pt;
+}
+
+#div-docx td.pt-000009 {
+    vertical-align: top;
+    width: 83.3%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx p.pt-Normal-000010 {
+    margin-top: 6pt;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: .001pt;
+}
+
+#div-docx span.pt-DefaultParagraphFont-000011 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    text-indent: 0;
+    width: 5.101in;
+}
+
+#div-docx span.pt-DefaultParagraphFont-000012 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    text-indent: 0;
+    width: 6.197in;
+}
+
+#div-docx td.pt-000013 {
+    vertical-align: top;
+    width: 52.9%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx td.pt-000014 {
+    vertical-align: top;
+    width: 47.1%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx td.pt-000015 {
+    vertical-align: top;
+    width: 41.8%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx td.pt-000016 {
+    vertical-align: top;
+    width: 58.2%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx td.pt-000017 {
+    vertical-align: top;
+    width: 39.8%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx td.pt-000018 {
+    vertical-align: top;
+    width: 60.2%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#div-docx span.pt-DefaultParagraphFont-000019 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    text-indent: 0;
+    width: 4.474in;
+}
+
+#div-docx td.pt-000020 {
+    vertical-align: middle;
+    width: 19.0%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000021 {
+    vertical-align: middle;
+    width: 25.8%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000022 {
+    vertical-align: middle;
+    width: 22.3%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000023 {
+    vertical-align: middle;
+    width: 14.4%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000024 {
+    vertical-align: middle;
+    width: 18.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000025 {
+    vertical-align: top;
+    width: 19.0%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000026 {
+    vertical-align: top;
+    width: 25.8%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000027 {
+    vertical-align: top;
+    width: 22.3%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000028 {
+    vertical-align: top;
+    width: 14.4%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000029 {
+    vertical-align: top;
+    width: 18.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx p.pt-Normal-000030 {
+    margin-top: 6pt;
+    margin-bottom: 6pt;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#div-docx td.pt-000031 {
+    vertical-align: middle;
+    width: 25.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000032 {
+    vertical-align: middle;
+    width: 74.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000033 {
+    vertical-align: top;
+    width: 25.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000034 {
+    vertical-align: top;
+    width: 74.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000035 {
+    vertical-align: middle;
+    width: 11.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000036 {
+    vertical-align: middle;
+    width: 24.7%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000037 {
+    vertical-align: middle;
+    width: 12.4%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000038 {
+    vertical-align: middle;
+    width: 51.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000039 {
+    vertical-align: top;
+    width: 11.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000040 {
+    vertical-align: top;
+    width: 24.7%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000041 {
+    vertical-align: top;
+    width: 12.4%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000042 {
+    vertical-align: top;
+    width: 51.5%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000043 {
+    vertical-align: top;
+    width: 18.1%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+#div-docx td.pt-000044 {
+    vertical-align: top;
+    width: 8.4%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+td.pt-000045 {
+    vertical-align: top;
+    width: 9.1%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+td.pt-000046 {
+    vertical-align: top;
+    width: 7.8%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+td.pt-000047 {
+    vertical-align: top;
+    width: 8.6%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+td.pt-000048 {
+    vertical-align: top;
+    width: 8.1%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+td.pt-000049 {
+    vertical-align: top;
+    width: 10.0%;
+    border-top: solid windowtext 1.0pt;
+    padding-top: 0;
+    border-right: solid windowtext 1.0pt;
+    padding-right: 5.4pt;
+    border-bottom: solid windowtext 1.0pt;
+    padding-bottom: 0;
+    border-left: solid windowtext 1.0pt;
+    padding-left: 5.4pt;
+}
+
+p.pt-Normal-000050 {
+    margin-bottom: 6pt;
+    text-align: right;
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+td.pt-000051 {
+    vertical-align: top;
+    width: 36.2%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+span.pt-DefaultParagraphFont-000052 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 13pt;
+    font-style: normal;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+td.pt-000053 {
+    vertical-align: top;
+    width: 63.8%;
+    border-top: none;
+    border-right: none;
+    padding-right: 5.4pt;
+    border-bottom: none;
+    border-left: none;
+    padding-left: 5.4pt;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+p.pt-Normal-000054 {
+    font-family: 'Times New Roman', 'serif';
+    font-size: 14pt;
+    line-height: 108%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: .001pt;
+}
+
+span.pt-000055 {
+    font-size: 14pt;
+    font-style: normal;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}

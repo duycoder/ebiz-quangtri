@@ -1,0 +1,154 @@
+﻿@using Web.Areas.CoCauToChucArea.Models;
+@model CoCauToChucNguoiDungModel
+<h3>Danh sách nhân viên - @Model.Item.NAME</h3>
+<div style="margin:10px;" class="row">
+    <div class="col-sm-4">
+        <input class="form-control" id="search-box-nv" style="margin:5px;" placeholder="tìm kiếm" />
+    </div>
+    <div class="col-sm-8">
+        <button class="pull-right btn-flat btn btn-xs btn-primary" onclick="addNVPhongBan()">Thêm nhân viên</button>
+    </div>
+</div>
+<div class="col-sm-12">
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th>Tài khoản</th>
+                <th>Vai trò</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="ListNguoiDung">
+            @for (int i = 0; i < Model.ListNguoiDung.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@Model.ListNguoiDung[i].HOTEN</td>
+                    <td>@Model.ListNguoiDung[i].TENDANGNHAP</td>
+                    <td>@Model.ListNguoiDung[i].txtVaiTro</td>
+                    <td class="center">
+                        <a href='javascript:void(0)' onclick='DeleteAction(@Model.ListNguoiDung[i].ID)' title='Xóa'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>
+                        <a href='/DMNguoiDungArea/DMNguoiDung/phanquyen/@Model.ListNguoiDung[i].ID' title='Phân quyền'><i class='glyphicon glyphicon-cog'> </i></a>
+                        <a href='javascript:void(0)' onclick='chuyenNVPhongBan(@Model.ListNguoiDung[i].ID)' title='Chuyển phòng ban'><i class=' 	glyphicon glyphicon-refresh'> </i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="ADDUserModal" title="Thêm nhân viên" role="dialog" class="modal fade">
+
+</div>
+<div id="ChuyenPhongUserModal" title="Chuyển phòng ban nhân viên" role="dialog" class="modal fade">
+
+</div>
+<script>
+
+
+    function DeleteAction(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn muốn đối tượng này?',
+            'buttons': {
+                'Xóa': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '/CCTCThanhPhanArea/CCTCThanhPhan/xoaNgDungPhongBan',
+                            type: 'post',
+                            cache: false,
+                            data: {
+                                id: id
+                            },
+                            success: function (data) {
+                                NotiSuccess("Xóa thành công");
+                                reloadModel();
+                            },
+                            error: function (xhr) {
+                                NotiError("Xóa thất bại");
+                            }
+                        });
+                    }
+                },
+                'Không xóa': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+
+    }
+
+    function reloadModel()
+    {
+        UserModalOpen(@Model.Item.ID);
+    }
+    function addNVPhongBan() {
+        $.ajax({
+            url: '/CCTCTHANHPHANArea/CCTCTHANHPHAN/newUserModal/'+@Model.Item.ID,
+            type:'get',
+
+            success: function (rs) {
+                $("#ADDUserModal").html(rs);
+                $("#ADDUserModal").modal("show");
+
+            },
+            error:failureAjax
+        });
+    }
+
+    function chuyenNVPhongBan(id) {
+        $.ajax({
+            url: '/CCTCTHANHPHANArea/CCTCTHANHPHAN/ChuyenPhongBanModal/'+id,
+            type:'get',
+            success: function (rs) {
+                $("#ChuyenPhongUserModal").html(rs);
+                $("#ChuyenPhongUserModal").modal("show");
+
+            },
+            error:failureAjax
+        });
+    }
+    $("#search-box-nv").keypress(function (e) {
+        if(e.which ==13)
+        {
+            permissionLiveSearch($("#search-box-nv"));
+        }
+    })
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+
+    function permissionLiveSearch(event) {
+
+        var key = generate_slugable(event.val());
+
+        $("#ListNguoiDung tr").each(function () {
+            var $row = $(this);
+            var hoten = generate_slugable($row.find("td:eq(1)").text());
+            console.log(hoten);
+            var taikhoan = generate_slugable($row.find("td:eq(2)").text());
+            console.log(taikhoan);
+
+            if (hoten.toLowerCase().indexOf(key.toLowerCase()) > -1 || taikhoan.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $row.show();
+            }
+            else {
+                $row.hide();
+            }
+        });
+    }
+</script>

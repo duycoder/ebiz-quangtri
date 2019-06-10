@@ -1,0 +1,135 @@
+﻿@using Web.Areas.SVTHEArea.Models;
+@using Business.CommonModel.SVSUACHUABAOTRI;
+@model SV_SUACHUA_BAOTRI_BO
+
+<div class="modal-dialog">
+    @using (Ajax.BeginForm("ThucHienKeHoach", "FunctionState", new { @area = "WfStreamArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxFunc",
+    }, new { id = "captheform" }))
+    {
+        @Html.AntiForgeryToken()
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Bắt đầu thực hiện</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type='hidden' name='ID' value='@Model.ID' />
+                <div class="row well well-sm">
+                    <div style="color:#222f3e; font-weight:bold;">Thông tin kế hoạch</div>
+                    <div>
+                        <table class="width-100 tbl-noborder">
+                            <tr>
+                                <td class="tbl-label">Tiêu đề</td>
+                                <td class="tbl-content">@Model.TITLE</td>
+                            </tr>
+                            <tr>
+                                <td class="tbl-label">Nội dung</td>
+                                <td class="tbl-content">@Model.NOIDUNG</td>
+                            </tr>
+                            <tr>
+                                <td class="tbl-label">Dự kiến bắt đầu</td>
+                                <td class="tbl-content">@string.Format("{0:dd/MM/yyyy HH:mm}", Model.NGAYDK_BATDAU)</td>
+                            </tr>
+                            <tr>
+                                <td class="tbl-label">Dự kiến kết thúc</td>
+                                <td class="tbl-content">@string.Format("{0:dd/MM/yyyy HH:mm}", Model.NGAYDK_KETTHUC)</td>
+                            </tr>
+                            <tr>
+                                <td class="tbl-label">Phạm vị</td>
+                                <td class="tbl-content">@Model.PHAMVI</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row well well-sm">
+                    <div style="color:#222f3e; font-weight:bold;">Bắt đầu</div>
+                    <div class="form-horizontal" style="margin-top:10px;">
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Ngày bắt đầu<span class="red">*</span></label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control txt-picker" value="@string.Format("{0:dd/MM/yyyy}",Model.NGAYBATDAU)" name="NGAYBATDAU">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                            <label class="control-label col-sm-1">
+                                Giờ
+                            </label>
+                            <div class="col-sm-3">
+                                <input type="time" class="form-control required " name="NGAYBATDAU_TIME" value="@string.Format("{0:HH:mm}", Model.NGAYBATDAU)">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-horizontal">
+
+
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function successAjaxFunc(rs) {
+        if (rs.Status) {
+            $("#modal_Function").modal("hide");
+            $("#modal_Function").empty();
+            NotiSuccess("Kế hoạch đã bắt đầu");
+            setTimeout(function () {
+                location.reload();
+            }, 1000);
+
+        } else {
+
+            NotiError(rs.Message);
+        }
+    }
+
+    function checkSubmid() {
+        var err = checkForm('captheform');
+        if (err) {
+            $("#captheform").submit();
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                $(".dropdown").select2({
+                    minimumResultsForSearch: Infinity
+                });
+                $(".txt-picker").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    changeMonth: true,
+                    changeYear: true, yearRange: "-50:+20",
+                    showWeek: false, weekHeader: "Tuần",
+                    language: 'vi',
+                    prevText: '<i class="fa fa-chevron-left"></i>',
+                    nextText: '<i class="fa fa-chevron-right"></i>',
+                    onSelect: function (date) {
+
+                    }
+                });
+            });
+        });
+    })
+
+</script>

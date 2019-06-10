@@ -1,0 +1,159 @@
+﻿@using Web.Areas.QL_XEArea.Models;
+@model XeBenhVienEditViewModel
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<form id="form--edit-xe-benhvien" enctype="multipart/form-data" method="post" action="@Url.Action("Save")">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ID" value="@Model.xeEntity.ID" />
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    @(Model.xeEntity.ID > 0 ? "CẬP NHẬT XE TỈNH ỦY" : "THÊM MỚI XE TỈNH ỦY")
+                </h5>
+            </div>
+            <div class="modal-body">
+                <fieldset>
+                    <div class="row">
+                        <section class="col col-lg-12">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="TENXE">
+                                        Tên xe:&nbsp;<span class="text-danger">(*)</span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control required checkHTMLInjection" name="TENXE" id="TENXE" value="@Model.xeEntity.TENXE" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="BIENSO">
+                                        Biển số:&nbsp;<span class="text-danger">(*)</span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control required checkHTMLInjection" name="BIENSO" id="BIENSO" value="@Model.xeEntity.BIENSO" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row form-group" style="margin-bottom:0">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="SOCHO">
+                                        Số chỗ:&nbsp;<span class="text-danger">(*)</span>
+                                    </label>
+                                </div>
+
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control required checkHTMLInjection checkIsNumeric" name="SOCHO" id="SOCHO" value="@Model.xeEntity.SOCHO" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error" id="SOCHO_ERROR"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="GHICHU">
+                                        Ghi chú:
+                                    </label>
+                                </div>
+
+                                <div class="col-sm-9">
+                                    <textarea class="form-control checkHTMLInjection" name="GHICHU" id="GHICHU">@Model.xeEntity.GHICHU</textarea>
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="GHICHU">
+                                        Ảnh:
+                                    </label>
+                                </div>
+
+                                <div class="col-sm-9">
+                                    @if (Model.xeEntity.ID > 0)
+                                    {
+                                        <image src="\Uploads\@Model.xeEntity.IMAGE_PATH" alt="@Model.xeEntity.TENXE" style="width:100%; height:100px;border:1px solid #3276b1;margin:10px 0" />
+                                    }
+                                    <input type="file" name="filebase" accept="image/*" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error text-info">
+                                            Định dạng .png,.gif,.jpeg,.jpg
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn--save">Lưu thông tin</button>
+                <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(function(){
+        loadScript("/Content/select/js/bootstrap-select.js", function () {
+            $(".selectpicker1").selectpicker();
+        })
+
+        $('#btn--save').on('click',function(){
+            var formName = 'form--edit-xe-benhvien';
+            var isValid = onSubmit(formName);
+            if(isValid){
+               $('#'+formName).submit();
+            }
+            return false;
+        });
+    })
+
+    function onSubmit(formName) {
+        var errorCount = 0;
+
+        var isValidSelectField = RequireDropDownlist(formName);
+        var isValidRequiredField = requiredFieldForFormId(formName);
+        var isValidHTMLInjection = validateHTMLInjectionField(formName);
+        var isValidNumeric = validateNumberField(formName);
+        if(!isValidSelectField || !isValidRequiredField || !isValidHTMLInjection || !isValidNumeric){
+            return false;
+        }
+        var totalSeat = parseInt($('#SOCHO').val());
+        if(totalSeat <= 0){
+            $('#SOCHO_ERROR').text('Số chỗ ít nhất là 2');
+            $('#SOCHO_ERROR').css('display', 'inline');
+            return false;
+        }
+        return true;
+    }
+
+    function editXeBenhVienSuccess(rs){
+        if(rs.Status){
+            $('#modal--edit-xe-benhvien').modal('hide');
+            $('#modal--edit-xe-benhvien').empty();
+            NotiSuccess(rs.Message);
+            setTimeout(function(){
+                reloadData();
+            }, 1000);
+        }else{
+            NotiError(rs.Message);
+        }
+    }
+
+    function editXeBenhVienFailure(rs){
+         NotiError(@(Model.xeEntity.ID) > 0 ? "Cập nhật xe thất bại" : "Thêm mới xe thất bại");
+    }
+</script>

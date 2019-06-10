@@ -1,0 +1,194 @@
+﻿@model Web.Areas.HSCV_VANBANPHATHANHArea.Models.HscvVanBanPhatHanhModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("searchData", "HSCV_VANBANPHATHANH",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure1",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Số/Ký hiệu:</div>
+                    <div class="col-md-4">
+                        <input name="SOHIEU" class="form-control" />
+                    </div>
+                    <div class="col-md-2 txt-label">Trích yếu:</div>
+                    <div class="col-md-4">
+                        <input name="TRICHYEU" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Loại văn bản:</div>
+                    <div class="col-md-4">
+                        <select name="LOAIVANBAN_ID" class="select2">
+                            <option value="">Lựa chọn</option>
+                            @{
+                                foreach (var item in Model.ListLoaiVanBan)
+                                {
+                                    <option value="@item.ID">@item.TEXT</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 txt-label">Lĩnh vực:</div>
+                    <div class="col-md-4">
+                        <select name="LINHVUCVANBAN_ID" class="select2">
+                            <option value="">Lựa chọn</option>
+                            @{
+                                foreach (var item in Model.ListLinhVucVanBan)
+                                {
+                                    <option value="@item.ID">@item.TEXT</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Độ khẩn:</div>
+                    <div class="col-md-4">
+                        <select name="DOKHAN_ID" class="select2">
+                            <option value="">Lựa chọn</option>
+                            @{
+                                foreach (var item in Model.ListDoKhan)
+                                {
+                                    <option value="@item.ID">@item.TEXT</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 txt-label">Độ ưu tiên:</div>
+                    <div class="col-md-4">
+                        <select name="DOMAT_ID" class="select2">
+                            <option value="">Lựa chọn</option>
+                            @{
+                                foreach (var item in Model.ListDoUuTien)
+                                {
+                                    <option value="@item.ID">@item.TEXT</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    @*<div class="col-md-2 txt-label">Văn bản trình ký:</div>
+                        <div class="col-md-4">
+                            <select name="VANBANDI_ID" class="select2">
+                                <option value="">Lựa chọn</option>
+                                @{
+                                    foreach (var item in Model.ListVanBan)
+                                    {
+                                        <option value="@item.ID">@item.TRICHYEU</option>
+                                    }
+                                }
+                            </select>
+                        </div>*@
+                    <div class="col-md-2 txt-label">Người ký:</div>
+                    <div class="col-md-4">
+                        <input name="NGUOIKY" class="form-control" />
+                    </div>
+                    <div class="col-md-2 txt-label">Ngày ban hành:</div>
+                    <div class="col-md-4 form-group">
+                        <div class="input-group">
+                            <input type="text" name="BANHANH_TU" class="form-control" id="NGAYBATDAU_FROM" />
+                            <span class="input-group-addon">Đến</span>
+                            <input type="text" name="BANHANH_DEN" class="form-control" id="NGAYBATDAU_TO" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+                <input type="hidden" name="DONVI_ID" id="DONVI_ID" />
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function failure1(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-vanbanden").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $("#collapseDiv .select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+    $("#NGAYBATDAU_FROM").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYBATDAU_TO").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#NGAYBATDAU_TO").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYBATDAU_FROM").datepicker('option', 'maxDate', date);
+        }
+    });
+</script>
+<style>
+    .select2 {
+        width: 100%;
+    }
+</style>

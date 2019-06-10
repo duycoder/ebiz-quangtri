@@ -1,0 +1,177 @@
+﻿@using Model.Entities;
+@using Newtonsoft.Json;
+@using Web.Areas.CCTCTHANHPHANArea.Models;
+@model NewNguoiDungVM
+@{
+    var lstDatauser = Html.Raw(JsonConvert.SerializeObject(Model.lstNguoiDung.ListItem));
+
+}
+<div class="modal-dialog" style="width:1000px;">
+
+    <!-- Modal content-->
+    <div class="modal-content" id="form-createChucNang">
+
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 style="font-weight: bold; text-transform: uppercase;" class="modal-title" id="myModalLabel">Thêm nhân viên - @Model.PhongBan.NAME<span id="detail" style="color: yellow; text-transform: none"></span></h4>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                 @Html.Partial("SearchPartialND")
+                 </div>
+            <div class="row">
+                <div class=" col-sm-12 custom-scroll" style=" max-height:300px; overflow-x:hidden;overflow-y:scroll;">
+                    <div id="tbl-nguoidung" class="hntbl-cover" style="padding:10px;">
+                        <table class="hinet-table table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Họ tên</th>
+                                    <th>Điện thoại</th>
+                                    <th>EMAIL</th>
+                                    <th>Ngày sinh</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newusercontentid"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer center">
+
+            <button type="button" class="btn btn-primary" style="border-radius: 3px;" onclick="saveUserPhongBan()" >Thêm</button>
+
+            <button type="button" class="btn btn-default" style="border-radius: 3px;" data-dismiss="modal">Đóng</button>
+        </div>
+
+
+
+    </div>
+
+</div>
+<script>
+
+    function saveUserPhongBan() {
+    
+        var listUser=[];
+        $("#newusercontentid input:checkbox:checked").each(function () {
+            listUser.push(parseInt($(this).attr("data-id")));
+        });
+        if(listUser.length>0)
+        {
+            $.ajax({
+                url: '/cctcthanhphanarea/cctcthanhphan/saveUserPhongBan',
+                type: 'post',
+                cache: false,
+                dataType:'json',
+                contentType:'application/json',
+                data:JSON.stringify({"lstUser":listUser,"idphongban":@Model.PhongBan.ID}),
+                success: function (data) {
+                    if(data.Status){
+                        NotiSuccess("Thêm mới nhân viên thành công");
+                        $("#ADDUserModal").modal("hide");
+                        reloadModel();
+                    }
+                },
+                error: failureAjax
+                
+            });
+        }else
+        {
+            NotiError("Vui lòng chọn nhân viên muốn thêm");
+        }
+    }
+
+    var userJsonData= eval(@lstDatauser);
+    function loadcomplete() {
+
+        var userconf = [
+           {
+               tdClass: "center",
+               isSort: false,
+               nameModel: "",
+               content: function (data) {
+                   return "<input type='checkbox' data-id='"+data.ID+"'/>"
+               }
+           },
+            {
+                isSort: true,
+                nameModel: "TENDANGNHAP",
+                content: function (data) {
+                    return data.TENDANGNHAP
+                }
+            },
+             {
+                 isSort: true,
+                 nameModel: "HOTEN",
+                 content: function (data) {
+                     return data.HOTEN
+                 }
+             },
+
+               {
+                   isSort: true,
+                   nameModel: "DIENTHOAI",
+                   content: function (data) {
+                       return data.DIENTHOAI
+                   }
+               },
+              {
+                  isSort: true,
+                  nameModel: "EMAIL",
+                  content: function (data) {
+                      return data.EMAIL
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "NGAYSINH",
+                  content: function (data) {
+
+                      return ToDate(data.NGAYSINH)
+                  }
+              }];
+
+        var usergetdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '/cctcthanhphanarea/cctcthanhphan/getDataND',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-nguoidung").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+
+        }
+
+        var tblData=$("#tbl-nguoidung").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.lstNguoiDung.TotalPage,
+            recordCount: @Model.lstNguoiDung.Count,
+            getData:usergetdatafunc,
+            listItem:userJsonData,
+            config:userconf
+        });
+
+    };
+
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js",function () {
+            loadScript("/Scripts/jquery-hinet-table.js",loadcomplete);
+        });
+
+    });
+
+</script>

@@ -1,0 +1,227 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@model DetailVM
+@{
+    var room = Model.roomEntity;
+}
+
+<style type="text/css">
+    #dialog--book--detail {
+        width: 50%;
+    }
+    #dialog--book--detail .modal-body {
+        font-size: 13px;
+    }
+
+        #dialog--book--detail .form-group {
+            border-bottom: 1px solid #ddd;
+            padding: 5px 0;
+        }
+
+        #dialog--book--detail .title-detail,
+        #dialog--book--detail .modal-body .col-sm-12 {
+            padding: 0;
+        }
+
+        #dialog--book--detail .form-group:last-child,
+        #dialog--book--detail .form-group:last-child {
+            border-bottom: none;
+        }
+
+        #dialog--book--detail .modal-body .content-detail {
+            color: #000;
+        }
+    #dialog--book--detail .time-data,
+    #dialog--book--detail .leader-data {
+        font-size: 15px;
+        font-weight: bold;
+        color: #B50101;
+    }
+
+    #dialog--book--detail .room-data {
+        font-size: 15px;
+        font-weight: bold;
+        color: #118ACB;
+    }
+
+    #dialog--book--detail .span--important--book {
+        width: 100%;
+        height: 20px;
+        line-height: 20px;
+        background: #b50101;
+        color: white;
+        position: relative;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+        #dialog--book--detail .span--important--book:before {
+            content: '';
+            border: 10px solid #b50101;
+            border-left-color: white;
+            border-left-width: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #dialog--book--detail .span--important--book:after {
+            content: '';
+            border: 10px solid #b50101;
+            border-right-color: white;
+            border-right-width: 10px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+    .select2 {
+        width: 100% !important;
+    }
+</style>
+
+<div class="modal-dialog" role="document" id="dialog--book--detail">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">THÔNG TIN LỊCH ĐẶT PHÒNG</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" value="@room.ID" name="ID" />
+
+                    @if (room.PHONG_ID > 0 && string.IsNullOrEmpty(room.TENPHONG) == false)
+                    {
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Tên phòng:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="room-data">@room.TENPHONG</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-3 pd0 title-detail">
+                                <span>
+                                    <strong>Mục đích:</strong>
+                                </span>
+                            </div>
+                            <div class="col-sm-9 pdr-0 content-detail">
+                                <span class="tenphong">@room.MUCDICH</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-3 pd0 title-detail">
+                                <span>
+                                    <strong>Thành phần tham dự:</strong>
+                                </span>
+                            </div>
+                            <div class="col-sm-9 pdr-0 content-detail">
+                                <span class="tenphong">@room.THANHPHANTHAMDU</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-3 pd0 title-detail">
+                                <span>
+                                    <strong>Ngày họp:</strong>
+                                </span>
+                            </div>
+                            <div class="col-sm-9 pdr-0 content-detail">
+                                <span class="time-data">
+                                    @string.Format("{0:dd/MM/yyyy}", room.NGAYDAT)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-3 pd0 title-detail">
+                                <span>
+                                    <strong>Thời gian từ:</strong>
+                                </span>
+                            </div>
+                            <div class="col-sm-9 pdr-0 content-detail">
+                                <span class="time-data">
+                                    @(string.Format("{0}h{1}", Model.roomEntity.GIOBATDAU.GetValueOrDefault().ToString("D2"), Model.roomEntity.PHUTBATDAU.GetValueOrDefault().ToString("D2")) + " - " + string.Format("{0}h{1}", Model.roomEntity.GIOKETTHUC.GetValueOrDefault().ToString("D2"), Model.roomEntity.PHUTKETTHUC.GetValueOrDefault().ToString("D2")))
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    @if (string.IsNullOrEmpty(room.TEN_LANHDAO) == false)
+                    {
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Lãnh đạo:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-5 pdr-0 content-detail">
+                                    <span class="leader-data">
+                                        @room.TEN_LANHDAO
+                                    </span>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <div class="span--important--book">
+                                        Lịch quan trọng&nbsp;<i class="fa fa-exclamation-circle icon--important--book"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-3 pd0 title-detail">
+                                <span>
+                                    <strong>Người đặt lịch:</strong>
+                                </span>
+                            </div>
+                            <div class="col-sm-9 pdr-0 content-detail">
+                                <span class="tenphong">
+                                    @room.TEN_NGUOITAO
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-3 pd0 title-detail">
+                                <span>
+                                    <strong>Ngày đặt lịch:</strong>
+                                </span>
+                            </div>
+                            <div class="col-sm-9 pdr-0 content-detail">
+                                <span class="tenphong">
+                                    @Html.Raw("<b>" + string.Format("{0:dd/MM/yyyy}", room.CREATED_AT) + "</b>" + "&nbsp;lúc&nbsp;<b>" + string.Format("{0:HH:mm:ss}", room.CREATED_AT) + "</b>")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

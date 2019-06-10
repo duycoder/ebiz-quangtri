@@ -1,0 +1,133 @@
+﻿@using Newtonsoft.Json;
+
+@model Web.Models.ChonNguoiDungModel
+@{
+    var jsonTree = Html.Raw(JsonConvert.SerializeObject(Model.TreeDonVi));
+}
+<style>
+    .Selected {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    #rootNodeV2_@Model.INDEX span {
+        cursor: pointer;
+    }
+</style>
+@if (Model.TreeDonVi.Child != null && Model.TreeDonVi.Child.Count > 0)
+{
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Danh sách đơn vị
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div style=" margin:7px;">
+                <input type="text" placeholder="Tên đơn vị" class="form-control" onkeyup="DonViSearchV2($(this))" />
+            </div>
+            <div class="tree smart-form" style="height:430px;overflow:auto">
+                <ul id="rootNodeV2_@Model.INDEX"></ul>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    var isCheckbox = parseInt('@Model.IS_MULTICHOICE') == 1 ? "checkbox" : "radio";
+    var isSearch = false;
+    var data = eval(@jsonTree);
+    function initDataTree() {
+        IDDonVi = data.ID;
+        $("ul#rootNodeV2_@Model.INDEX span.itemData.Selected").removeClass("Selected");
+        var inputSelector = $("ul#rootNodeV2_@Model.INDEX span.itemData input[value=" + IDDonVi + "]");
+        inputSelector.parent().addClass("Selected");
+    }
+
+    function getChild(item) {
+        var str = "";
+        str += "<li>";
+        if (item.Child != null && item.Child.length > 0) {
+            str += '<span class="itemData">' +
+               '<i ></i><b data-id="' + item.ID + '" class="input-Name">' + item.NAME + "</b></span>";
+            str += "<ul>";
+            for (var i = 0; i < item.Child.length; i++) {
+                str += getChild(item.Child[i]);
+            }
+            str += "</ul>";
+        } else {
+            str += '<span class="itemData"><i ></i><b data-id="' + item.ID + '" class="input-Name">' + item.NAME + "</b></span>";
+        }
+        str += "</li>";
+
+        return str;
+    }
+    if (data.Child != null && data.Child.length > 0) {
+        var treeData = getChild(data);
+        $("#rootNodeV2_@Model.INDEX").html(treeData);
+    }
+    function pageFunction() {
+        $("ul#rootNodeV2_@Model.INDEX span.itemData").click(function () {
+            $("ul#rootNodeV2_@Model.INDEX span.itemData.Selected").removeClass("Selected");
+            $(this).addClass("Selected");
+            var id = $("ul#rootNodeV2_@Model.INDEX span.itemData.Selected .input-Name").attr("data-id");
+            var ids = "";
+            var selected = $("#LISTSELECTED_@(Model.INDEX)").val().split(',');
+            $("#nhan_su_dialog_" + '@Model.INDEX' + " .checkbox_chon_nguoi_dung").each(function () {
+                if (this.checked && selected.indexOf($(this).val()) < 0) {
+                        ids += $(this).val() + ",";
+                        selected.push($(this).val());
+                } else if (!this.checked && selected.indexOf($(this).val()) > 0) {
+                    selected = $.grep(selected, function (value) {
+                        return value != $(this).val();
+                    });
+                }
+            });
+
+            $("#LISTSELECTED_@(Model.INDEX)").val(selected + "");
+            $.ajax({
+                url: '@Url.Action("GetDSByPhongBan")',
+                type: 'post',
+                data: { "id": id, EXCEPT_DEPT: '@Model.EXCEPT_DEPT',ROLE:'@Model.ROLE' },
+                success: function (rs) {
+                    LoadDataTable(rs.ListItem);
+                    IDDonVi = id;
+                }, error: function (err) {
+                    console.log(err.responseText);
+                }
+            });
+        });
+        initDataTree();
+    }
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+    var isSearch = false;
+    function DonViSearchV2(event) {
+        var key = generate_slugable(event.val());
+        if (key != "") {
+            isSearch = true;
+        } else {
+            isSearch = false;
+        }
+        $(".tree b.input-Name").each(function () {
+            var $row = $(this);
+            var name = generate_slugable($row.html());
+            if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                $row.parents("li").show()
+            }
+            else {
+                $row.parent().parent().hide();
+            }
+        });
+    }
+    pageFunction();
+</script>

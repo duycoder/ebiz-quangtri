@@ -1,0 +1,1881 @@
+﻿@using Business.CommonModel.CONSTANT
+@using Web.Models
+@using Model.Entities
+@model Web.Areas.CongViecArea.Models.CongViecModal
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    TimeSpan t_span = DateTime.Now.Subtract(Model.CongViec.NGAYHOANTHANH_THEOMONGMUON.Value);
+    var songayquahan = (int)t_span.TotalDays;
+    var idx_trinhduyet = 1;
+    var TotalSendPlan = Model.LstKeHoachCongViec != null ? Model.LstKeHoachCongViec.Count() : 0;
+    var tudanhgia = new SelectListItem();
+    var DateToFinishJob = DateTime.Now;
+    if (Model.CongViec.NGAYHOANTHANH_THEOMONGMUON != null)
+    {
+        DateToFinishJob = Model.CongViec.NGAYHOANTHANH_THEOMONGMUON.Value;
+    }
+    if (Model.CongViec.NGAYKETTHUC_KEHOACH != null)
+    {
+        DateToFinishJob = Model.CongViec.NGAYKETTHUC_KEHOACH.Value;
+    }
+}
+<style>
+    ul li {
+        list-style: none;
+    }
+
+    .btn-success {
+        margin-right: 15px;
+    }
+</style>
+<link href="~/Content/Custom/countdown/assets/countdown/jquery.countdown.css" rel="stylesheet" />
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("Create")">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        @if (Model.IsNguoiThucHienChinh)
+        {
+            <a class="btn btn-default pull-right" href="/QuanLyCongViec/QuanLyCongViec/ImportCongViecCon?taskId=@Model.CongViec.ID">
+                <i class="fa fa-file-excel"></i> <span>Import công việc con</span>
+            </a>
+        }
+    </div>
+</div>
+
+<div role="content">
+    <!-- widget edit box -->
+    <div class="jarviswidget-editbox">
+        <!-- This area used as dropdown edit box -->
+
+    </div>
+    <!-- end widget edit box -->
+    <!-- widget content -->
+    <div class="widget-body col-sm-8" style="background-color: #fff !important;">
+        <div class="row" style="margin-left: 0px;padding-bottom: 10px">
+            <h2 style="padding-left: 10px">
+                @Model.CongViec.TENCONGVIEC
+            </h2>
+
+            <ul id="myTab1" class="nav nav-tabs bordered" style="margin-right: 15px">
+                <li class="active">
+                    <a href="#s1" data-toggle="tab" aria-expanded="true"><i class="fa fa-fw fa-lg fa-bar-chart-o"></i>Mô tả</a>
+                </li>
+                <li class="">
+                    <a href="#s2" data-toggle="tab" aria-expanded="false"><i class="fa fa-fw fa-lg fa-gear"></i> Công việc</a>
+                </li>
+                @if (true == Model.CongViec.IS_HASPLAN)
+                {
+                    <li class="">
+                        <a href="#planjob" data-toggle="tab" aria-expanded="false"><i class="fa fa-fw fa-lg fa-link"></i>Kế hoạch thực hiện</a>
+                    </li>
+                }
+                <li style="float: right; padding-top: 3px;">
+                    <span>
+                        @if (true == Model.CongViec.IS_BATDAU)
+                        {
+                            // Nếu công việc đã bắt đầu
+                            if (((true != Model.CongViec.DAGIAOVIEC && Model.IsNguoiGiaoViec && Model.CongViec.IS_SUBTASK != true) || Model.IsNguoiThucHienChinh) && (Model.CongViec.PHANTRAMHOANTHANH == null || Model.CongViec.PHANTRAMHOANTHANH < 100))
+                            {
+                                <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:createSubTask()">Tạo công việc con</a>
+                            }
+                            if (Model.HasRoleAssignTask && (Model.CongViec.PHANTRAMHOANTHANH == 0 || Model.CongViec.PHANTRAMHOANTHANH == null) && Model.CongViec.DAGIAOVIEC != true)
+                            {
+                                <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:assignTask(@Model.CongViec.ID, 0)">Giao việc</a>
+                            }
+                            if (Model.HasRoleAssignTask)
+                            {
+                                if (Model.CongViec.NGUOIXULYCHINH_ID != Model.CongViec.NGUOIGIAOVIEC_ID)
+                                {
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:showAllSubTask(@Model.CongViec.ID)">Theo dõi</a>
+                                }
+
+                            }
+                            if (Model.CongViec.NGUOIGIAOVIECDAPHANHOI == true)
+                            {
+                                if (Model.IsNguoiGiaoViec && Model.CongViec.PHANTRAMHOANTHANH == 100 && Model.CongViec.DATUDANHGIA == true && Model.CongViec.NGUOIGIAOVIECDANHGIA != true)
+                                {
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" data-toggle="modal" data-target="#DiemDuyetDanhGiaCongViec" href="javascript:void(0)">Đánh giá công việc</a>
+                                }
+                                if (Model.IsNguoiThucHienChinh && Model.CongViec.PHANTRAMHOANTHANH == 100 && Model.CongViec.DATUDANHGIA != true)
+                                {
+                                    @*<a class="btn btn-default" style="float: right; margin-right: 5px" data-toggle="modal" data-target="#TuDanhGiaCongViec" href="javascript:void(0)">Đánh giá công việc</a>*@
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:TuDanhGiaCongViec(0)">Đánh giá công việc</a>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Nếu công việc chưa bắt đầu
+                            if (Model.CongViec.NGUOIXULYCHINH_ID == null)
+                            {
+                                // Truong hop chua co nguoi xu ly la cong viec chua duoc giao
+                                // Chưa được giao thì ko cần lập kế hoạch, tránh vừa đánh trống vừa thôi kèn
+                                // Chỉ yêu cầu lập kế hoạch khi mà người xử lý chính và người giao việc khác nhau
+                                if (Model.HasRoleAssignTask && (Model.CongViec.PHANTRAMHOANTHANH == 0 || Model.CongViec.PHANTRAMHOANTHANH == null) && Model.CongViec.DAGIAOVIEC != true)
+                                {
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:assignTask(@Model.CongViec.ID, 0)">Giao việc</a>
+                                    //Bắt đầu xử lý
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:beginProcess(@Model.CongViec.ID)">Bắt đầu xử lý</a>
+                                }
+                            }
+                            else if (Model.IsNguoiGiaoViec)
+                            {
+                                <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:showAllSubTask(@Model.CongViec.ID)">Theo dõi</a>
+                                if (true == Model.CongViec.IS_HASPLAN && Model.TrangThaiKeHoach == PLANJOB_CONSTANT.DATRINHKEHOACH)
+                                {
+
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" data-toggle="modal" data-target="#DUYETKEHOACHCONGVIEC" href="javascript:void(0)">Duyệt kế hoạch</a>
+                                }
+                            }
+                            else
+                            {
+                                if (true == Model.CongViec.IS_HASPLAN)
+                                {
+                                    <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:createSubTask()">Tạo công việc con</a>
+                                    // Nếu công việc yêu cầu lập kế hoạch trước khi bắt đầu thực hiện
+                                    if (Model.TrangThaiKeHoach == PLANJOB_CONSTANT.CHUATRINHKEHOACH)
+                                    {
+                                        // nếu chưa trình kế hoạch và là người xử lý chính thì
+                                        if (Model.IsNguoiThucHienChinh)
+                                        {
+                                            <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:trinhKeHoach(@Model.CongViec.ID)">Trình kế hoạch</a>
+                                        }
+                                    }
+                                    else if (Model.TrangThaiKeHoach == PLANJOB_CONSTANT.CHUALAPKEHOACH || Model.TrangThaiKeHoach == PLANJOB_CONSTANT.LAPLAIKEHOACH)
+                                    {
+                                        // chưa lập kế hoạch hoặc phải lập lại
+                                        <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:showFormLapKeHoach()">Lập kế hoạch</a>
+                                    }
+                                    else if (Model.TrangThaiKeHoach == PLANJOB_CONSTANT.DAPHEDUYETKEHOACH)
+                                    {
+                                        if (Model.IsNguoiThucHienChinh)
+                                        {
+                                            <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:beginProcess(@Model.CongViec.ID)">Bắt đầu xử lý</a>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.IsNguoiThucHienChinh)
+                                    {
+                                        //Bắt đầu xử lý
+                                        <a class="btn btn-default" style="float: right; margin-right: 5px" href="javascript:beginProcess(@Model.CongViec.ID)">Bắt đầu xử lý</a>
+                                    }
+
+                                }
+                            }
+                        }
+                    </span>
+                </li>
+            </ul>
+
+            <div id="myTabContent1" class="tab-content padding-10" style="margin-right: 15px">
+                <div class="tab-pane fade active in" id="s1">
+                    <p>Tên công việc: <b>@Model.CongViec.TENCONGVIEC</b></p>
+                    <p>Ngày hoàn thành theo mong muốn: <b>@string.Format("{0:dd/MM/yyyy}", Model.CongViec.NGAYHOANTHANH_THEOMONGMUON)</b></p>
+                    <p>Ngày hoàn thành theo kế hoạch: <b>@(Model.CongViec.NGAYKETTHUC_KEHOACH != null ? string.Format("{0:dd/MM/yyyy}", Model.CongViec.NGAYKETTHUC_KEHOACH) : "Chưa lập kế hoạch")</b></p>
+                    <input type="hidden" id="HIDDEN_NGAYKETTHUC" value="@string.Format("{0:dd/MM/yyyy}", Model.CongViec.NGAYHOANTHANH_THEOMONGMUON)" />
+                    <p>Độ ưu tiên: <b>@Model.DOUUTIEN</b></p>
+                    <p>Độ khẩn: <b>@Model.DOKHAN</b></p>
+                    <p>Yêu cầu lập kế hoạch: <b>@(true == Model.CongViec.IS_HASPLAN ? "Có yêu cầu lập kế hoạch" : "Không yêu cầu lập kế hoạch")</b></p>
+                    <p>Trạng thái: <b>@(Model.CongViec.PHANTRAMHOANTHANH < 100 ? "Đang thực hiện" : "Đã hoàn thành")</b></p>
+                    <p><b>Nội dung công việc: </b></p>
+                    <p>
+                        @Html.Raw(Model.CongViec.NOIDUNGCONGVIEC)
+                    </p>
+                    <div>
+                        @{Html.RenderPartial("../Common/UploadFile", Model.ListTaiLieuDinhKem, new ViewDataDictionary { { "detail", 1 }, { "id", "rootUploadJob" }, { "allowviewpdf", 0 } });}
+                    </div>
+                    <div>
+                        @if (Model.VanBanDenLienQuan != null)
+                        {
+                            <div class="jarviswidget" style="padding: 0px;border: none">
+                                <header role="heading">
+                                    <span class="widget-icon"><i class="fa fa-paperclip txt-color-red"></i></span>
+                                    <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+                                        Văn bản đến liên quan
+                                    </h2>
+                                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                                </header>
+
+                                <table class="hinet-table table table-bordered table-hover" width="100%" style="margin-bottom: 0px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Số hiệu</th>
+                                            <th>Trích yếu</th>
+                                            <th>Người ký</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen?id=@Model.VanBanDenLienQuan.ID" target="_blank">
+                                                    @Model.VanBanDenLienQuan.SOHIEU
+                                                </a>
+                                            </td>
+                                            <td>@Model.VanBanDenLienQuan.TRICHYEU</td>
+                                            <td>
+                                                @Model.VanBanDenLienQuan.NGUOIKY
+                                                <br />
+                                                <i>@Model.VanBanDenLienQuan.CHUCVU</i>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        @if (Model.VanBanDiLienQuan != null)
+                        {
+                            <div class="jarviswidget" style="padding: 0px;border: none">
+                                <header role="heading">
+                                    <span class="widget-icon"><i class="fa fa-paperclip txt-color-red"></i></span>
+                                    <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+                                        Văn bản đi liên quan
+                                    </h2>
+                                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                                </header>
+                                <table class="hinet-table table table-bordered table-hover" width="100%" style="margin-bottom: 0px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Trích yếu</th>
+                                            <th>Độ khẩn</th>
+                                            <th>Độ ưu tiên</th>
+                                            <th>Người ký</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a href="/HSVanBanDiArea/HSVanBanDi/DetailVanBan/@Model.VanBanDiLienQuan.ID" target="_blank">
+                                                    @Model.VanBanDiLienQuan.TRICHYEU
+                                                </a>
+                                            </td>
+                                            <td>@Model.VanBanDiLienQuan.TEN_DOKHAN</td>
+                                            <td>
+                                                @Model.VanBanDiLienQuan.TEN_DOUUTIEN
+                                            </td>
+                                            <th>
+                                                @Model.VanBanDiLienQuan.TEN_NGUOIKY
+                                                <br />
+                                                <i>@Model.VanBanDiLienQuan.CHUCVU</i>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.PhieuDanhGia != null)
+                    {
+                        <div style="margin-top: 10px">
+                            <label><strong>Ngày đánh giá: @string.Format("{0:dd/MM/yyyy}", Model.PhieuDanhGia.NGAYDANHGIA)</strong></label>
+                            <br />
+                            <label><strong>Người tự đánh giá: @Model.NGUOIXULYCHINH</strong></label>
+                            <br />
+                            <label><strong>Ngày duyệt đánh giá: @string.Format("{0:dd/MM/yyyy}", Model.PhieuDanhGia.NGAYDUYET)</strong></label>
+                            <br />
+                            <label><strong>Người duyệt: @Model.NGUOIGIAOVIEC</strong></label>
+                            <br />
+                            <label><strong>Xếp loại: <label style="color:red; font-weight:bolder">@Model.PhieuDanhGia.XEPLOAI</label> </strong></label>
+                            @if (Model.PhieuDanhGia.TDG_XEPLOAI_ID != null)
+                            {
+                                tudanhgia = Model.LstDanhGiaCongViec.Where(x => x.Value == Model.PhieuDanhGia.TDG_XEPLOAI_ID.ToString()).FirstOrDefault();
+                            <br />
+                            <label style="color:red">
+                                <strong>Kết quả tự đánh giá công việc: @tudanhgia.Text</strong>
+                            </label>
+                            }
+                            else
+                            {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>TT</th>
+                                        <th>Hạng mục đánh giá</th>
+                                        <th>Điểm tự đánh giá</th>
+                                        <th>Điểm duyệt</th>
+                                        <th>Trọng số</th>
+                                        <th>Tổng điểm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Tự chủ cao</td>
+                                        <td>@Model.PhieuDanhGia.TDG_TUCHUCAO</td>
+                                        <td>@Model.PhieuDanhGia.DD_TUCHUCAO</td>
+                                        <td>2</td>
+                                        <td>@(Model.PhieuDanhGia.DD_TUCHUCAO * 2)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Trách nhiệm lớn</td>
+                                        <td>@Model.PhieuDanhGia.TDG_TRACHNHIEMLON</td>
+                                        <td>@Model.PhieuDanhGia.DD_TRACHNHIEMLON</td>
+                                        <td>2</td>
+                                        <td>@(Model.PhieuDanhGia.DD_TRACHNHIEMLON * 2)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Tương tác tốt</td>
+                                        <td>@Model.PhieuDanhGia.TDG_TUONGTACTOT</td>
+                                        <td>@Model.PhieuDanhGia.DD_TUONGTACTOT</td>
+                                        <td>1</td>
+                                        <td>@Model.PhieuDanhGia.DD_TUONGTACTOT</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Tốc độ nhanh</td>
+                                        <td>@Model.PhieuDanhGia.TDG_TOCDONHANH</td>
+                                        <td>@Model.PhieuDanhGia.DD_TOCDONHANH</td>
+                                        <td>1</td>
+                                        <td>@Model.PhieuDanhGia.DD_TOCDONHANH</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>Tiến bộ nhiều</td>
+                                        <td>@Model.PhieuDanhGia.TDG_TIENBONHIEU</td>
+                                        <td>@Model.PhieuDanhGia.DD_TIENBONHIEU</td>
+                                        <td>1</td>
+                                        <td>@Model.PhieuDanhGia.DD_TIENBONHIEU</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>Thành tích vượt</td>
+                                        <td>@Model.PhieuDanhGia.TDG_THANHTICHVUOT</td>
+                                        <td>@Model.PhieuDanhGia.DD_THANHTICHVUOT</td>
+                                        <td>3</td>
+                                        <td>@(Model.PhieuDanhGia.DD_THANHTICHVUOT * 3)</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5"><strong>Tổng cộng</strong></td>
+                                        <td>@Model.PhieuDanhGia.TONGDIEM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            }
+                            <div>
+
+                                <label><strong>Kết luận : @Model.PhieuDanhGia.KETLUAN</strong></label>
+
+                            </div>
+                            <br />
+                            @if (Model.PhieuDanhGia.TDG_XEPLOAI_ID == null)
+                            {
+
+
+                            <label><strong>Tiêu chí xếp loại</strong></label>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>TT</th>
+                                        <th>Xếp loại</th>
+                                        <th>Điểm số</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Tốt</td>
+                                        <td>41 - 50</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Khá</td>
+                                        <td>35 - 40</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Đạt</td>
+                                        <td>26 - 35</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Không đạt</td>
+                                        <td>25 trở xuống</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="tab-pane fade" id="s2">
+                    <div class="widget-body mytask">
+                        <h5 class="todo-group-title alert-success" style="color:black"><i class="fa fa-exclamation"></i> Công việc chưa xử lý xong (<small class="num-of-tasks">@Model.LstTask.Count</small>)</h5>
+                        <ul style="padding-left: 0px">
+                            @foreach (var subtask in Model.LstTask)
+                            {
+                                <li class="todotask">
+                                    <p>
+                                        @if (subtask.DAGIAOVIEC == true)
+                                        {
+                                            <strong>
+                                                <a href='/QuanLyCongViec/QuanLyCongViec/GoToDetailSubTask/@subtask.ID'>Ticket #@subtask.ID</a>
+                                            </strong>
+                                        }
+                                        else
+                                        {
+                                            <strong>Ticket #@subtask.ID</strong>
+                                        }
+                                        <span> - </span>@subtask.NOIDUNG
+                                        <span class="date" style="font-weight: bold" title="Thời hạn hoàn thành">
+                                            <i class="glyphicon glyphicon-time"></i>
+                                            @string.Format("{0:dd/MM/yyyy}", subtask.HANHOANTHANH)
+                                        </span>
+                                        <span> - </span><strong>Độ khẩn: @subtask.DOKHAN_TEXT</strong>
+                                        <span> - </span><strong>Độ ưu tiên: @subtask.DOUUTIEN_TEXT</strong>
+                                        @if (subtask.DAGIAOVIEC == true)
+                                        {
+                                            <span><i class="glyphicon glyphicon-user"></i>@subtask.NGUOITHUCHIEN</span>
+                                        }
+                                        else
+                                        {
+                                            if ((Model.CongViec.DAGIAOVIEC != true && Model.IsNguoiGiaoViec && Model.CongViec.IS_SUBTASK != true) || Model.IsNguoiThucHienChinh)
+                                            {
+                                                <a href="javascript:deleteTask('@subtask.ID');" class="btn btn-danger btn-circle"><i class="glyphicon glyphicon-remove" title="Xóa công việc"></i></a>
+                                                <a href="javascript:finishTask('@subtask.ID');" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-ok" title="Hoàn thành"></i></a>
+                                            }
+
+                                        }
+                                        @if (Model.HasRoleAssignTask && subtask.DAGIAOVIEC != true)
+                                        {
+                                            if ((Model.CongViec.DAGIAOVIEC != true && Model.IsNguoiGiaoViec && Model.CongViec.IS_SUBTASK != true) || Model.IsNguoiThucHienChinh)
+                                            {
+                                                <a href="javascript:assignTask('@Model.CongViec.ID','@subtask.ID');" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-random" title="Giao việc"></i></a>
+                                            }
+
+                                        }
+
+                                    </p>
+                                </li>
+                            }
+                        </ul>
+                        <h5 class="todo-group-title alert-info" style="color:black"><i class="fa fa-check"></i> Công việc đã hoàn thành (<small class="num-of-tasks">@Model.LstCompletedTask.Count</small>)</h5>
+                        <ul style="padding-left: 0px">
+                            @foreach (var subtask in Model.LstCompletedTask)
+                            {
+                                <li class="complete">
+                                    <p>
+                                        <strong>Ticket #@subtask.ID</strong> - @subtask.NOIDUNG
+                                        <span class="date" style="font-weight: bold" title="Thời hạn hoàn thành">
+                                            <i class="glyphicon glyphicon-time"></i>
+                                            @string.Format("{0:dd/MM/yyyy}", subtask.HANHOANTHANH)
+                                        </span>
+                                        <i class="glyphicon glyphicon-time"></i> Ngày hoàn thành: <span class="date" style="font-weight: bold">@string.Format("{0:dd/MM/yyyy}", subtask.NGAYHOANTHANH)</span>
+                                    </p>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="planjob">
+                    @*Kế hoạch thực hiện*@
+                    <div class="tabs-left">
+                        <ul class="nav nav-tabs tabs-left" id="demo-pill-nav">
+                            @for (var i = 0; i < TotalSendPlan; i++)
+                            {
+                                <li class="@(i == 0 ? "active":"")">
+                                    <a href='#tab-r-@(i)' data-toggle="tab" aria-expanded="true">
+                                        Lập kế hoạch lần @(TotalSendPlan - i)
+                                    </a>
+                                </li>
+                            }
+
+                        </ul>
+                        <div class="tab-content" style="margin-left: 160px">
+                            @{var tmp_plan_idx = 0;}
+                            @if (TotalSendPlan > 0)
+                            {
+                                foreach (var plan in Model.LstKeHoachCongViec)
+                                {
+                                    var tmpUploadId = "upload-file-plan-" + plan.ID.ToString();
+                                    var lstTmpTaiLieu = Model.ListTaiLieuDinhKemKeHoach.Where(x => x.ITEM_ID == plan.ID).ToList();
+                                    <div class="tab-pane @(tmp_plan_idx == 0 ? "active" : "")" id='tab-r-@(tmp_plan_idx)'>
+                                        <p>
+                                            Trạng thái:
+                                            @(plan.NGAYTRINHKEHOACH == null ? "Chưa trình kế hoạch" : (plan.ISAPPROVE == null ? "Đang chờ phê duyệt" : (plan.ISAPPROVE == true) ? "Đã phê duyệt" : "Không phê duyệt"))
+
+                                        </p>
+                                        <p>
+                                            Ngày dự kiến bắt đầu theo kế hoạch:<b> @string.Format("{0:dd/MM/yyyy}", plan.NGAYBATDAUTHEOKEHOACH)</b>
+                                        </p>
+                                        <p>
+                                            Ngày dự kiến hoàn thành theo kế hoạch:<b> @string.Format("{0:dd/MM/yyyy}", plan.NGAYHOANTHANHTHEOKEHOACH)</b>
+                                        </p>
+                                        <p>
+                                            <strong>
+                                                Mục tiêu công việc/Sản phẩm đạt được:
+                                            </strong>
+                                            @Html.Raw(plan.MUCTIEUCONGVIEC)
+                                        </p>
+                                        <p>
+                                            <strong>
+                                                Các bước thực hiện:
+                                            </strong>
+                                            @Html.Raw(plan.CACBUOCTHUCHIEN)
+                                        </p>
+                                        @{Html.RenderPartial("../Common/UploadFile", lstTmpTaiLieu, new ViewDataDictionary { { "detail", 1 }, { "id", "upload-plan-" + plan.ID.ToString() } });}
+                                    </div>
+                                                    tmp_plan_idx = tmp_plan_idx + 1;
+                                                }
+                                            }
+                        </div>
+                    </div>
+                    @*End*@
+                </div>
+            </div>
+
+            <div class="col-sm-12" style="margin-top: 20px;padding-left: 0px">
+                <form enctype="multipart/form-data" method="post" class="well padding-bottom-10" action="/QuanLyCongViec/QuanLyCongViec/SaveCommentRootLevel" id="SaveCommentRootLevelForm">
+                    <input type="hidden" name="COMMENTFORTASK" value="@Model.CongViec.ID" />
+                    <textarea rows="2" class="form-control required" placeholder="Nội dung trao đổi công việc" id="NOIDUNGTRAODOI" name="NOIDUNGTRAODOIFORTASK"></textarea>
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                    <span style="color:red">Chỉ được upload các file định dạng .jpg,.pdf,.png,.doc,.docx,.xls,.xlsx,.zip,.rar với dung lượng không vượt quá 20Mb</span>
+                    <div class="margin-top-10">
+                        <button type="button" class="btn btn-sm btn-primary pull-right" onclick="saveNoiDungTraoDoi()">
+                            Post
+                        </button>
+                        <input type="hidden" maxlength="500" class="form-control" placeholder="Nhập tên tài liệu" name="filename">
+                        <input type="file" name="FILECOMMENTFORTASK" class="btn btn-link profile-link-btn" style="width: 80% !important;" />
+                    </div>
+                </form>
+                @foreach (var comment in Model.LstRootComment)
+                {
+                    <span class="timeline-seperator text-center">
+                        <span>@string.Format("{0:dd/MM/yyyy}", comment.NGAYTAO)</span>
+
+                    </span>
+                    <div class="chat-body no-padding profile-message">
+                        <ul>
+                            @{
+                                var LstSubComment = Model.LstNoiDungTraoDoi.Where(x => x.REPLY_ID == comment.ID).ToList();
+                                var tmp_idx = 0;
+
+                                long TAILIEU_ID = 0;
+                                if (Model.LstTaiLieuComment.Count > 0)
+                                {
+                                    var TaiLieuComment = Model.LstTaiLieuComment.Where(x => x.ITEM_ID == comment.ID).FirstOrDefault();
+                                    if (TaiLieuComment != null)
+                                    {
+                                        TAILIEU_ID = TaiLieuComment.TAILIEU_ID;
+                                    }
+
+                                }
+
+                            }
+                            <li class="message">
+                                <img src="@(string.IsNullOrEmpty(comment.UserAvatar) ? "/../../Content/Images/Avatar/users_woman-512.png" : comment.UserAvatar)" class="online" style="max-width: 45px;">
+                                <span class="message-text" style="min-height: 45px;">
+                                    <a href="javascript:void(0);" class="username">@comment.FullName<small class="text-muted pull-right ultra-light"> </small></a>
+                                    @comment.NOIDUNG
+                                    @if (TAILIEU_ID > 0)
+                                    {
+                                        <a class="btn btn-default btn-xs" href="javascript:void(0)" onclick="DowloadFile(@TAILIEU_ID)"><i class="glyphicon glyphicon-save"></i></a>
+                                    }
+
+                                </span>
+                                <ul class="list-inline font-xs">
+                                    <li>
+                                        <a href="javascript:showFormComment(@comment.ID);" class="text-info"><i class="fa fa-reply"></i> Reply</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:showAllComment(@comment.ID);" class="text-muted">Hiển thị hết các comment (@LstSubComment.Count)</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            @foreach (var subcomment in LstSubComment)
+                            {
+                                <li class="message message-reply message-reply-for-comment-@comment.ID" style="display: @(tmp_idx > 2 ? " none":"block")">
+                                    <img src="@(string.IsNullOrEmpty(subcomment.UserAvatar) ? " /../../Content/Images/Avatar/users_woman-512.png" : subcomment.UserAvatar)" class="online" style="max-width: 30px;">
+                                    <span class="message-text">
+                                        <a href="javascript:void(0);" class="username">@subcomment.FullName</a>
+                                        @subcomment.NOIDUNG
+                                    </span>
+
+                                    <ul class="list-inline font-xs">
+                                        <li>
+                                            <a href="javascript:void(0);" class="text-muted">@string.Format("{0:dd/MM/yyyy}", subcomment.NGAYTAO)</a>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                tmp_idx = tmp_idx + 1;
+                            }
+                            <li id="comment-for-task-@comment.ID" style="display:none">
+                                <div class="input-group wall-comment-reply">
+                                    <input id="btn-input-for-task-@comment.ID" type="text" class="form-control required comment" placeholder="Type your message here...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" onclick="saveCommentForTask(@comment.ID, @Model.CongViec.ID)">
+                                            <i class="fa fa-reply"></i> Reply
+                                        </button>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                                }
+
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-4">
+        <div class="" style="padding-top: 10px">
+            <div id="countdown"></div>
+            <p id="note" style="font-weight: bold; text-align: center; text-transform:uppercase"></p>
+            <p>
+                <b>Tiến độ công việc : @Model.CongViec.PHANTRAMHOANTHANH%</b>
+                @if (true == Model.CongViec.IS_BATDAU)
+                {
+                    if (((Model.CongViec.DAGIAOVIEC != true && Model.IsNguoiGiaoViec && Model.CongViec.IS_SUBTASK != true) || Model.IsNguoiThucHienChinh) && Model.CongViec.PHANTRAMHOANTHANH < 100)
+                    {
+                        <a title="Cập nhật tiến độ công việc" href="javascript:updateProgressTask()"><i class="fa fa-lg fa-fw fa-pencil-square-o"></i></a>
+                        if (Model.CongViec.NGUOIXULYCHINH_ID != Model.CongViec.NGUOIGIAOVIEC_ID)
+                        {
+                            <a title="Xin lùi hạn" href="javascript:extendTask()"><i class="fa fa-lg fa-fw fa-bar-chart-o"></i></a>
+                        }
+
+                    }
+                    if (Model.IsNguoiGiaoViec && Model.CongViec.PHANTRAMHOANTHANH == 100 && Model.CongViec.NGUOIGIAOVIECDAPHANHOI == null)
+                    {
+                        @*<a href="javascript:void(0);" class="btn btn-primary btn-circle" data-toggle="modal" data-target="#PHANHOICONGIVEC">
+                                <i class="fa fa-lg fa-fw fa-list-alt" title="Phản hồi công việc"></i>
+                            </a>*@
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#PHANHOICONGIVEC" title="Phản hồi công việc" class="btn btn-default">
+                            <strong><i class="fa fa-folder-open fa-lg"></i></strong> Phản hồi kết quả
+                        </a>
+                        <br />
+                    }
+                }
+
+                <a title="Quay lại" href="javascript:goBack()"><i class="fa fa-lg fa-fw fa-mail-reply"></i>Quay lại</a>
+            </p>
+            <div class="progress progress-sm">
+                <div class="progress-bar bg-color-greenLight" role="progressbar" style="width: @Model.CongViec.PHANTRAMHOANTHANH%"></div>
+            </div>
+        </div>
+        <div class="panel-group smart-accordion-default" id="accordion-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion-2" href="#collapseOne-1" aria-expanded="true" class=""> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-red"></i> Thông tin công việc </a></h4>
+                </div>
+                <div id="collapseOne-1" class="panel-collapse collapse in" aria-expanded="true">
+                    <div class="panel-body">
+                        <p>Người giao việc: <b>@Model.NGUOIGIAOVIEC</b></p>
+                        <p>
+                            Nhận thông báo qua:
+                            <b>
+                                @(Model.CongViec.IS_EMAIL == true ? "Email, " : "")
+                                @(Model.CongViec.IS_SMS == true ? "Tin nhắn, " : "")
+                                @(Model.CongViec.IS_MESG == true ? "Tin thông báo hệ thống, " : "")
+                            </b>
+                        </p>
+                        <p>Nhắc việc trước: <b>@Model.CongViec.SONGAYNHACTRUOCHAN ngày</b></p>
+                        @if (!string.IsNullOrEmpty(Model.NGUOIXULYCHINH))
+                        {
+                            <p>Người xử lý chính: <b>@Model.NGUOIXULYCHINH</b></p>
+                        }
+
+                        <p>
+                            Phối hợp xử lý:
+                            @if (Model.LstNewNguoiThamGia.Count > 0)
+                            {
+                                <b>
+                                    @foreach (var tmpUser in Model.LstNewNguoiThamGia)
+                                    {
+                                        <span id="nguoiphoihop-@tmpUser.ID">
+                                            @(tmpUser.HOTEN + "(" + tmpUser.TENDANGNHAP + ")" )
+                                            <a href="javascript:removeUserPhoiHop(@tmpUser.ID, @Model.CongViec.ID)">
+                                                <i class="fa fa-fw fa-remove txt-color-red"></i>
+                                            </a>,
+                                        </span>
+                                    }
+                                </b>
+                            }
+                            @if (Model.IsNguoiGiaoViec)
+                            {
+                                <a href="javascript:assignJoinJob(@Model.CongViec.ID)">
+                                    <i class="fa fa-fw fa-plus-circle txt-color-green"></i>
+                                    Thêm người phối hợp
+                                </a>
+                            }
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion-2" href="#collapseTwo-1" class="collapsed" aria-expanded="false"> <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-red"></i> Cập nhật tiến độ công việc </a></h4>
+                </div>
+                <div id="collapseTwo-1" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <div class="panel-body">
+                        @foreach (var process in Model.LstCapNhat)
+                        {
+                            <p style="border-bottom:1px solid #ddd">
+                                <span class="date" style="font-weight: bold"><i class="fa  fa-clock-o"></i> @string.Format("{0:dd/MM/yyyy}", process.NGAYCAPNHATTIENDO)</span>
+                                @process.NOIDUNG -  <strong><i class="fa fa-dot-circle-o"></i>@process.TIENDOCONGVIEC %</strong>
+                                <span><i class="fa fa-user"></i>@process.NGUOITAO</span>
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion-3" href="#collapseTwo-3" class="collapsed" aria-expanded="@(Model.LstXinLuiHan.Count > 0 ?"true":"false")">
+                            <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-red"></i> Xin lùi hạn công việc
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo-3" class="panel-collapse collapse @(Model.LstXinLuiHan.Count > 0 ?"in":"")" aria-expanded="@(Model.LstXinLuiHan.Count > 0 ?"true":"false")">
+                    <div class="panel-body">
+                        @foreach (var giahan in Model.LstXinLuiHan)
+                        {
+                            <p style="border-bottom:1px solid #ddd">
+                                <span class="date" style="font-weight: bold"><i class="fa fa-user"></i> @giahan.FullName</span>
+                                <br />
+                                <strong>
+                                    <i class="fa fa-clock-o"></i> Xin lùi hạn từ @string.Format("{0:dd/MM/yyyy}", giahan.HANKETHUCTRUOC)
+                                    <span>đến ngày</span> @string.Format("{0:dd/MM/yyyy}", giahan.HANKETHUC)
+                                    <br />
+                                    @if (true == giahan.IS_APPROVED)
+                                    {
+                                        <i class="fa fa-clock-o"></i><span> Đồng ý gia hạn đến ngày </span>
+                                        @(string.Format("{0:dd/MM/yyyy}", giahan.HANKETTHUC_LANHDAODUYET))
+                                    }
+
+                                </strong>
+                                <br />
+                                <span><strong>Lý do:</strong> @giahan.NOIDUNG</span>
+                                <br />
+                                <span><i class="fa fa-clock-o"></i> Ngày tạo: @string.Format("{0:dd/MM/yyyy}", giahan.NGAYGUI)</span>
+                                <br />
+                                <span><strong>Trang thái:</strong> @(giahan.IS_APPROVED != true ? ((giahan.IS_APPROVED == null) ? "Chưa phê duyệt" : "Không duyệt") : "Đã phê duyệt")</span>
+                                <br />
+                                <span><strong>Nội dung duyệt: </strong>@giahan.BUTPHELANHDAO</span>
+                                @if (Model.IsNguoiGiaoViec == true && giahan.IS_APPROVED == null)
+                                {
+                                    <a href="javascript:rejectRequest('@giahan.ID',0);" class="btn btn-danger btn-circle"><i class="glyphicon glyphicon-remove" title="Phê duyệt"></i></a>
+                                    <a href="javascript:approveRequest('@giahan.ID',1, '@string.Format("{0:dd/MM/yyyy}", giahan.HANKETHUC)');" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-ok" title="Phê duyệt"></i></a>
+                                }
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+            @*Phản hồi công việc*@
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion-4" href="#collapseTwo-4" class="collapsed" aria-expanded="@(Model.LstTrinhDuyet != null ?"true":"")">
+                            <i class="fa fa-fw fa-plus-circle txt-color-green"></i> <i class="fa fa-fw fa-minus-circle txt-color-red"></i> Phản hồi kết quả thực hiện công việc
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo-4" class="panel-collapse collapse @(Model.LstTrinhDuyet != null ?"in":"")" aria-expanded="@(Model.LstTrinhDuyet != null ?"true":"")">
+                    <div class="panel-body">
+                        @if (Model.LstTrinhDuyet != null)
+                        {
+                            foreach (var trinhduyet in Model.LstTrinhDuyet)
+                            {
+                                <p style="border-bottom: 1px solid #ddd">
+
+                                    <strong>
+                                        <i class="fa fa-clock-o"></i>Ngày trình duyệt kết quả công việc lần @idx_trinhduyet : @string.Format("{0:dd/MM/yyyy}", trinhduyet.CREATED_AT)
+                                    </strong>
+                                    <br />
+                                    <span><i class="fa fa-clock-o"></i> Ngày có phản hồi của cấp trên lần @idx_trinhduyet : @string.Format("{0:dd/MM/yyyy}", trinhduyet.NGAYPHANHOI)</span>
+                                    <br />
+                                    <span>Số ngày chờ phản hồi: @trinhduyet.SONGAYCHOPHANHOI</span>
+                                    <br />
+                                    <span>
+                                        Kết quả: <strong>
+                                            @(trinhduyet.PHEDUYETKETQUA == true ? "Đã tiếp nhận - " : (trinhduyet.PHEDUYETKETQUA != null) ? "Đã trả lại - " : "")
+                                        </strong>
+                                        @trinhduyet.KETQUATRINHDUYET
+                                    </span>
+                                </p>
+                                idx_trinhduyet = idx_trinhduyet + 1;
+                            }
+                        }
+
+                    </div>
+                </div>
+            </div>
+            @*End phản hồi công việc*@
+        </div>
+        <div class="jarviswidget jarviswidget-sortable" id="wid-id-5" data-widget-colorbutton="false" data-widget-editbutton="false" role="widget" style="margin-top: 10px">
+
+            <header role="heading">
+                <div class="jarviswidget-ctrls" role="menu">
+                </div>
+                <span class="widget-icon"> <i class="fa fa-eye-slash"></i> </span>
+                <h2>Danh sách công việc con</h2>
+
+            </header>
+
+            <!-- widget div-->
+            <div role="content">
+                <!-- widget content -->
+                <div class="widget-body mytask">
+                    <h5 class="todo-group-title alert-success" style="color:black"><i class="fa fa-exclamation"></i> Công việc chưa hoàn thành (<small class="num-of-tasks">@Model.LstTask.Count</small>)</h5>
+                    <ul style="padding-left: 0px">
+                        @foreach (var subtask in Model.LstTask)
+                        {
+                            <li class="todotask">
+                                <p>
+                                    @if (subtask.DAGIAOVIEC == true)
+                                    {
+                                        <strong>
+                                            <a href='/QuanLyCongViec/QuanLyCongViec/GoToDetailSubTask/@subtask.ID'>Ticket #@subtask.ID</a>
+                                        </strong>
+                                    }
+                                    else
+                                    {
+                                        <strong>Ticket #@subtask.ID</strong>
+                                    }
+                                    <span> - </span>@subtask.NOIDUNG
+                                    <span class="date" style="font-weight: bold" title="Thời hạn hoàn thành">
+                                        <i class="glyphicon glyphicon-time"></i>
+                                        @string.Format("{0:dd/MM/yyyy}", subtask.HANHOANTHANH)
+                                    </span>
+                                    <span> - </span><strong>Độ khẩn: @subtask.DOKHAN_TEXT</strong>
+                                    <span> - </span><strong>Độ ưu tiên: @subtask.DOUUTIEN_TEXT</strong>
+                                    @if (subtask.DAGIAOVIEC == true)
+                                    {
+                                        <span title="Người thực hiện"><i class="glyphicon glyphicon-user"></i>@subtask.NGUOITHUCHIEN</span>
+                                        <span title="Tiến độ công việc"><i class="fa fa-dot-circle-o"></i><strong>@subtask.PHANTRAMHOANTHANH %</strong></span>
+                                    }
+                                    else
+                                    {
+                                        if ((Model.CongViec.DAGIAOVIEC != true && Model.IsNguoiGiaoViec && Model.CongViec.IS_SUBTASK != true) || Model.IsNguoiThucHienChinh)
+                                        {
+                                            <a href="javascript:deleteTask('@subtask.ID');" class="btn btn-danger btn-circle"><i class="glyphicon glyphicon-remove" title="Xóa công việc"></i></a>
+                                            <a href="javascript:finishTask('@subtask.ID');" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-ok" title="Hoàn thành"></i></a>
+                                        }
+
+                                    }
+                                    @if (Model.HasRoleAssignTask && subtask.DAGIAOVIEC != true)
+                                    {
+                                        if ((Model.CongViec.DAGIAOVIEC != true && Model.IsNguoiGiaoViec && Model.CongViec.IS_SUBTASK != true) || Model.IsNguoiThucHienChinh)
+                                        {
+                                            <a href="javascript:assignTask('@Model.CongViec.ID','@subtask.ID');" class="btn btn-primary btn-circle"><i class="glyphicon glyphicon-random" title="Giao việc"></i></a>
+                                        }
+
+                                    }
+
+                                </p>
+                            </li>
+                        }
+                    </ul>
+                    <h5 class="todo-group-title alert-info" style="color:black"><i class="fa fa-check"></i> Công việc đã hoàn thành (<small class="num-of-tasks">@Model.LstCompletedTask.Count</small>)</h5>
+                    <ul style="padding-left: 0px">
+                        @foreach (var subtaskCompleted in Model.LstCompletedTask)
+                        {
+                            <li class="complete">
+                                <p>
+                                    <strong>Ticket #@subtaskCompleted.ID</strong> - @subtaskCompleted.NOIDUNG
+                                    <span class="date" style="font-weight: bold" title="Thời hạn hoàn thành">
+                                        <i class="glyphicon glyphicon-time"></i>
+                                        @string.Format("{0:dd/MM/yyyy}", subtaskCompleted.HANHOANTHANH)
+                                    </span>
+                                    <i class="glyphicon glyphicon-time"></i> Ngày hoàn thành: <span class="date" style="font-weight: bold">@string.Format("{0:dd/MM/yyyy}", subtaskCompleted.NGAYHOANTHANH)</span>
+                                </p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <!-- end widget content -->
+
+            </div>
+            <!-- end widget div -->
+
+        </div>
+    </div>
+    <!-- end widget content -->
+</div>
+
+<div id="UpdateProgressTask" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            Type your message here...
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Cập nhật tiến độ công việc</h4>
+            </div>
+            <div class="modal-body">
+                <form id="UpdateProgressTaskForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/UpdateProgressTask">
+                    <input type="hidden" name="BEGINTASKID" value="@Model.CongViec.ID" />
+                    <div class="form-group">
+                        <label for="task-content" class="control-label">Phần trăm hoàn thành:</label>
+                        <div>
+                            <div id="slider-range"></div>
+                            <input type="text" id="PHANTRAMHOANTHANH" style="border:0; color:#f6931f; font-weight:bold;" name="PHANTRAMHOANTHANH">
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">
+                            Nội dung
+                        </label>
+                        <div>
+                            <textarea name="NOIDUNG_COMMENT" class="form-control required"></textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitUpdateProgressTask()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="CreateSubTask" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Tạo công việc con</h4>
+            </div>
+            <div class="modal-body">
+                <form id="CreateSubTaskForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/CreateSubTaskNew">
+                    <input type="hidden" name="BEGINTASKID" value="@Model.CongViec.ID" />
+                    <input type="hidden" name="TOTAL_CONGVIEC" value="1" id="TOTAL_CONGVIEC" />
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tên công việc</th>
+                                <th>Độ ưu tiên</th>
+                                <th>Mức độ quan trọng</th>
+                                <th>Hạn hoàn thành</th>
+                                <th>Yêu cầu lập k/h</th>
+                                <th>
+                                    <a href="javascript:createFormSubTask('body_subtask_id')">
+                                        <i class="glyphicon glyphicon-plus"></i>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="body_subtask_id">
+                            <tr class="trsubtask_1" data-index="1">
+                                <td>
+                                    <textarea class="form-control required" id="task-content-1" name="TASKCONTENT-1"></textarea>
+                                </td>
+                                <td>
+                                    @Html.DropDownList("MUCDOUUTIEN-1", Model.ListDoUuTien, new { @class = "selectpicker1" })
+                                </td>
+                                <td>
+                                    @Html.DropDownList("DOKHAN-1", Model.ListDoKhan, new { @class = "selectpicker1" })
+                                </td>
+                                <td>
+                                    <input class="form-control required hanhoanthanh" id="hanhoanthanh-1" name="HANHOANTHANH-1" />
+                                </td>
+                                <td>
+                                    <label class="checkbox-inline" style="padding: 0px">
+                                        <input type="radio" class="radio radio-inline" value="1" name="IS_HASPLAN-1">
+                                        Có lập
+                                    </label>
+                                    <label class="checkbox-inline" style="padding: 0px">
+                                        <input checked type="radio" class="radio radio-inline" value="2" name="IS_HASPLAN-1">
+                                        Không lập
+                                    </label>
+                                </td>
+                                <td>
+                                    <a title="Xóa công việc" href="javascript:XoaCongViec(1)" onclick="XoaCongViec(1)" data-id="file_1"><i class="red glyphicon glyphicon-remove"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitCreateSubTask()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@*Từ chối gia hạn công việc*@
+<div id="tuChoiGiaHanCongViec" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Từ chối gia hạn công việc</strong></h4>
+            </div>
+            <div class="modal-body" id="tuChoiGiaHanCongViecBody">
+                <textarea placeholder="Lý do từ chối gia hạn" id="tuchoi_lydo" name="tuchoi_lydo" style="width: 100%;height:100px"></textarea>
+                <input type="hidden" id="rejectId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="rejectExtendJob()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@*End*@
+@*Đồng ý gia hạn công việc*@
+<div id="approveExtendTaskForm" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Đồng ý gia hạn công việc</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-sm-6">
+                    <label for="task-content" class="control-label">Xin lùi tới ngày:</label>
+                    <div>
+                        <input class="form-control required datetime-cv" id="approve_extend_hanhoanthanh" name="APPROVE_EXTEND_HANHOANTHANH" />
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label for="task-content" class="control-label">Ngày lãnh đạo đồng ý cho lùi hạn:</label>
+                    <div>
+                        <input class="form-control required datetime-cv" id="approve_butphe_hanhoanthanh" name="APPROVE_BUTPHE_HANHOANTHANH" />
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <textarea placeholder="Phản hồi" id="approve_phanhoi" name="approve_phanhoi" style="width: 100%; height: 100px"></textarea>
+                </div>
+                <input type="hidden" id="approveTaskId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitApproveExtendTask()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@*End*@
+@*Assign công việc*@
+<div id="ShowAllTaskDialog" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="text-transform: uppercase; color:white"><strong>Tiến độ thực hiện công việc</strong></h4>
+            </div>
+            <div class="modal-body" id="ShowAllTaskBody" style="padding: 0px; padding-top: 5px;">
+
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>*@
+        </div>
+
+    </div>
+</div>
+@*End*@
+<div id="AssignTaskDialog" class="modal fade bd-example-modal-lg" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="text-align: center">Giao việc</h4>
+            </div>
+            <div class="modal-body" id="AssignTaskBody">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitAssignTask()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="extendTask" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Xin lùi hạn công việc</h4>
+            </div>
+            <div class="modal-body">
+                <form id="ExtendTaskForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/SaveExtendTask">
+                    <input type="hidden" name="EXTEND_TASKID" value="@Model.CongViec.ID" />
+                    <div class="form-group">
+                        <label for="task-content" class="control-label">Xin lùi tới ngày:</label>
+                        <div>
+                            <input class="form-control required" id="extend_hanhoanthanh" name="EXTEND_HANHOANTHANH" />
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">
+                            Nguyên nhân xin lùi
+                        </label>
+                        <div>
+                            <textarea name="EXTEND_NOIDUNG_COMMENT" class="form-control required" id="EXTEND_NOIDUNG_COMMENT"></textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitExtendTask()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="DiemDuyetDanhGiaCongViec" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Duyệt đánh giá công việc</strong></h4>
+            </div>
+            <div class="modal-body">
+                @if (Model.PhieuDanhGia != null && Model.PhieuDanhGia.TDG_XEPLOAI_ID == null)
+                {
+                    <form id="DiemDuyetDanhGiaCongViecForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/DuyetDanhGiaCongViec">
+                        <input type="hidden" name="DD_TASKID" value="@Model.CongViec.ID" />
+                        @if (Model.PhieuDanhGia != null)
+                        {
+                            <div style="margin-top: 10px">
+                                <label><strong>Ngày đánh giá: @string.Format("{0:dd/MM/yyyy}", Model.CongViec.NGAY_NHANVIEC)</strong></label>
+                                <br />
+                                <label><strong>Người tự đánh giá: @Model.NGUOIXULYCHINH</strong></label>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>TT</th>
+                                            <th>Hạng mục đánh giá</th>
+                                            <th>Điểm tự đánh giá</th>
+                                            <th>Điểm duyệt</th>
+                                            <th>Trọng số</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Tự chủ cao</td>
+                                            <td>@Model.PhieuDanhGia.TDG_TUCHUCAO</td>
+                                            <td>
+                                                <input type="number" class="form-control required" id="DD_TUCHUCAO" name="DD_TUCHUCAO" value="@Model.PhieuDanhGia.TDG_TUCHUCAO" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </td>
+                                            <td>2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Trách nhiệm lớn</td>
+                                            <td>@Model.PhieuDanhGia.TDG_TRACHNHIEMLON</td>
+                                            <td>
+                                                <input type="number" value="@Model.PhieuDanhGia.TDG_TRACHNHIEMLON" class="form-control required" id="DD_TRACHNHIEMLON" name="DD_TRACHNHIEMLON" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </td>
+                                            <td>2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Tương tác tốt</td>
+                                            <td>@Model.PhieuDanhGia.TDG_TUONGTACTOT</td>
+                                            <td>
+                                                <input type="number" value="@Model.PhieuDanhGia.TDG_TUONGTACTOT" class="form-control required" id="DD_TUONGTACTOT" name="DD_TUONGTACTOT" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>Tốc độ nhanh</td>
+                                            <td>@Model.PhieuDanhGia.TDG_TOCDONHANH</td>
+                                            <td>
+                                                <input type="number" value="@Model.PhieuDanhGia.TDG_TOCDONHANH" class="form-control required" id="DD_TOCDONHANH" name="DD_TOCDONHANH" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>Tiến bộ nhiều</td>
+                                            <td>@Model.PhieuDanhGia.TDG_TIENBONHIEU</td>
+                                            <td>
+                                                <input type="number" value="@Model.PhieuDanhGia.TDG_TIENBONHIEU" class="form-control required" id="DD_TIENBONHIEU" name="DD_TIENBONHIEU" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>Thành tích vượt</td>
+                                            <td>@Model.PhieuDanhGia.TDG_THANHTICHVUOT</td>
+                                            <td>
+                                                <input type="number" value="@Model.PhieuDanhGia.TDG_THANHTICHVUOT" class="form-control required" id="DD_THANHTICHVUOT" name="DD_THANHTICHVUOT" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </td>
+                                            <td>3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label><strong>Nhận xét</strong></label>
+                                <textarea name="DD_KETLUAN" style="width:100%;height:100px"></textarea>
+                            </div>
+                        }
+                    </form>
+                }
+                else if (Model.PhieuDanhGia != null)
+                {
+                    <form id="DiemDuyetDanhGiaCongViecForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/DuyetDanhGiaCongViecTheoThangDiem">
+                        <input type="hidden" name="DD_TASKID" value="@Model.CongViec.ID" />
+                        <div style="margin-top: 10px">
+                            <label><strong>Ngày đánh giá: @string.Format("{0:dd/MM/yyyy}", Model.CongViec.NGAY_NHANVIEC)</strong></label>
+                            <br />
+                            <label><strong>Người tự đánh giá: @Model.NGUOIXULYCHINH</strong></label>
+                            <table class="table" style="margin-bottom:0px;">
+                                <thead>
+                                    <tr>
+                                        <th>Tự đánh giá</th>
+                                        <th>Duyệt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @tudanhgia.Text
+                                        </td>
+                                        <td>
+                                            @Html.DropDownList("DUYETDANHGIATHEOTHANGDIEM", Model.LstDanhGiaCongViec, new { @class = "selectpicker1" })
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <label><strong>Kết luận</strong></label>
+                            <br />
+                            <div class="col-sm-12">
+                                <textarea placeholder="Kết luận" style="width:100%;height:70px" name="KETLUAN"></textarea>
+                            </div>
+                            <div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Xếp loại</th>
+                                            <th>Điểm số</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.LstDanhGiaCongViecObj)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item.TEXT
+                                                </td>
+                                                <td>
+                                                    @item.DATA <span>điểm</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveDuyetDanhGia()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="danhGiaTheoThangDiem" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Đánh giá công việc</strong></h4>
+            </div>
+            <div class="modal-body" style="min-height:170px;">
+                <form id="danhGiaTheoThangDiemForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/TuDanhGiaCongViecTheoThangDiem">
+                    <input type="hidden" name="TDG_TASKID" value="@Model.CongViec.ID" />
+                    <div>
+                        @Html.DropDownList("TUDANHGIATHEOTHANGDIEM", Model.LstDanhGiaCongViec, new { @class = "selectpicker1" })
+                    </div>
+                    <div style="margin-top:10px">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Xếp loại</th>
+                                    <th>Điểm số</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.LstDanhGiaCongViecObj)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.TEXT
+                                        </td>
+                                        <td>
+                                            @item.DATA <span>điểm</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <br />
+                    <div class="col-sm-12" style="text-align:center">
+                        <i style="color:red">
+                            Note: trong trường hợp không sử dụng bộ tiêu chí 6T, bạn có thể đánh giá theo thang điểm đã có sẵn
+                        </i>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveDuyetDanhGiaTheoThangDiem()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="TuDanhGiaCongViec" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Tự đánh giá công việc</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="TuDanhGiaCongViecForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/TuDanhGiaCongViec">
+                    <input type="hidden" name="TDG_TASKID" value="@Model.CongViec.ID" />
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>TT</th>
+                                    <th>Hạng mục đánh giá</th>
+                                    <th>Điểm tự đánh giá</th>
+                                    <th>Trọng số</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Tự chủ cao</td>
+                                    <td>
+                                        <input type="number" class="form-control required" id="TDG_TUCHUCAO" name="TDG_TUCHUCAO" />
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Trách nhiệm lớn</td>
+                                    <td>
+                                        <input type="number" max="5" class="form-control required" id="TDG_TRACHNHIEMLON" name="TDG_TRACHNHIEMLON" />
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </td>
+
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Tương tác tốt</td>
+                                    <td>
+                                        <input type="text" max="5" class="form-control required" id="TDG_TUONGTACTOT" name="TDG_TUONGTACTOT" />
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>Tốc độ nhanh</td>
+                                    <td>
+
+                                        @{
+                                            var tocdo = 0;
+                                            var NgayKetThuc = Model.CongViec.NGAYHOANTHANH_THEOMONGMUON;
+                                            if (Model.CongViec.NGAYKETTHUC_KEHOACH != null)
+                                            {
+                                                NgayKetThuc = Model.CongViec.NGAYKETTHUC_KEHOACH;
+                                            }
+                                            if (Model.LstKeHoachCongViec == null)
+                                            {
+                                                Model.LstKeHoachCongViec = new List<HSCV_CONGVIEC_LAPKEHOACH>();
+                                            }
+                                            if (Model.LstTrinhDuyet == null)
+                                            {
+                                                Model.LstTrinhDuyet = new List<HSCV_TRINHDUYETCONGVIEC>();
+                                            }
+                                        }
+                                        @if (Model.CongViec.NGAYKETTHUC_THUCTE <= NgayKetThuc)
+                                        {
+                                            if (Model.LstKeHoachCongViec.Count <= 1 && Model.LstTrinhDuyet.Count <= 1)
+                                            {
+                                                tocdo = 5;
+                                            }
+                                            else if (Model.LstKeHoachCongViec.Count <= 2 && Model.LstTrinhDuyet.Count <= 2)
+                                            {
+                                                tocdo = 4;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (true == Model.CongViec.IS_HASPLAN)
+                                            {
+                                                var TotalNgay = (Model.CongViec.NGAYKETTHUC_KEHOACH - Model.CongViec.NGAYBATDAU_KEHOACH);
+                                                double SoNgayTheoKeHoach = TotalNgay.HasValue ? TotalNgay.Value.TotalDays : 0;
+                                                TotalNgay = (NgayKetThuc - Model.CongViec.NGAYBATDAU_KEHOACH);
+                                                double SoNgayThucTe = TotalNgay.HasValue ? TotalNgay.Value.TotalDays : 0;
+                                                var chenhLechNgay = (SoNgayThucTe - SoNgayTheoKeHoach) * 100 / SoNgayTheoKeHoach;
+                                                chenhLechNgay = Math.Abs(chenhLechNgay);
+                                                if (Model.LstKeHoachCongViec.Count <= 2 && Model.LstTrinhDuyet.Count <= 2)
+                                                {
+                                                    if (chenhLechNgay <= 20)
+                                                    {
+                                                        tocdo = 3;
+                                                    }
+                                                    else
+                                                    {
+                                                        tocdo = 2;
+                                                    }
+                                                }
+                                                else if (Model.LstKeHoachCongViec.Count <= 3 && Model.LstTrinhDuyet.Count <= 3)
+                                                {
+                                                    if (chenhLechNgay > 20 && chenhLechNgay <= 30)
+                                                    {
+                                                        tocdo = 2;
+                                                    }
+                                                    else
+                                                    {
+                                                        tocdo = 1;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (Model.LstKeHoachCongViec.Count <= 2 && Model.LstTrinhDuyet.Count <= 2)
+                                                {
+                                                    tocdo = 3;
+                                                }
+                                                else if (Model.LstKeHoachCongViec.Count <= 3 && Model.LstTrinhDuyet.Count <= 3)
+                                                {
+                                                    tocdo = 2;
+                                                }
+                                            }
+                                        }
+                                        <input type="text" value="@tocdo" readonly="readonly" class="form-control" style="text-align:right" />
+                                        <input type="hidden" value="@tocdo" max="5" class="form-control required" id="TDG_TOCDONHANH" name="TDG_TOCDONHANH" />
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Tiến bộ nhiều</td>
+                                    <td>
+                                        <input type="number" max="5" class="form-control required" id="TDG_TIENBONHIEU" name="TDG_TIENBONHIEU" />
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>Thành tích vượt</td>
+                                    <td>
+                                        <input type="number" max="5" class="form-control required" id="TDG_THANHTICHVUOT" name="TDG_THANHTICHVUOT" />
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </td>
+                                    <td>3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveTuDanhGia()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@*Phản hôi cong viec*@
+<div id="PHANHOICONGIVEC" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Duyệt kết quả công việc</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="PhanHoiCongViecForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/PhanHoiCongViec">
+                    <input type="hidden" name="PHANHOICONGVIEC_ID" value="@Model.CongViec.ID" />
+                    <div class="form-group">
+                        <label for="task-content" class="control-label">Phản hồi:</label>
+                        <textarea class="form-control required" id="PHANHOICONGVIEC" name="PHANHOICONGVIEC"></textarea>
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">
+                            Đánh giá kết quả
+                        </label>
+                        <div>
+                            <select id="KETQUATIEPNHAN" class="form-control" name="KETQUATIEPNHAN">
+                                <option value="1">Duyệt</option>
+                                <option value="0">Trả lại</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitPhanHoiCongViec()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@*End*@
+@*Lập kế hoach công việc*@
+<div id="LAPKEHOACHCONGVIEC" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width:70%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Lập kế hoạch thực hiện công việc</strong></h4>
+            </div>
+            <div class="modal-body" style="max-height:75vh">
+                <form id="LAPKEHOACHCONGVIECForm" method="post" action="/QuanLyCongViec/QuanLyCongViec/LapKeHoachCongViec" enctype="multipart/form-data">
+                    <input type="hidden" name="LAPKEHOACHCONGVIEC_ID" value="@Model.CongViec.ID" />
+                    <div class="row">
+                        <label for="task-content" class="control-label col-md-2">Ngày dự kiến bắt đầu<span class="red">*</span></label>
+                        <div class="col-md-10">
+                            <input class="form-control datepicker1 required" placeholder="Ngày dự kiến bắt đầu" type="text" id="NGAYBATDAU_KEHOACH" name="NGAYBATDAU_KEHOACH" value="">
+                        </div>
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px">
+                        <label for="task-content" class="control-label col-md-2">Ngày dự kiến kết thúc<span class="red">*</span></label>
+                        <div class="col-md-10">
+                            <input class="form-control datepicker1 required" placeholder="Ngày dự kiến kết thúc" type="text" id="NGAYKETTHUC_KEHOACH" name="NGAYKETTHUC_KEHOACH" value="@string.Format("{0:dd/MM/yyyy}", Model.CongViec.NGAYHOANTHANH_THEOMONGMUON)">
+                        </div>
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px">
+                        <label class="col-md-2 control-label">
+                            Mục tiêu công việc/ sản phẩm đạt được
+                        </label>
+                        <div class="col-md-10">
+                            <input type="hidden" name="MUCTIEU_CONGVIEC" id="MUCTIEU_CONGVIEC_HIDDEN" />
+                            <textarea class="form-control" type="text" id="MUCTIEU_CONGVIEC" name="MUCTIEU_CONGVIEC">@Model.CongViec.MUCTIEU_CONGVIEC</textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-md-2 control-label">
+                            Các bước thực hiện
+                        </label>
+                        <div class="col-md-10">
+                            <ul class="list-group">
+                                @foreach (var item in Model.LstTask)
+                                {
+                                    <li class="list-group-item" id="plan-subtask-@item.ID">
+                                        @item.NOIDUNG
+                                        <a href="javascript:deleteTaskFromPlan(@item.ID);" style="color:red;float:right"><i class="glyphicon glyphicon-remove" title="Xóa công việc"></i></a>
+                                    </li>
+                                }
+                            </ul>
+                            <input type="hidden" name="CACBUOCTHUCHIEN" id="CACBUOCTHUCHIEN_HIDDEN" />
+                            <textarea style="display:none" class="form-control" type="text" id="CACBUOCTHUCHIEN" name="CACBUOCTHUCHIEN"></textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-md-2 control-label">
+                            Tài liệu đính kèm
+                        </label>
+                        <div class="col-md-10">
+                            @{Html.RenderPartial("../Common/UploadFile", new List<TAILIEUDINHKEM>());}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitLapKeHoach()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@*End*@
+
+@*Duyệt kế hoạch công việc*@
+<div id="DUYETKEHOACHCONGVIEC" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Duyệt kế hoạch thực hiện công việc</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="DUYETKEHOACHCONGVIECForm" method="post" action="">
+                    <div class="row">
+                        <label for="task-content" class="control-label col-md-2">Duyệt công việc<span class="red">*</span></label>
+                        <div class="col-md-10">
+                            <div>
+                                <select id="KETQUADUYETPLAN" class="form-control" name="KETQUADUYETPLAN">
+                                    <option value="1">Duyệt</option>
+                                    <option value="0">Trả lại</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:5px">
+                        <label class="col-md-2 control-label">
+                            Nội dung
+                        </label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" type="text" id="DUYETKEHOACHCONGVIEC_NOIDUNG" name="DUYETKEHOACHCONGVIEC_NOIDUNG"></textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitDuyetKeHoach(@Model.CongViec.ID)">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@*End*@
+
+<!--IMPORT CÔNG VIỆC CON-->
+<div class="modal fade" id="modal--import-subtask" tabindex="-1" role="dialog" aria-labelledby="label--import-subtask" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        @using (Ajax.BeginForm("ImportSubTasks", "QuanLyCongViec", new { @area = "QuanLyCongViec" }, new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnFailure = "failureImportSubTasks",
+            OnSuccess = "successImportSubTasks"
+        }, new { id = "form--import-subtask", @enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="label--import-subtask">
+                        IMPORT CÔNG VIỆC CON
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data" id="form--import-subtask" action="/QuanLyCongViec/QuanLyCongViec/ImportSubTasks">
+                        <div class="form-group row">
+                            <label for="file" class="control-label col-sm-2">File:</label>
+                            <div class="col-sm-10">
+                                <input type="file" class="form-control" id="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="CONGVIEC_ID" value="@Model.CongViec.ID" />
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" id="btn--import-subtask">Lưu</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<!--END IMPORT CÔNG VIỆC CON-->
+
+
+<script src="~/Content/Custom/countdown/assets/countdown/jquery.countdown.js"></script>
+<script src="~/Content/Custom/joblib.js"></script>
+<script>
+    $(function () {
+        $('#btn--import-subtask').on('click', function () {
+            $('#form--import-subtask').submit();
+        });
+
+
+        var phanTramHoanThanh = '@Model.CongViec.PHANTRAMHOANTHANH';
+        if (phanTramHoanThanh == "") {
+            phanTramHoanThanh = 0;
+        } else {
+            phanTramHoanThanh = parseInt(phanTramHoanThanh);
+        }
+
+        $("#slider-range").slider({
+            value: phanTramHoanThanh,
+            min: phanTramHoanThanh,
+            max: 100,
+            step: 1,
+            slide: function (event, ui) {
+                $("#PHANTRAMHOANTHANH").val(ui.value);
+            }
+        });
+        $("#PHANTRAMHOANTHANH").val($("#slider-range").slider("value"));
+
+        $(".hanhoanthanh").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "0:+3",
+            //maxDate: $("#HIDDEN_NGAYKETTHUC").val(),
+            //minDate: $("#HIDDEN_NGAYBATDAU").val(),
+        });
+        $("#hanhoanthanh").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "0:+3",
+            //maxDate: $("#HIDDEN_NGAYKETTHUC").val(),
+            //minDate: $("#HIDDEN_NGAYBATDAU").val(),
+        });
+        $("#extend_hanhoanthanh").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            minDate: $("#HIDDEN_NGAYKETTHUC").val(),
+            yearRange: "0:+3"
+        });
+        $(".datetime-cv").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "0:+3"
+        });
+
+        var year = '@DateToFinishJob.Year';
+        var month = '@DateToFinishJob.Month';
+        var day = '@DateToFinishJob.Day';
+        var note = $('#note'), newYear = true,
+            ts = new Date(year, parseInt(month - 1), day, 00, 00, 00, 00);
+        if (phanTramHoanThanh < 100) {
+            if ((new Date()) > ts) {
+                note.html("Quá hạn xử lý " + @songayquahan +" ngày");
+                note.css("color", "red");
+            }
+            else {
+                $('#countdown').countdown({
+                    timestamp: ts,
+                    callback: function (days, hours, minutes, seconds) {
+                        var message = "Còn lại: ";
+                        message += days + " ngày, ";
+                        message += hours + " giờ, ";
+                        message += minutes + " phút và ";
+                        message += seconds + " giây <br />";
+                        note.html(message);
+                    }
+                });
+            }
+        } else {
+            note.html("Đã hoàn thành công việc");
+            note.css("color", "#356635");
+            note.css("border-color", "#8ac38b");
+            note.css("background-color", "#cde0c4");
+        }
+    });
+
+    function failureImportSubTasks(data) {
+        console.log(data);
+        return false;
+    }
+
+    function successImportSubTasks() {
+        console.log(data);
+        return false;
+    }
+</script>

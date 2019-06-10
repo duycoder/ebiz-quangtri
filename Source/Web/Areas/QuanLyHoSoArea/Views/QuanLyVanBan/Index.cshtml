@@ -1,0 +1,223 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using Model.Entities;
+@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Web.FwCore;
+@using Web.Areas.QuanLyHoSoArea.Models;
+@model QuanLyVanBanIndexViewModel
+
+
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.Source.ListItem));
+
+}
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+</style>
+
+<div id="ribbon">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6 padding-0">
+        <a class="btn btn-default pull-right" href="javascript:ActionCreate()">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<div id="content">
+
+
+    @Html.Partial("_Search")
+
+
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <span class="widget-icon">
+                <i class="fa fa-th-large"></i>
+            </span>
+            <h2 class="group-tittle mt10">
+                Quản lý văn bản
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div id="tbl-hoso" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Stt</th>
+                            <th>Số ký hiệu</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="modal_create" class="modal fade" role="dialog">
+
+</div>
+
+<div id="modal_edit" class="modal fade" role="dialog">
+
+</div>
+<div id="modal_userinrole" class="modal fade" role="dialog">
+
+</div>
+<script>
+   
+    var lstData = eval(@lstData);
+    function ActionForm()
+    {
+        AjaxCall("/DMVAITROArea/DMVAITRO/Create",'get',null,function (rs) {
+            $("#modal_create").html(rs);
+            $("#modal_create").modal("show");
+
+        })
+    }
+
+    function pagefunction(){
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel:"",
+                isCounter:true,
+                //content: function (data) {
+                //    return "<input type='checkbox'/>"
+                //}
+            },
+
+            {
+                isSort:true,
+                nameModel:'HOSO_NAME',
+                content: function (data) {
+                    return data.HOSO_NAME
+                }
+            },
+
+               {
+                   isSort:false,
+                   //tdClass:"center",
+                   //content: function (data) {
+                   //    var result = "<div class='btn-group'>";
+
+                   //    result += "<a href='javascript:void(0)' onclick='ShowUserInRoleAction(" + data.DM_VAITRO_ID + ")'   title = 'Xem danh người dùng thuộc vai trò'><i class='fa fa-user fa-lg' style = 'color: #3276b1; line-height: 0.4em; font-size: 1.4em;'></i>&nbsp;&nbsp;</a> ";
+                   //    result += "<a href='javascript:void(0)' onclick='EditAction(" + data.DM_VAITRO_ID + ")'   title = 'Chỉnh sửa'><i class='fa fa-pencil-square fa-lg' style='color: #dfb56c; font-size: 1.5em; line-height: 0.5em;'> </i>&nbsp;&nbsp;</a> ";
+                   //    result += "<a href='javascript:void(0)' onclick='DeleteFunction(" + data.DM_VAITRO_ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-remove fa-lg' style='color:red'> </i>&nbsp;&nbsp;</a>";
+                   //    result += "</div>";
+                   //    return result;
+                   //}
+               },
+
+        ];
+
+
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '/DMVAITROArea/DMVAITRO/getData',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-hoso").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+
+        }
+
+        var tblData=$("#tbl-hoso").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.Source.TotalPage,
+            recordCount: @Model.Source.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+
+    }
+    function DeleteFunction(id) {
+
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa vai trò này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+
+                        $.ajax({
+                            url: '/dmvaitroarea/dmvaitro/delete',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Status) {
+                                    NotiSuccess("Xóa vai trò thành công");
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+
+                            }
+                        })
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+
+    }
+    function reloadData() {
+        $("#tbl-hoso").hinetTable("reload");
+    }
+
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+    function pagefunctionSearch() {
+        $(".tbl-search select").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    })
+
+</script>

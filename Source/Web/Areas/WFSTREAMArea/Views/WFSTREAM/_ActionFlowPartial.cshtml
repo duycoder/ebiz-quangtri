@@ -1,0 +1,280 @@
+﻿@using Web.Areas.WFSTREAMArea.Models;
+@using Business.CommonModel.CONSTANT;
+@using Model.Entities
+
+@model ActionFlowBO
+<a class="btn btn-default" href="javascript:History()"><span>Lịch sử xử lý</span></a>
+
+@if (Model.REQUIRED_REVIEW != true)
+{
+    if (Model.LstStepBack != null)
+    {
+        foreach (var item in Model.LstStepBack)
+        {
+            <a class="btn btn-default" href="javascript:CallAction(@item.ID,true,@item.Log.ID)"><span>@item.NAME</span></a>
+        }
+    }
+    if (Model.LstStep != null)
+    {
+        foreach (var item in Model.LstStep)
+        {
+            if (true == item.REQUIRED_REVIEW)
+            {
+                if (Model.ReviewObj != null && true == Model.ReviewObj.IS_FINISH && true != Model.ReviewObj.IS_REJECT)
+                {
+                    <a class="btn btn-default" href="javascript:CallAction(@item.ID,false,0)"><span>@item.NAME</span></a>
+                }
+                else
+                {
+                    <a class="btn btn-default" href="javascript:CallAction(@item.ID,false,0)"><span>Gửi Review</span></a>
+                }
+
+            }
+            else
+            {
+                <a class="btn btn-default" href="javascript:CallAction(@item.ID,false,0)"><span>@item.NAME</span></a>
+            }
+
+        }
+    }
+
+
+}
+else
+{
+    <a class="btn btn-default" href="javascript:callReviewFunction()"><span>Phản hồi</span></a>
+}
+@if (Model.Function != null)
+{
+    <a class="btn btn-default" href="javascript:FunctionAction('@Model.Function.FUNTION_NAME')" id="@Model.Function.FUNTION_NAME"><span>@Model.Function.FUNTION_TITLE</span></a>
+}
+<div id="modal_review" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Review văn bản trình ký</strong></h4>
+            </div>
+            <div class="modal-body" style="padding-bottom: 0px;">
+                <form id="ReviewVanBanTrinhKyForm" method="post" action="/wfstreamarea/wfstream/SaveUserReview" enctype="multipart/form-data">
+                    <input type="hidden" name="PHANHOIVANBAN_ID" value="@Model.Process.ITEM_ID" />
+                    <div class="form-group">
+                        @*<label for="task-content" class="control-label">Phản hồi:</label>*@
+                        <textarea placeholder="Ý kiến phản hồi" class="form-control required" id="PHANHOIVANBAN" name="PHANHOIVANBAN"></textarea>
+                        <div class="note-error" style="display: none; text-align: left" id="PHANHOIVANBAN_DIV_ERROR">
+                            <span class="error mes-note-errr" id="PHANHOIVANBAN_ERROR" style="color: red"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <select id="PHEDUYETVANBAN" class="form-control" name="PHEDUYETVANBAN">
+                                <option value="1">Đồng ý</option>
+                                <option value="0">Trả lại</option>
+                            </select>
+                            <input type="hidden" name="itemId" value="@Model.Process.ITEM_ID" />
+                            <input type="hidden" name="itemType" value="@Model.Process.ITEM_TYPE" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @{Html.RenderPartial("../Common/UploadFile", new List<TAILIEUDINHKEM>(), new ViewDataDictionary() { { "id", "ReviewVanBan" + Model.Process.ITEM_ID.ToString() } });}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="submitPhanHoiVanBan()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal_flow" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+
+</div>
+<div id="modal_history" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+
+</div>
+<div id="modal_Function" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+
+</div>
+
+<div id="modal--block-sovanban" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog" style="width: 55%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hover table-condensed" id="table--sovanban">
+                    <thead>
+                        <tr>
+                            <th class="width-30"></th>
+                            <th class="width-30">STT</th>
+                            <th>Số đi theo sổ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn">Đóng</button>
+                <button type="button" class="btn btn-primary" id="btn--pick-sovanban">Chọn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#modal_flow").on("hidden.bs.modal", function () {
+        $(this).empty();
+    });
+    $("#modal_history").on("hidden.bs.modal", function () {
+        $(this).empty();
+    });
+    function callReviewFunction() {
+        $("#modal_review").modal("show");
+    }
+    function CallAction(stepid, back, log) {
+        AjaxCall("/wfstreamarea/wfstream/flow?idprocess=" + @Model.Process.ID + "&stepid=" + stepid + "&IsBack=" + back + "&LogId=" + log, 'get', null, function (rs) {
+            $("#modal_flow").html(rs);
+            $("#modal_flow").modal("show");
+
+        })
+    }
+
+    function History() {
+        AjaxCall("/wfstreamarea/wfstream/GetHistory?idItem=" + @Model.Process.ITEM_ID + "&itemType=@Model.Process.ITEM_TYPE", 'get', null, function (rs) {
+            $("#modal_history").html(rs);
+            $("#modal_history").modal("show");
+
+        })
+    }
+
+    function FunctionAction(actionName) {
+        switch (actionName) {
+            case '@FUNCTION_CONSTANT.LUUSOPHATHANH':
+                ActionLuuSoPhatHanh(@Model.Process.ITEM_ID);
+                break;
+            case '@FUNCTION_CONSTANT.KYDUYETVANBAN':
+                ActionKyDuyetVanBan(@Model.Process.ITEM_ID);
+                break;
+            default:
+        }
+
+    }
+    ////////Begin Danh sách function chức năng////////
+    function ActionLuuSoPhatHanh(id) {
+        AjaxCall("/wfstreamarea/FunctionState/LuuSoPhatHanh?id=" + id, 'get', null, function (rs) {
+            $("#modal_Function").html(rs);
+            $("#modal_Function").modal("show");
+        });
+    }
+    function ActionKyDuyetVanBan(id) {
+        //thực hiện gọi ký duyệt văn bản trong đây
+        $.confirm({
+            'title': 'Xác nhận ký duyệt',
+            'message': 'Bạn có chắc chắn muốn thực hiện việc này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url:'/wfstreamarea/wfstream/SaveKyDuyetVanBan',
+                                type:'post',
+                            data: { "id": id },
+                                success:function (rs) {
+                                    if (rs.Type == "SUCCESS") {
+                                        NotiSuccess(rs.Message);
+                                        setTimeout(function () {
+                                            location.reload()
+                                        },1000);
+                                    }else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                            error: function (rs) {
+                                console.log(rs);
+                                    NotiError("Đã có lỗi xảy ra");
+                                }
+                            })
+                        }
+                    },
+            'Hủy bỏ': {
+                'class': 'btn-danger',
+                'action': function () { }
+                }
+            }
+        });
+        //End
+    }
+    function submitPhanHoiVanBan() {
+        if ($("#PHANHOIVANBAN").val() == "") {
+            $("#PHANHOIVANBAN").focus();
+            $("#PHANHOIVANBAN_DIV_ERROR").show();
+            $("#PHANHOIVANBAN_ERROR").html("Bạn phải nhập thông tin này");
+            $("#PHANHOIVANBAN_ERROR").show();
+            NotiError("Bạn phải nhập nội dung phản hồi");
+            return false;
+        } else {
+            $("#PHANHOIVANBAN_ERROR").hide();
+            $("#PHANHOIVANBAN_DIV_ERROR").hide();
+            $.confirm({
+                'title': 'Xác nhận phản hồi',
+                'message': 'Bạn có chắc chắn muốn thực hiện việc này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $("#ReviewVanBanTrinhKyForm").submit();
+                            @*$.ajax({
+                                url:'/wfstreamarea/wfstream/SaveUserReview',
+                                type:'post',
+                                data:JSON.stringify({"processID":@Model.Process.ID,
+                                    "phanHoiVanBan":$("#PHANHOIVANBAN").val(),
+                                    "pheDuyetVanBan":$("#PHEDUYETVANBAN").val(),
+                                    "itemId":'@Model.Process.ITEM_ID',
+                                    "itemType":'@Model.Process.ITEM_TYPE'
+                                }),
+                                dataType:'json',
+                                contentType:'application/json',
+                                success:function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess("Đã lưu dữ liệu thành công");
+                                        setTimeout(function () {
+                                            location.reload()
+                                        },1000);
+                                    }else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error:function () {
+                                    NotiError("Đã có lỗi xảy ra");
+                                }
+                            })*@
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-danger',
+                        'action': function () { }
+                    }
+                }
+            });
+        }
+
+    }
+    ////////End Danh sách function chức năng////////
+
+    $('#btn--pick-sovanban').on('click', function () {
+        var checked = $('#table--sovanban input[type=radio]:checked');
+        if (checked.length > 0) {
+            var value = checked[0].value;
+            $('#modal--block-sovanban').modal('hide');
+            $('#SOTHEOSO').val(value);
+        } else {
+            NotiError('Vui lòng chọn số đi theo sổ');
+        }
+    })
+</script>

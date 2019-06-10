@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Thư gửi thông báo lịch công tác trong tuần</title>
+</head>
+
+<body>
+    <div id="email-header" style="font-family: 'Times New Roman', Times, serif;font-size:13pt;">
+        <p>Kính gửi [[recipient]] lãnh đạo bệnh viện Ninh Bình</p>
+        <p>
+            Văn phòng trân trọng gửi lịch làm việc của Anh/Chị trong tuần [[week_header_title]] (nội dung thay đổi được đánh dấu màu cam, nội dung xóa được để màu đỏ) để báo
+            cáo Lãnh đạo Bệnh viện và để các đơn vị được biết
+        </p>
+    </div>
+
+
+    <div id="email-content" style="width:100%;text-align: center;font-size:13pt;">
+        [[email_error_content]]
+        <div id="email-content-title">
+            <h3>
+                Lịch làm việc trong tuần
+            </h3>
+            <p>[[week_title]]</p>
+            <p>[[week_start_end_date_title]]</p>
+        </div>
+
+        <table style="width:100%;font-size:13px;border-color:#ddd;border-collapse: collapse" border="1">
+            <thead>
+                <tr style="font-weight:bold;">
+                    <th style="width:10%;border:1px solid #ddd">Ngày</th>
+                    <th style="border:1px solid #ddd">Sáng</th>
+                    <th style="border:1px solid #ddd">Chiều</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                [[email_main_content]]
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

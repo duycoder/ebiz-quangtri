@@ -1,0 +1,73 @@
+﻿@using Business.CommonModel.QUANLYVANBAN
+@model ListVanBanBO
+<table class="table table-bordered table-striped table-hover">
+    <tdead>
+        <tr>
+            <td>#</td>
+            @*<td> <img src="\Content\Images/attach-3.png" title="Tài liệu đính kèm" /></td>*@
+            <td widtd="10%">
+                Số ký hiệu
+            </td>
+            <td widtd="10%">
+                Ngày ban hành
+            </td>
+            <td widtd="20%">
+                Cơ quan ban hành
+            </td>
+            <td widtd="45%">Trích yếu</td>
+            <td class="text-center">
+                <span class="pointer fa-lg text-primary" style="cursor:pointer" onclick="FormVanBan(@Model.HoSoID)">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                </span>
+            </td>
+        </tr>
+    </tdead>
+    <tbody>
+        @{
+            if (Model.ListVanBan.Any())
+            {
+                var stt = 0;
+                foreach (var item in Model.ListVanBan)
+                {
+                    stt++;
+                    <tr>
+                        <td>@stt</td>
+                        @*<td>
+                                @if (item.TAILIEU_ID.HasValue)
+                                {
+                                    <a href="javascript:void(0)" onclick="DowloadFile(@item.TAILIEU_ID)" title="@item.TAILIEU_NAME">
+                                        <img src="\Content\Images/attach-3.png" title="Tài liệu đính kèm" />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>&nbsp;</span>
+                                }
+                            </td>*@
+                        <td>
+                            <a href="javascript:DetailVanBan(@item.VANBAN_ID)">
+                                @item.SO_KYHIEU
+                            </a>
+                        </td>
+                        <td>@string.Format("{0:dd/MM/yyyy}", item.NGAYBANHANH)</td>
+                        <td>@item.COQUAN_BANHANH_NAME</td>
+                        <td>@item.TRICHYEU_VANBAN</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="javascript:void(0)" onclick="FormVanBan(@item.HOSO_ID,@item.VANBAN_ID)" title="Chỉnh sửa"><i class="fa fa-pencil-square fa-lg" style="color: #dfb56c; font-size: 1.5em; line-height: 0.5em;"> </i>&nbsp;&nbsp;</a>
+                                <a href="javascript:void(0)" onclick="DeleteVanBan(@item.VANBAN_ID)" title="Xóa"><i class=" glyphicon glyphicon-remove fa-lg" style="color:red"> </i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-danger text-center">Chưa có thông tin</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

@@ -1,0 +1,185 @@
+﻿@using Web.Areas.DMNguoiDungArea.Models;
+@model DetailVM
+<div class="modal-dialog" style="width:60%">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">@Model.NguoiDung.HOTEN</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+               
+
+                <div class="col-sm-12 ">
+                    <div class="row">
+                        <div class="detail-title"> Thông tin cá nhân</div>
+                    </div>
+                    <div class="row well well-sm">
+                        <div class="col-sm-2 nomargin nopadding center" style=" margin-bottom:20px;">
+                            <img style="height:80px;" class="img img-thumbnail" src="~/img/avatars/male.png" />
+                            <div class="center" style=" margin-top: 10px;">
+                                <button class="btn btn-xs btn-primary">Tải lên</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Tài khoản
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @Model.NguoiDung.TENDANGNHAP
+                                </div>
+                            </div>
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Họ tên
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @Model.NguoiDung.HOTEN
+                                </div>
+                            </div>
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Ngày sinh
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @string.Format("{0:dd/MM/yyyy}", Model.NguoiDung.NGAYSINH)
+                                </div>
+                            </div>
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Email
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @Model.NguoiDung.EMAIL
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Điện thoại
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @Model.NguoiDung.DIENTHOAI
+                                </div>
+                            </div>
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Địa chỉ
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @Model.NguoiDung.DIACHI
+                                </div>
+                            </div>
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Trạng thái
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @if (Model.NguoiDung.TRANGTHAI == 1)
+                                    {
+                                        <div class="label label-info">Đang hoạt động</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="label label-danger">Khóa</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-6 nomargin nopadding">
+                                <div class="detail-label col-sm-4">
+                                    Vai trò
+                                </div>
+                                <div class="detail-data col-sm-8">
+                                    @foreach (var vt in Model.ListVaiTro)
+                                    {
+                                        <div class="label label-default">@vt.TEN_VAITRO</div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="detail-title"> Quyền người dùng</div>
+                    </div>
+                    <div class="row well well-sm">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Chức năng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var chucnangnd in Model.ListChucNang)
+                                {
+                                    <tr>
+                                        <td rowspan="@chucnangnd.ListThaoTac.Count" style="vertical-align:middle; color:#34495e; font-weight:bold">@chucnangnd.TEN_CHUCNANG</td>
+                                        <td>@chucnangnd.ListThaoTac[0].TEN_THAOTAC</td>
+                                    </tr>
+                                    for (int tt = 1; tt < chucnangnd.ListThaoTac.Count; tt++)
+                                    {
+                                        <tr>
+                                            <td>@chucnangnd.ListThaoTac[tt].TEN_THAOTAC</td>
+                                        </tr>
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+    }
+</div>
+
+
+
+<script>
+    $(".txt-picker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-50:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onSelect: function (date) {
+
+        }
+    });
+    function successAjaxCreate(rs) {
+        if (rs.Status) {
+            $("#tbl-nguoidung").hinetTable("reload");
+            $("#modal_create").modal("hide");
+            $("#modal_create").empty();
+            NotiSuccess("Thêm mới thành công");
+        } else {
+
+            NotiError("Không thể thêm mới");
+        }
+    }
+
+    function checkSubmid() {
+        var err = checkForm('createNguoidungForm');
+        if (err) {
+            $("#createNguoidungForm").submit();
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+
+</script>

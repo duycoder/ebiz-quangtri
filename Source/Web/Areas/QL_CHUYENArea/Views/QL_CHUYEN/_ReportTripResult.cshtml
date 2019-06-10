@@ -1,0 +1,143 @@
+﻿@using Web.Areas.QL_CHUYENArea.Models;
+@using Business.CommonModel.QLCHUYEN
+@model ReportTripViewModel
+@{
+    //ChuyenReportBO reportEntity = Model.reportEntity;
+}
+<style type="text/css">
+    #block--report--title,
+    #block--report--time-title {
+        text-align: center;
+        color: #118ACB;
+        font-weight: bold;
+    }
+
+    #table--report--transport {
+        border: 1px solid #118ACB;
+    }
+
+        #table--report--transport thead tr th {
+            background: #118ACB;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            border-bottom: 1px solid #118ACB;
+        }
+
+        #table--report--transport tbody tr th,
+        #table--report--transport tbody tr td {
+            border: 1px solid #118ACB;
+            width: auto;
+            height: 50px;
+            line-height: 50px;
+            background: #fff;
+        }
+
+        #table--report--transport tbody tr th {
+            color: #118ACB;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+    #table--report--transport {
+        background-color: #FFEAA7;
+    }
+</style>
+
+<h2 id="block--report--title">
+    BÁO CÁO CÔNG TÁC VẬN CHUYỂN
+</h2>
+
+<h6 id="block--report--time-title">
+    (@Model.timeLine)
+</h6>
+
+<div class="center" style="margin: 10px; text-align:left !important;">
+    <button type="button" class="btn btn-primary" onclick="exportReportTrip()">
+        <i class="fa fa-file-word"></i>&nbsp;XUẤT BÁO CÁO
+    </button>
+</div>
+
+<table class="table table-condensed" id="table--report--transport">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên chuyến</th>
+            <th>Thời gian xuất phát</th>
+            <th>Điểm xuất phát</th>
+            <th>Thời điểm về</th>
+            <th>Điểm kết thúc</th>
+            <th>Quãng đường di chuyển (km)</th>
+            <th>Tổng chi phí di chuyển</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model.reportEntity.Any())
+        {
+            foreach (var entity in Model.reportEntity)
+            {
+                var trips = entity.groupOfTrips;
+                int count = 0;
+                <tr class="highlight">
+                    <td colspan="8">
+                        <b>@entity.TEN_CANBO (@(trips.Count() + " chuyến"))</b>
+                    </td>
+                </tr>
+                foreach (var trip in trips)
+                {
+
+                    <tr>
+                        <td>
+                            @(++count)
+                        </td>
+                        <td>
+                            @trip.TEN_CHUYEN
+                        </td>
+                        <td>
+                            @if (trip.NGAY_XUATPHAT != null)
+                            {
+                                <span>
+                                    @string.Format("{0} lúc {1}h{2}", string.Format("{0:dd/MM/yyyy}", trip.NGAY_XUATPHAT.Value), trip.GIO_XUATPHAT.GetValueOrDefault().ToString("D2"), trip.PHUT_XUATPHAT.GetValueOrDefault().ToString("D2"))
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @trip.DIEM_XUATPHAT
+                        </td>
+                        <td>
+                            @if (trip.NGAYSUA != null)
+                            {
+                                <span>
+                                    @string.Format("{0} lúc {1}h{2}", string.Format("{0:dd/MM/yyyy}", trip.NGAYSUA.Value), trip.NGAYSUA.Value.Hour.ToString("D2"), trip.NGAYSUA.Value.Minute.ToString("D2"))
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @trip.DIEM_KETTHUC
+                        </td>
+                        <td>
+                            @trip.QUANGDUONG_DICHUYEN.GetValueOrDefault().ToString("#,#0")
+                        </td>
+                        <td>
+                            @trip.TONG_CHIPHI.GetValueOrDefault().ToString("#,#0")
+                        </td>
+                    </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr>
+                <th colspan="7">
+                    <center>
+                        <h1 class="text-info">
+                            KHÔNG CÓ SỐ LIỆU
+                        </h1>
+                    </center>
+                </th>
+            </tr>
+        }
+    </tbody>
+</table>

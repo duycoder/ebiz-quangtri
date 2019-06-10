@@ -1,0 +1,565 @@
+﻿
+@using Newtonsoft.Json;
+@model Web.Areas.HSCV_VANBANPHATHANHArea.Models.HscvVanBanPhatHanhModel
+@{
+    ViewBag.Title = Model.VanBan.ID > 0 ? "Cập nhật văn bản phát hành" : "Thêm mới văn bản phát hành";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("Index")">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+<div id="content">
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">@(Model.VanBan.ID > 0 ? "Cập nhật văn bản phát hành" : "Thêm mới văn bản phát hành")</h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div class="loading-ajax" style="display:none">Đang xử lý...</div>
+            @using (Html.BeginForm("SaveObj", "HSCV_VANBANPHATHANH", FormMethod.Post,
+        new { id = "UploadFileFrm", enctype = "multipart/form-data", style = "padding:30px" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ID" value="@Model.VanBan.ID" />
+                <div class="form-horizontal">
+                    
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Số/ Ký hiệu:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control required" name="SOHIEU" value="@Model.VanBan.SOHIEU" id="SOHIEU" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="SOHIEU_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Số trang:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="SOTRANG" id="SOTRANG" class="form-control" value="@Model.VanBan.SOTRANG" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="SOTRANG_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Loại văn bản:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="txt-select2 required" name="LOAIVANBAN_ID" id="LOAIVANBAN_ID">
+                                <option value="">Lựa chọn</option>
+                                @{
+                                    foreach (var item in Model.ListLoaiVanBan)
+                                    {
+                                        <option value="@item.ID" @(Model.VanBan.LOAIVANBAN_ID.HasValue && Model.VanBan.LOAIVANBAN_ID.Value == item.ID ? "selected='selected'" : "")>@item.TEXT</option>
+                                    }
+                                }
+                            </select>
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="LOAIVANBAN_ID_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Lĩnh vực:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <select class="txt-select2 required" name="LINHVUCVANBAN_ID" id="LINHVUCVANBAN_ID">
+                                <option value="">Lựa chọn</option>
+                                @{
+                                    foreach (var item in Model.ListLinhVucVanBan)
+                                    {
+                                        <option value="@item.ID" @(Model.VanBan.LINHVUCVANBAN_ID.HasValue && Model.VanBan.LINHVUCVANBAN_ID.Value == item.ID ? "selected='selected'" : "")>@item.TEXT</option>
+                                    }
+                                }
+                            </select>
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="LINHVUCVANBAN_ID_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Độ khẩn:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <select name="DOKHAN_ID" id="DOKHAN_ID" class="txt-select2 required">
+                                <option value="">Lựa chọn</option>
+                                @{
+                                    foreach (var item in Model.ListDoKhan)
+                                    {
+                                        <option value="@item.ID" @(Model.VanBan.DOKHAN_ID.HasValue && Model.VanBan.DOKHAN_ID.Value == item.ID ? "selected='selected'" : "")>@item.TEXT</option>
+                                    }
+                                }
+
+                            </select>
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="DOKHAN_ID_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Độ ưu tiên:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <select name="DOMAT_ID" id="DOMAT_ID" class="txt-select2 required">
+                                <option value="">Lựa chọn</option>
+                                @{
+                                    foreach (var item in Model.ListDoUuTien)
+                                    {
+                                        <option value="@item.ID" @(Model.VanBan.DOMAT_ID.HasValue && Model.VanBan.DOMAT_ID.Value == item.ID ? "selected='selected'" : "")>@item.TEXT</option>
+                                    }
+                                }
+
+                            </select>
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="DOMAT_ID_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Ngày có hiệu lực:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="NGAY_HIEULUC" id="NGAY_HIEULUC" class="form-control" value="@(Model.VanBan.NGAY_HIEULUC.HasValue? Model.VanBan.NGAY_HIEULUC.Value.ToString("dd/MM/yyyy") : "")" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="NGAY_HIEULUC_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Ngày hết hiệu lực:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="NGAYHET_HIEULUC" id="NGAYHET_HIEULUC" class="form-control" value="@(Model.VanBan.NGAYHET_HIEULUC.HasValue? Model.VanBan.NGAYHET_HIEULUC.Value.ToString("dd/MM/yyyy") : "")" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="NGAYHET_HIEULUC_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Ngày văn bản:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="NGAY_VANBAN" id="NGAY_VANBAN" class="form-control datepicker" value="@(Model.VanBan.NGAY_VANBAN.HasValue? Model.VanBan.NGAY_VANBAN.Value.ToString("dd/MM/yyyy") : "")" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="NGAY_VANBAN_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Ngày ban hành:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="NGAY_BANHANH" id="NGAY_BANHANH" class="form-control datepicker" value="@(Model.VanBan.NGAY_BANHANH.HasValue? Model.VanBan.NGAY_BANHANH.Value.ToString("dd/MM/yyyy") : "")" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="NGAY_BANHANH_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Người ký:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="NGUOIKY" id="NGUOIKY" class="form-control" value="@Model.VanBan.NGUOIKY" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="NGUOIKY_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Chức vụ:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" name="CHUCVU" id="CHUCVU" value="@Model.VanBan.CHUCVU" />
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="CHUCVU_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Trích yếu:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-10">
+                            <textarea rows="5" class="form-control" id="TRICHYEU" name="TRICHYEU">@Model.VanBan.TRICHYEU</textarea>
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="TRICHYEU_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Nội dung:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="hidden" name="NOIDUNG" id="NOIDUNG" />
+                            <textarea name="NOIDUNG_TEXT" id="NOIDUNG_TEXT" class="form-control">@Model.VanBan.NOIDUNG</textarea>
+                            <div class="note-error">
+                                <span class="red error mes-note-error" id="NOIDUNG_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label >
+                                Chọn phòng ban/ đơn vị nhận
+                            </label>
+                        </div>
+                        <div class="col-sm-3">
+                            <a href="javascript:choosePhongban()">Click vào để chọn đơn vị nhận</a>
+                        </div>
+                        <div class="col-sm-7" id="ChooseDeptId">
+                            @{
+                                string DonViId = "";
+                                if (Model.ListDonVi.Any())
+                                {
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Đơn vị/ phòng ban nhận văn bản</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                foreach (var item in Model.ListDonVi)
+                                                {
+                                                    DonViId += item.ID + ",";
+                                                    <tr>
+                                                        <td>
+                                                            <input type="hidden" name="department-choose" value="@item.ID">@item.CODE - @item.NAME
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Định dạng cho phép:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Model.Extension
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Dung lượng cho phép:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @(Model.MaxSize + " (Mb)")
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            @Html.Partial("../Common/UploadFile", Model.ListTaiLieu)
+                        </div>
+                    </div>
+                    <div class="form-group" style="text-align:center;margin-top:20px">
+                        <button class="btn btn-success" id="btnSave" type="submit">Lưu lại</button>
+                        <button class="btn btn-default" id="btnClose" type="button" onclick="location.href='@Url.Action("Index")'">Quay lại</button>
+                    </div>
+                </div>
+                <input type="hidden" id="DONVINHAN_ID" name="DONVINHAN_ID" value="@DonViId" />
+                <div id="dialogChonPhongBan" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Chọn phòng ban/ đơn vị</h4>
+                            </div>
+                            <div class="modal-body" style="max-height: 500px; overflow-y: scroll" id="TreeChonDonViPartial">
+                                @Html.Partial("TreeChonDonViPartialV2", Model.TreeDonVi)
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" onclick="chooseDepartment()">Lưu</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script src="~/ckeditor/ckeditor.js"></script>
+<script>
+    function chooseDepartment() {
+        var lstItem = $("#TreeChonDonViPartial input[type=checkbox]:checked.dept-doji");
+        $("#dialogChonPhongBan").modal("hide");
+        if (lstItem.length > 0) {
+            var html = '<table class="table"><thead><tr><th>Đơn vị/ phòng ban nhận văn bản</th></tr></thead><tbody>';
+            for (var i = 0; i < lstItem.length; i++) {
+                html += '<tr><td>'
+                    + '<input type="hidden" name="department-choose" value="' + lstItem[i]["value"] + '" />'
+                    + $("#" + lstItem[i]["id"]).parent().find('.input-Name').html() + '</td></tr>';
+            }
+            html += '</tbody></table>';
+            $("#ChooseDeptId").html(html);
+        } else {
+            $("#ChooseDeptId").html("");
+        }
+    }
+    function choosePhongban() {
+        $("#dialogChonPhongBan").modal();
+    }
+    for (name in CKEDITOR.instances) {
+        CKEDITOR.instances[name].destroy(true);
+    }
+    CKEDITOR.replace('NOIDUNG_TEXT', {// Define the toolbar groups as it is a more accessible solution.
+        toolbarGroups: [
+            { "name": "basicstyles", "groups": ["basicstyles"] },
+            { "name": "links", "groups": ["links"] },
+            { "name": "paragraph", "groups": ["list", "blocks"] },
+            { "name": "document", "groups": ["mode"] },
+            { "name": "insert", "groups": ["insert"] },
+            { "name": "styles", "groups": ["styles"] },
+            { "name": "about", "groups": ["about"] }
+        ],
+        removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+    });
+    CKEDITOR.config.height = 200;
+    CKEDITOR.config.copyFormatting_allowedContexts = true;
+    $(".datepicker").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onSelect: function (date) {
+
+        }
+    });
+    $("#NGAY_HIEULUC").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYHET_HIEULUC").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#NGAYHET_HIEULUC").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAY_HIEULUC").datepicker('option', 'maxDate',date);
+        }
+    });
+    function SubmitForm() {
+        var error = 0;
+        $("#NOIDUNG").val(CKEDITOR.instances.NOIDUNG_TEXT.getData());
+        //var VANBANDI_ID = $("#VANBANDI_ID").val();
+        var SOHIEU = $("#SOHIEU").val().trim();
+        var TRICHYEU = $("#TRICHYEU").val().trim();
+        var LOAIVANBAN_ID = $("#LOAIVANBAN_ID").val();
+        var LINHVUCVANBAN_ID = $("#LINHVUCVANBAN_ID").val();
+        var DOKHAN_ID = $("#DOKHAN_ID").val();
+        var DOMAT_ID = $("#DOMAT_ID").val();
+        var SOTRANG = $("#SOTRANG").val().trim();
+        var NGUOIKY = $("#NGUOIKY").val().trim();
+        var CHUCVU = $("#CHUCVU").val().trim();
+        var NOIDUNG = $("#NOIDUNG").val().trim();
+        var NGAY_HIEULUC = $("#NGAY_HIEULUC").val().trim();
+        var NGAYHET_HIEULUC = $("#NGAYHET_HIEULUC").val().trim();
+        var NGAY_VANBAN = $("#NGAY_VANBAN").val().trim();
+        var NGAY_BANHANH = $("#NGAY_BANHANH").val().trim();
+        //if (VANBANDI_ID == "") {
+        //    error++;
+        //    $("#VANBANDI_ID_ERROR").html("Bạn chưa chọn văn bản đi");
+        //}
+        if (SOHIEU == "") {
+            error++;
+            $("#SOHIEU_ERROR").html("Bạn chưa nhập số/ký hiệu");
+        } else if (/<[a-z][\s\S]*>/i.test(SOHIEU)) {
+            error++;
+            $("#SOHIEU_ERROR").html("Số/ký hiệu không được chứa ký tự dạng html");
+        } else {
+            $("#SOHIEU_ERROR").html("");
+        }
+        if (SOTRANG != "" && !$.isNumeric(SOTRANG)) {
+            error++;
+            $("#SOTRANG_ERROR").html("Số trang phải là số");
+        }
+        if (NGUOIKY == "") {
+            error++;
+            $("#NGUOIKY_ERROR").html("Bạn chưa nhập ngày ký");
+        } else if (/<[a-z][\s\S]*>/i.test(SOHIEU)) {
+            error++;
+            $("#NGUOIKY_ERROR").html("Người ký không được chứa ký tự dạng html");
+        } else {
+            $("#NGUOIKY_ERROR").html("");
+        }
+        if (TRICHYEU == "") {
+            error++;
+            $("#TRICHYEU_ERROR").html("Bạn chưa nhập trích yếu");
+        } else if (/<[a-z][\s\S]*>/i.test(SOHIEU)) {
+            error++;
+            $("#TRICHYEU_ERROR").html("Trích yếu không được chứa ký tự dạng html");
+        } else {
+            $("#TRICHYEU_ERROR").html("");
+        }
+        if (LOAIVANBAN_ID == "") {
+            error++;
+            $("#LOAIVANBAN_ID_ERROR").html("Bạn chưa chọn loại văn bản");
+        }
+        if (LINHVUCVANBAN_ID == "") {
+            error++;
+            $("#LINHVUCVANBAN_ID_ERROR").html("Bạn chưa chọn lĩnh vực văn bản");
+        }
+        if (DOKHAN_ID == "") {
+            error++;
+            $("#DOKHAN_ID_ERROR").html("Bạn chưa chọn độ khẩn văn bản");
+        }
+        if (DOMAT_ID == "" || DOMAT_ID == null) {
+            error++;
+            $("#DOMAT_ID_ERROR").html("Bạn chưa chọn độ mật văn bản");
+        }
+        if (NGAY_HIEULUC != "" && !CommonJS.dateValidate(NGAY_HIEULUC)) {
+            error++;
+            $("#NGAY_HIEULUC_ERROR").html("Ngày có hiệu lực không đúng định dạng");
+        } else if (NGAY_HIEULUC != "" && !CommonJS.dateValidate(NGAY_HIEULUC)) {
+            $('#NGAY_HIEULUC_ERROR').text('Ngày có hiệu lực không tồn tại');
+            error++;
+        }
+        if (NGAYHET_HIEULUC != "" && !CommonJS.dateValidate(NGAYHET_HIEULUC)) {
+            error++;
+            $("#NGAYHET_HIEULUC_ERROR").html("Ngày hết hiệu lực không đúng định dạng");
+        } else if (NGAYHET_HIEULUC != "" && !CommonJS.dateValidate(NGAYHET_HIEULUC)) {
+            $('#NGAYHET_HIEULUC_ERROR').text('Ngày hết hiệu lực không tồn tại');
+            error++;
+        }
+        if (NGAY_VANBAN != "" && !CommonJS.dateValidate(NGAY_VANBAN)) {
+            error++;
+            $("#NGAY_VANBAN_ERROR").html("Ngày văn bản không đúng định dạng");
+        } else if (NGAY_VANBAN != "" && !CommonJS.dateValidate(NGAY_VANBAN)) {
+            $('#NGAY_VANBAN_ERROR').text('Ngày văn bản không tồn tại');
+            error++;
+        } if (NGAY_BANHANH == "") {
+            error++;
+            $("#NGAY_BANHANH_ERROR").html("Bạn chưa chọn ngày ban hành");
+        }else if (!CommonJS.dateValidate(NGAY_BANHANH)) {
+            error++;
+            $("#NGAY_BANHANH_ERROR").html("Ngày có hiệu lực không đúng định dạng");
+        } else if (NGAY_BANHANH != "" && !CommonJS.dateValidate(NGAY_BANHANH)) {
+            $('#NGAY_BANHANH_ERROR').text('Ngày có hiệu lực không tồn tại');
+            error++;
+        }
+        return error;
+    }
+    $("#btnSave").click(function () {
+        var err = SubmitForm();
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Vui lòng kiểm tra lại thông tin nhập");
+        }
+        return false;
+    });
+    $(function () {
+        $("form").ajaxForm({
+            beforeSend: function () {
+                $(".loading-ajax").show();
+                $("#btnSave").attr("disabled");
+            },
+            uploadProgress: function () {
+            },
+            success: function (data) {
+                $(".loading-ajax").hide();
+                if (data.Type == "SUCCESS") {
+                    NotiSuccess(data.Message);
+                    location.href='@Url.Action("Index")'
+                } else if (data.Type == "ERROR") {
+                    NotiError(data.Message);
+                } else {
+                    var error = data.Message;
+                    var size = error.length;
+                    for (var i = 0; i < size; i++) {
+                        $("#" + error[i].Field + "_ERROR").html(error[i].Message);
+                    }
+                }
+            },
+            complete: function () {
+            }, error: function (data) {
+                NotiError(data);
+            }
+        });
+    });
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                    $(".txt-select2").select2();
+                });
+            });
+        });
+    });
+    $(document).on("blur", ".form-control", function () {
+        if ($(this).val().trim() != "") {
+            var name = $(this).attr("name");
+            $("#" + name + "_ERROR").html("");
+        }
+    });
+    $(document).on("change", "select", function () {
+        if ($(this).val().trim() != "") {
+            var name = $(this).attr("name");
+            $("#" + name + "_ERROR").html("");
+        }
+    });
+</script>
+<style>
+    .txt-select2 {
+        width: 100%
+    }
+
+    #UploadFileFrm {
+        padding: 10px
+    }
+
+    .form-group .col-sm-2 label {
+        font-weight: bold
+    }
+
+    .mes-note-error {
+        display: block !important;
+    }
+
+    .like-table-row {
+        display: table;
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 0px;
+    }
+
+        .form-group .col-sm-2 {
+            vertical-align: middle;
+            text-align: right
+        }
+</style>

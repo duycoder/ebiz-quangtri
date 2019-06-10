@@ -1,0 +1,185 @@
+﻿@using Web.Areas.QL_LAIXEArea.Models;
+@model LaiXeBenhVienEditViewModel
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+@using (Ajax.BeginForm("Save", "QL_LAIXE", new { @area = "QL_LAIXEArea" }, new AjaxOptions()
+{
+    HttpMethod = "POST",
+    OnSuccess = "editLaiXeBenhVienSuccess",
+    OnFailure = "editLaiXeBenhVienFailure"
+}, new { id = "form--edit-laixe-benhvien" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ID" value="@Model.laiXeEntity.ID" />
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    @(Model.laiXeEntity.ID > 0 ? "CẬP NHẬT LÁI XE TỈNH ỦY" : "THÊM MỚI LÁI XE TỈNH ỦY")
+                </h5>
+            </div>
+            <div class="modal-body">
+                <fieldset>
+                    <div class="row">
+                        <section class="col col-lg-12">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="HOTEN">
+                                        Họ tên:&nbsp;<span class="text-danger">(*)</span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control required checkHTMLInjection" name="HOTEN" id="HOTEN" value="@Model.laiXeEntity.HOTEN" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="GIOITINH">
+                                        Giới tính:&nbsp;
+                                    </label>
+                                </div>
+
+                                <div class="col-sm-9">
+                                    <select class="width-100 selectpicker1" data_action_box="true" data_live_search="true"id="GIOITINH" name="GIOITINH">
+                                        <option value="true" @(Model.laiXeEntity.GIOITINH ? "selected" : "")>Nam</option>
+                                        <option value="false" @(!Model.laiXeEntity.GIOITINH ? "selected" : "")>Nữ</option>
+                                    </select>
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row form-group" style="margin-bottom:0">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="CMND">
+                                        Số CMND:&nbsp;<span class="text-danger">(*)</span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control validateCMND checkHTMLInjection" name="CMND" id="CMND" value="@Model.laiXeEntity.CMND" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row form-group" style="margin-bottom:0">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="SODIENTHOAI">
+                                        Số điện thoại:&nbsp;<span class="text-danger">(*)</span>
+                                    </label>
+                                </div>
+
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control required checkHTMLInjection validatePhone" name="SODIENTHOAI" value="@Model.laiXeEntity.SODIENTHOAI" id="SODIENTHOAI" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label class="lbl control-label" for="EMAIL">
+                                        Email:&nbsp;
+                                    </label>
+                                </div>
+
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control checkHTMLInjection" name="EMAIL" value="@Model.laiXeEntity.EMAIL" id="EMAIL" />
+                                    <div class="note-error">
+                                        <span class="error mes-note-error" id="EMAIL_ERROR"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn--save">Lưu thông tin</button>
+                <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(function(){
+        loadScript("/Content/select/js/bootstrap-select.js", function () {
+            $(".selectpicker1").selectpicker();
+        })
+
+        $('#btn--save').on('click',function(){
+            var formName = 'form--edit-laixe-benhvien';
+            var isValid = onSubmit(formName);
+            if(isValid){
+               $('#'+formName).submit();
+            }
+            return false;
+        });
+    })
+
+    function onSubmit(formName) {
+        var errorCount = 0;
+        var emailValue = $('#' + formName + ' #EMAIL').val().trim();
+        
+        var isValidCMND = ValidateFieldCMND(formName);
+        var isValidRequiredField = requiredFieldForFormId(formName);
+        var isValidPhoneNumber = ValidateFieldPhone(formName);
+        var isValidEmail = emailValue != '' ? isEmail(emailValue) : true;
+
+        if(!isValidCMND || !isValidRequiredField || !isValidPhoneNumber){
+            return false;
+        }
+
+        if(!isValidEmail){
+            $('#EMAIL_ERROR').css('display', 'inline');
+            $('#EMAIL_ERROR').text('Vui lòng nhập đúng định dạng email.');
+            return false;
+        }else{
+            $('#EMAIL_ERROR').css('display', 'none');
+        }
+
+        var isValidHTMLInjection = validateHTMLInjectionField(formName);
+        if(!isValidHTMLInjection){
+            return false;
+        }
+        return true;
+    }
+
+    function editLaiXeBenhVienSuccess (rs){
+        if(rs.Status){
+            $('#modal--edit-laixe-benhvien').modal('hide');
+            $('#modal--edit-laixe-benhvien').empty();
+            NotiSuccess(rs.Message);
+            setTimeout(function(){
+                reloadData();
+            }, 1000);
+        }else{
+            NotiError(rs.Message);
+        }
+    }
+
+    function editLaiXeBenhVienFailure(rs){
+         NotiError(@(Model.laiXeEntity.ID) > 0 ? "Cập nhật lái xe thất bại" : "Thêm mới lái xe thất bại");
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

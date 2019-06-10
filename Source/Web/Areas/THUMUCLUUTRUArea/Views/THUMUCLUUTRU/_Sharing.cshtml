@@ -1,0 +1,358 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models;
+@using Web.Models
+@model ThuMucLuuTruModel
+@using (Ajax.BeginForm("SaveSharing", "ThuMucLuuTru", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "createSuccess"
+}, new { id = "frmCreateThuMuc" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Chia sẻ tài liệu</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    @{
+                        if (Model.IsFolder)
+                        {
+                            <div class="form-group row">
+                                <div class="col-sm-2">Tên thư mục:</div>
+                                <div class="col-sm-4">
+                                    @Model.ThuMuc.TENTHUMUC
+                                </div>
+                                <div class="col-sm-2" style="padding-right:0px">
+                                    Phạm vi truy cập:
+                                </div>
+                                <div class="col-sm-4">
+                                    @{
+                                        switch (Model.ThuMuc.ACCESS_MODIFIER)
+                                        {
+                                            case AccessModifier.ALL_DEPARTMENT:
+                                                <span>Toàn phòng ban</span>
+                                                break;
+                                            case AccessModifier.ALL_SYSTEM:
+                                                <span>Toàn hệ thống</span>
+                                                break;
+                                            case AccessModifier.ALL_UNIT:
+                                                <span>Toàn đơn vị</span>
+                                                break;
+                                            case AccessModifier.PRIVATE:
+                                                <span>Cá nhân</span>
+                                                break;
+                                        }
+                                    }
+                                    <div class="note-error">
+                                        <span class="error" id=""></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-2">Thao tác:</div>
+                                <div class="col-sm-4">
+                                    @{
+                                        switch (Model.ThuMuc.PERMISSION)
+                                        {
+                                            case FolderPermission.CAN_READ:
+                                                <span>Chỉ đọc</span>
+                                                break;
+                                            case FolderPermission.CAN_WRITE:
+                                                <span>Chỉ ghi</span>
+                                                break;
+                                            case FolderPermission.BOTH:
+                                                <span>Ghi và đọc</span>
+                                                break;
+                                        }
+                                    }
+                                    <div class="note-error">
+                                        <span class="error" id=""></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="ITEM_ID" value="@Model.ThuMuc.ID" />
+                            <input type="hidden" name="IS_FOLDER" value="True" />
+                        }
+                        else
+                        {
+                            <div class="form-group row">
+                                <div class="col-sm-2">Tên tài liệu:</div>
+                                <div class="col-sm-10">
+                                    @Model.TaiLieu.TENTAILIEU
+                                    <div class="note-error">
+                                        <span class="error" id=""></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <input type="hidden" name="ITEM_ID" value="@Model.TaiLieu.TAILIEU_ID" />
+                            <input type="hidden" name="IS_FOLDER" value="False" />
+                        }
+                    }
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Họ và tên:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input value="" name="NGUOIDUOC_CHIASE" id="NGUOIPHUTRACH_CHINH" type="hidden" />
+                            <input style="width:80%" disabled placeholder="Tên người được chia sẻ" type="text" id="NGUOIPHUTRACH_CHINH_TEXT" value="" class="form-control" />
+                            <ul class="list-inline">
+                                <li class="list-inline-item text-success" id="NGUOIPHUTRACH_CHINH_CHOOSE" style="cursor:pointer">Chọn</li>
+                                <li class="list-inline-item">|</li>
+                                <li class="list-inline-item" id="NGUOIPHUTRACH_CHINH_REMOVE" style="cursor:pointer">Xóa</li>
+                            </ul>
+                            <div class="note-error">
+                                <span class="error" id="NGUOIDUOC_CHIASE_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Quyền thao tác:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <select name="PERMISSION" id="PERMISSION" class="select2" style="width:100%">
+                                @foreach (var item in Model.ListFolderPermission)
+                                {
+                                    <option value="@item.Value" @(item.Selected ? "selected='selected'" : "")>@item.Text</option>
+                                }
+                            </select>
+                            <div class="note-error">
+                                <span class="error" id="PERMISSION_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Từ ngày:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="TUNGAY" id="TUNGAY" class="form-control txt-picker" />
+                            <div class="note-error">
+                                <span class="error" id="TUNGAY_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Đến ngày:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="DENNGAY" id="DENNGAY" class="form-control txt-picker" />
+                            <div class="note-error">
+                                <span class="error" id="DENNGAY_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            Ghi chú:
+                        </div>
+                        <div class="col-sm-10">
+                            <textarea name="GHICHU" id="GHICHU" class="form-control" rows="2"></textarea>
+                            <div class="note-error">
+                                <span class="error" id="DENNGAY_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    @{
+                        if (Model.ListChiaSe.Any())
+                        {
+                            <div class="form-group">
+                                <h3 class="group-tittle mt10" style="margin-bottom:10px">Những người cũng có quyền thao tác với thư mục này</h3>
+                            </div>
+                            <div class="form-group">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Họ và tên</th>
+                                            <th>Từ ngày</th>
+                                            <th>Đến ngày</th>
+                                            <th>Quyền</th>
+                                            <th>Ghi chú</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="SHARE_BODY">
+                                        @{
+                                            int size = Model.ListChiaSe.Count;
+                                            for (int i = 0; i < size; i++)
+                                            {
+                                                <tr id="SHARED_@Model.ListChiaSe[i].ID">
+                                                    <td class="center">@(i + 1)</td>
+                                                    <td class="center">@(Model.ListChiaSe[i].TEN_NGUOIDUNG)</td>
+                                                    <td class="center">@(Model.ListChiaSe[i].TUNGAY.HasValue ? Model.ListChiaSe[i].TUNGAY.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                    <td class="center">@(Model.ListChiaSe[i].DENNGAY.HasValue ? Model.ListChiaSe[i].DENNGAY.Value.ToString("dd/MM/yyyy") : "")</td>
+                                                    <td class="left">
+                                                        @{
+                                                            switch (Model.ListChiaSe[i].PERMISSION)
+                                                            {
+                                                                case FolderPermission.CAN_READ:
+                                                                    <span>Chỉ đọc</span>
+                                                                    break;
+                                                                case FolderPermission.CAN_WRITE:
+                                                                    <span>Chỉ ghi</span>
+                                                                    break;
+                                                                case FolderPermission.BOTH:
+                                                                    <span>Đọc và ghi</span>
+                                                                    break;
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td class="left">@(Model.ListChiaSe[i].GHICHU)</td>
+                                                    <td class="center">
+                                                        <a href='javascript:void(0)' onclick='EditSharing(@Model.ListChiaSe[i].ID)' title='Chỉnh sửa'><i class='glyphicon glyphicon-edit'> </i></a>
+                                                        <a href='javascript:void(0)' onclick='DeleteSharing(@Model.ListChiaSe[i].ID)' title='Chỉnh sửa'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        } }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Lưu lại" id="btnSave" class="btn btn-success" />
+                <button class="close-modal btn btn-default" id="btnClose" type="button" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <div id="SharingFile" class="modal fade" role="dialog"></div>
+}
+@{
+    ChonNguoiDungModel model_one = new ChonNguoiDungModel();
+    model_one.PHONGBAN_ID = 0;
+    model_one.TEXT_ID = "NGUOIPHUTRACH_CHINH_TEXT";
+    model_one.VALUE_ID = "NGUOIPHUTRACH_CHINH";
+    model_one.ID_CLICK = "NGUOIPHUTRACH_CHINH_CHOOSE";
+    model_one.IS_MULTICHOICE = 1;
+    model_one.INDEX = 0;
+    model_one.TITLE = "Lựa chọn người dùng";
+    //Nếu là thư mục phòng
+    if ((Model.ThuMuc.FIXED_FOLDER_ID == ThuMucLuuTruConstant.DefaultDept || Model.ThuMuc.FIXED_FOLDER_ID == ThuMucLuuTruConstant.DefaultUnit) && 
+        Model.ThuMuc.DONVI_ID == Model.userInfoBo.DM_PHONGBAN_ID)
+    {
+        model_one.EXCEPT_DEPT = Model.ThuMuc.DONVI_ID;
+    }
+    Html.RenderPartial("../Common/_ChonNguoiDungV2", model_one);
+}
+<script>
+ function createSuccess(data) {
+    NotiSuccess(data.Message);
+    $("#btnClose").click();
+}
+function failure(err) {
+    NotiError("Không thể thêm mới");
+}
+$(document).ready(function () {
+    loadScript("/Scripts/autoNumeric.min.js", function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $(".select2").select2();
+        });
+    });
+});
+$("#TUNGAY").datepicker({
+    dateFormat: 'dd/mm/yy',
+    changeMonth: true,
+    changeYear: true, yearRange: "-0:+20",
+    showWeek: false, weekHeader: "Tuần",
+    language: 'vi',
+    minDate: new Date(),
+    prevText: '<i class="fa fa-chevron-left"></i>',
+    nextText: '<i class="fa fa-chevron-right"></i>',
+    onSelect: function (date) {
+        $("#DENNGAY").datepicker("option", "minDate", date);
+    }
+});
+$("#DENNGAY").datepicker({
+    dateFormat: 'dd/mm/yy',
+    changeMonth: true,
+    changeYear: true, yearRange: "-0:+20",
+    showWeek: false, weekHeader: "Tuần",
+    language: 'vi',
+    minDate: new Date(),
+    prevText: '<i class="fa fa-chevron-left"></i>',
+    nextText: '<i class="fa fa-chevron-right"></i>',
+    onSelect: function (date) {
+        $("#TUNGAY").datepicker("option", "maxDate", date);
+    }
+});
+$("#btnSave").click(function () {
+    if ($("#NGUOIPHUTRACH_CHINH").val() == "") {
+        $("#NGUOIDUOC_CHIASE_ERROR").html("Bạn chưa chọn người được chia sẻ");
+        return false;
+    }
+    return true;
+});
+function DeleteSharing(id) {
+    $.confirm({
+        'title': 'Xác nhận xóa',
+        'message': 'Bạn có chắc chắn muốn ngừng chia sẻ?',
+        'buttons': {
+            'Đồng ý': {
+                'class': 'btn-confirm-yes btn-primary',
+                'action': function () {
+
+                    $.ajax({
+                        url: '@Url.Action("DeleteSharing")',
+                        data: { 'id': id },
+                        type: 'post',
+                        success: function (rs) {
+                            if (rs.Type == "SUCCESS") {
+                                NotiSuccess(rs.Message);
+                                $("#SHARED_" + id).remove();
+                            } else {
+                                NotiError(rs.Message);
+                            }
+                        },
+                        error: function () {
+                            NotiError("Không thực hiện được thao tác");
+
+                        }, complete: function () {
+                            var count = 0;
+                            $("#SHARE_BODY tr").each(function () {
+                                count++;
+                                $(this).find("td:first-child").html(count);
+                            });
+                        }
+                    })
+
+                }
+            },
+            'Hủy bỏ': {
+                'class': 'btn-default',
+                'action': function () { }   // Nothing to do in this case. You can as well omit the action property.
+            }
+        }
+    });
+}
+function EditSharing(id) {
+    $.ajax({
+        url: '@Url.Action("EditShare")',
+        type: 'GET',
+        cache: false,
+        data: {
+            id: id
+        },
+        success: function (data) {
+            $("#SharingFile").html(data);
+            $("#SharingFile").modal('show');
+        },
+        error: function (xhr) {
+            CommonJS.alert(xhr.responseText);
+        }
+    });
+}   
+
+</script>
+<style>
+    .table th {
+        text-align: center;
+    }
+</style>

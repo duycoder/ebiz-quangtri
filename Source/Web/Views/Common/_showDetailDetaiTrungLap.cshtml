@@ -1,0 +1,15 @@
+﻿
+@model Web.Models.ShowTrungLapDeTaiModel
+<div class="panel panel-default">
+    <div class="panel-heading">@Model.tendetai</div>
+    <div class="panel-body ">
+        <ul class="list-group">
+            @foreach (var highlight in Model.lsthighlights)
+            {
+                <li class="list-group-item">
+                    @Html.Raw(highlight)
+                </li>
+            }
+        </ul>
+    </div>
+</div>

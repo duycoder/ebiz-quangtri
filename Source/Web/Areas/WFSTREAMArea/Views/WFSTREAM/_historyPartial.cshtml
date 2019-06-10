@@ -1,0 +1,119 @@
+﻿@using Web.Areas.WFSTREAMArea.Models;
+@using Business.CommonModel.WFSTREAM;
+@using Newtonsoft.Json;
+@model HistoryFlowBO
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+    .cssPhongBan {
+        background-color: #16a085 !important;
+        color: white;
+    }
+
+    .event {
+        text-align: left !important;
+    }
+
+    .roadmap.roadmap--orientation-vertical .roadmap__events__event:nth-child(2n+1) .event {
+        top: 0 !important;
+    }
+</style>
+
+<div class="modal-dialog" style="width:1000px;">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">Lịch sử xử lý</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="row nomargin">
+                <div class="timeline-container timeline-theme-1">
+                    <div class="smart-timeline">
+                        <ul class="smart-timeline-list">
+                            @foreach (var item in Model.lstLog)
+                            {
+                                <li>
+                                    @if (item.IS_RETURN == true)
+                                    {
+                                        <div class="smart-timeline-icon bg-orange">
+                                            <i class="fa fa-rotate-left"></i>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="smart-timeline-icon">
+                                            <i class="fa fa-arrow-right"></i>
+                                        </div>
+                                    }
+
+                                    <div class="smart-timeline-time">
+                                        <small>
+                                            @string.Format("{0:dd/MM/yyyy HH:mm:ss}", item.create_at)
+                                        </small>
+                                    </div>
+                                    <div class="smart-timeline-content">
+                                        <p style="text-align:left">
+                                            <a href="javascript:void(0);">
+                                                @if (item.IS_RETURN == true)
+                                                {
+                                                    <strong>Trả về</strong>
+                                                }
+                                                else if (item.step != null)
+                                                {
+                                                    <strong>@item.step.NAME</strong>
+                                                }
+                                            </a>
+                                        </p>
+
+                                        <div class="well well-sm display-inline" style="width:100%; text-align:left">
+                                            <p>
+                                                <strong>
+                                                    <i class="fa fa-user"></i>&nbsp;Người xử lý:
+                                                </strong> @item.TenNguoiXuLy
+                                            </p>
+
+                                            <p>
+                                                <strong>
+                                                    <i class="fa fa-folder"></i>&nbsp;Nội dung:
+                                                </strong> @Html.Raw(item.MESSAGE)
+                                            </p>
+
+                                            <p>
+                                                <strong>
+                                                    <i class="fa fa-user"></i>&nbsp;Người nhận:
+                                                </strong> @item.TenNguoiNhan
+                                            </p>
+                                            @if (item.LstThamGia != null)
+                                            {
+                                                <p>
+                                                    <strong>
+                                                        <i class="fa fa-users"></i>&nbsp;Người tham gia
+                                                    </strong>:&nbsp;@(string.Join(", ", item.LstThamGia))
+                                                </p>
+                                            }
+                                        </div>
+
+                                        @*@if (item.LstTaiLieuDinhKem.Any() == false)
+                                        {
+                                            <div class="well well-sm display-inline" style="width:100%; text-align:left">
+                                                @Html.Partial("../Common/UploadFile", item.LstTaiLieuDinhKem, new ViewDataDictionary() { { "detail", 1 }, { "allowviewpdf", 0 } })
+                                            </div>
+                                        }*@
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer center">
+
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>

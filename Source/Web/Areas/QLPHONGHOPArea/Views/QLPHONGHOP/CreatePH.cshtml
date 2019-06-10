@@ -1,0 +1,823 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@using Web.Custom;
+@model PhongHopVM
+
+@{
+    ViewBag.Title = "Đặt Phòng Họp";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var nextWeek = Model.GoToDate.AddDays(7);
+    var lastWeek = Model.GoToDate.AddDays(-7);
+}
+<link href="~/css/print.min.css" rel="stylesheet" />
+<link href="~/css/qlphonghop.css" rel="stylesheet" />
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<script src="~/js/print.min.js"></script>
+<div id="tbale-qlphong">
+    <div id="lstt-lenh">
+        <button><a href="/QLPHONGHOPArea/QLPHONGHOP/CreatePH" title="Hôm nay">Hôm nay</a></button>
+        <div class="chuyenpage">
+            <a class="glyphicon glyphicon-chevron-left" href="/QLPHONGHOPArea/QLPHONGHOP/CreatePH?gotodate=@string.Format("{0:dd/MM/yyyy}", lastWeek) " id="pre-page" title="Tuần trước"></a>
+            <a class="glyphicon glyphicon-chevron-right" href="/QLPHONGHOPArea/QLPHONGHOP/CreatePH?gotodate=@string.Format("{0:dd/MM/yyyy}", nextWeek)" id="next-page" title="Tuần kế tiếp"></a>
+            <div class="thoigian">
+                @string.Format("{0:dd}", Model.Monday) <span>-</span> <span>@string.Format("{0:dd}", Model.Sunday)</span> <span>tháng @string.Format("{0:MM, yyyy}", Model.Sunday)</span>
+            </div>
+        </div>
+        <div class="inpage">
+            <ul>
+                <li title="In lịch họp">
+                    <button onclick="printJS({ printable: 'tbl_creatPhong', type: 'html', header: 'Lịch đặt phòng họp' })" id="btnPrint">
+                        <span class="glyphicon glyphicon-print"></span>In trang
+                    </button>
+                </li>
+
+                <li title="Tạo yêu cầu họp" style="margin:0 5px">
+                    <button onclick="create()">
+                        <span class="glyphicon glyphicon-plus"></span>Tạo yêu cầu họp
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="header">
+        <h3>Quản lý phòng họp</h3>
+    </div>
+    <table style="border: 1px solid #333; width: 100%; margin: auto;" id="tbl_creatPhong">
+        <tr>
+            <td rowspan="2">STT</td>
+            <td rowspan="2">Phòng</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Monday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Thứ 2 - (@(string.Format("{0:dd/MM}", Model.Monday)))</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Tuesday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Thứ 3 - (@(string.Format("{0:dd/MM}", Model.Tuesday)))</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Wednesday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Thứ 4 - (@(string.Format("{0:dd/MM}", Model.Wednesday)))</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Thursday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Thứ 5 - (@(string.Format("{0:dd/MM}", Model.Thursday)))</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Friday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Thứ 6 - (@(string.Format("{0:dd/MM}", Model.Friday)))</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Saturday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Thứ 7 - (@(string.Format("{0:dd/MM}", Model.Saturday)))</td>
+            <td colspan="2" class="@(string.Format("{0:dd/MM/yyyy}", Model.Sunday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "ThuHtai" : "")">Chủ nhật - (@(string.Format("{0:dd/MM}", Model.Sunday)))</td>
+        </tr>
+        <tr>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Monday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Monday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Tuesday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Tuesday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Wednesday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Wednesday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Thursday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Thursday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Friday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Friday ) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Saturday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Saturday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Sunday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiSang" : "")">Sáng</td>
+            <td class="@(string.Format("{0:dd/MM/yyyy}", Model.Sunday) == string.Format("{0:dd/MM/yyyy}", DateTime.Now) ? "BuoiChieu" : "")">Chiều</td>
+        </tr>
+
+        @foreach (var item in Model.LstPhongHop)
+        {
+            var LstMondaySang = Model.LstMonday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstMondayChieu = Model.LstMonday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            var LstTuesdaySang = Model.LstTuesday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstTuesdayChieu = Model.LstTuesday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            var LstWednesdaySang = Model.LstWednesday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstWednesdayChieu = Model.LstWednesday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            var LstThursdaySang = Model.LstThursday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstThursdayChieu = Model.LstThursday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            var LstFridaySang = Model.LstFriday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstFridayChieu = Model.LstFriday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            var LstSaturdaySang = Model.LstSaturday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstSaturdayChieu = Model.LstSaturday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            var LstSundaySang = Model.LstSunday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU <= 12).ToList();
+            var LstSundayChieu = Model.LstSunday.Where(x => x.PHONG_ID == item.ID && x.GIOBATDAU > 12).ToList();
+            <tr>
+                <td>@item.DATA</td>
+                <td>@item.TEXT</td>
+
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstMondaySang)
+                    {
+                        <div class="user-phong  @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstMondayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstTuesdaySang)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstTuesdayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstWednesdaySang)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstWednesdayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstThursdaySang)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstThursdayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstSaturdaySang)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstSaturdayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstFridaySang)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstFridayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstSundaySang)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+                <td class="userphong-1">
+                    @foreach (var bookroom in LstSundayChieu)
+                    {
+                        <div class="user-phong @(bookroom.TRANGTHAI == 1 ? "Cofirm-Ok" : "")">
+                            <a href="javascript:DetailDatPhong(@bookroom.ID)" class="detailPhong" title="Xem chi tiết">
+                                <p>@(bookroom.MUCDICH.Length > 50 ? bookroom.MUCDICH.Substring(0, 50 - 3) + "..." : bookroom.MUCDICH)</p>
+                                <p>@bookroom.NguoiChuTri</p>
+                            </a>
+                            <p>(@bookroom.GIOBATDAU<span>:</span>@bookroom.PHUTBATDAU <span>-</span>@bookroom.GIOKETTHUC<span>:</span>@bookroom.PHUTKETTHUC)</p>
+                            <div class="actionPhong">
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.ROLE))
+                                    {
+                                        <a href="javascript:ConfirmDatPhong(@bookroom.ID)" title="Xác nhận"><i class="fa fa-check"></i></a>
+                                    }}
+                                <a href="javascript:EditDatPhong(@bookroom.ID)" title="Sửa"><i class="fa fa-edit"></i></a>
+                                <a href="javascript:DeleteDatPhong(@bookroom.ID)" title="Xóa"><i class="fa fa-remove"></i></a>
+
+                            </div>
+
+                        </div>
+                    }
+                    <div class="btnDatPhong">
+                        <button type="button" class="btn btn-primary" onclick="datphong('@string.Format("{0:dd/MM/yyyy}", Model.Monday)', '@item.TEXT', '@item.ID')">Đặt phòng</button>
+                    </div>
+                </td>
+            </tr>
+
+        }
+    </table>
+</div>
+<div class="modal fade" id="phonghop" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Thông tin đặt phòng</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/QLPHONGHOPArea/QLPHONGHOP/CreatePH" method="post" id="formQlphonghop">
+                    <input type="hidden" name="PHONGID" value="" id="PHONGID" />
+                    <input type="hidden" name="NGAYDAT" value="" id="NGAYDAT" />
+                    <div class="form-group col-sm-6 pd0">
+                        <label for="phong"><strong>Số phòng </strong><span>*</span></label>
+                        <span id="So_Phong_Dat"></span>
+                    </div>
+                    <div class="form-group col-sm-6 pd0">
+                        <label for="ngaydat"><strong>Ngày đặt </strong><span>*</span></label>
+
+                        <span id="Ngay_Dat_Phong"></span>
+                    </div>
+                    <div class="form-group dattgian">
+                        <div class="col-sm-2">
+                            <label for="thoigian"><strong>Thời gian </strong><span>*</span></label>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="col-sm-6 pd0 batdau">
+                                <span>&nbsp; <strong><i>Từ</i></strong> </span>
+                                <select id="GIOBATDAU" class="requireDropdownlist selectpicker1" name="GIOBATDAU">
+                                    <option value="1">Chọn giờ</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                <span>&nbsp; Giờ &nbsp;</span>
+
+                                <select name="PHUTBATDAU" class="selectpicker1" id="PHUTBATDAU">
+                                    <option value="0">00</option>
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                    <option value="30">30</option>
+                                    <option value="35">35</option>
+                                    <option value="40">40</option>
+                                    <option value="45">45</option>
+                                    <option value="50">50</option>
+                                    <option value="55">55</option>
+
+                                </select>
+                                <span>&nbsp; Phút</span>
+                                <div class="note-error">
+                                    <span class="error mes-note-error loidatgio"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 pd0 pdl-15 ketthuc">
+                                <span><strong><i>Đến</i></strong> </span>
+                                <select name="GIOKETTHUC" class="requireDropdownlist selectpicker1" id="GIOKETTHUC">
+                                    <option value="1">Chọn giờ</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                <span>&nbsp; Giờ &nbsp;</span>
+                                <select name="PHUTKETTHUC" class="requireDropdownlist selectpicker1" id="PHUTKETTHUC">
+                                    <option value="0">00</option>
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                    <option value="30">30</option>
+                                    <option value="35">35</option>
+                                    <option value="40">40</option>
+                                    <option value="45">45</option>
+                                    <option value="50">50</option>
+                                    <option value="55">55</option>
+
+                                </select>
+                                <span>&nbsp; Phút</span>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group chutri">
+                        <div class="col-sm-2">
+                            <label for="thoigian"><strong>Người chủ trì </strong><span>*</span></label>
+                        </div>
+                        @Html.DropDownList("NGUOICHUTRI", Model.LstUsers, "- Chọn Người Chủ Trì -", new { @class = "requiredDropDownList col-sm-10 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group thamduhop">
+                        <label for="thanhphan"><strong>Thành phần tham dự </strong><span>*</span></label>
+                        @*<select class="">
+                            <option value="1">---Chọn thành phần tham dự---</option>
+                            <option value="2">Phạm Công Qúy</option>
+                            <option value="2">Dương Minh Tuấn</option>
+                            <option value="2">Đỗ Hải Anh</option>
+                            <option value="2">Đặng Thùy Linh</option>
+                            <option value="2">Nguyễn Ngọc Bảo Trâm</option>
+                                </select>*@
+                        <textarea rows="5" placeholder="Thành phần tham dự cuộc họp" class="required selectpicker1" id="TPTHAMDU" name="TPTHAMDU"></textarea>
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="noidung"><strong>Nội dung </strong><span>*</span></label>
+                        <textarea rows="5" placeholder="Nội dung cuộc họp" id="MUCDICH" class="required selectpicker1" name="MUCDICH"></textarea>
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="gui-datphong"><button type="button" id="btnSavePhong" class="btn btn-default" title="Đặt phòng">Đặt phòng</button></div>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" title="Thoát">Thoát</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+
+
+        </div>
+    </div>
+</div>
+
+
+<div id="modal--edit--phonghop" class="modal fade">
+
+</div>
+
+
+
+<div class="modal fade" id="Modal_DetailPhongHop" role="dialog">
+
+</div>
+
+<div class="modal fade" id="Modal_EditPhongHop" role="dialog">
+
+</div>
+
+<div class="modal fade" id="Modal_ConfirmPhongHop" role="dialog">
+
+</div>
+
+
+<script>
+    var pageFunction = function () {
+        $(".selectpicker1").selectpicker();
+    }
+    $(document).ready(function () {
+        loadScript("/ckeditor/ckeditor.js", function () {
+            loadScript("/Content/select/js/bootstrap-select.js", pageFunction);
+        });
+
+    });
+
+    $("#btnSavePhong").click(function () {
+        var is_submit = onSubmit();
+        if (is_submit) {
+            $.ajax({
+                url: '/QLPHONGHOPArea/QLPHONGHOP/CreatePH',
+                type: 'post',
+                cache: false,
+                data: {
+                    "NgayDatPhong": $("#NGAYDAT").val(),
+                    "IDPhong": $("#PHONGID").val(),
+                    "GioBD": $("#GIOBATDAU").val(),
+                    "GioKT": $("#GIOKETTHUC").val(),
+                    "PhutBD": $("#PHUTBATDAU").val(),
+                    "PhutKT": $("#PHUTKETTHUC").val(),
+                    "NguoiChuTri": $("#NGUOICHUTRI").val(),
+                    "TPThamDu": $("#TPTHAMDU").val(),
+                    "MucDich": $("#MUCDICH").val()
+                },
+                success: function (data) {
+                    if (data.Status == true) {
+                        $.confirm({
+                            'title': 'Xác nhận Đặt phòng',
+                            'message': 'Bạn có chắc chắn muốn đặt lịch phòng này?',
+                            'buttons': {
+                                'Đồng ý': {
+                                    'class': 'btn-confirm-yes btn-primary',
+                                    'action': function () {
+                                        $("#phonghop").hide();
+                                        NotiSuccess("Đặt Phòng Thành công!");
+                                        setTimeout(location.reload(), 2000);
+                                    }
+                                },
+                                'Hủy bỏ': {
+                                    'class': 'btn-default',
+                                    'action': function () { }
+                                }
+                            }
+                        });
+                    } else {
+                        NotiError(data.Message);
+                    }
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        } else {
+            return false;
+        }
+    });
+
+    function datphong(NgayDatPhong, SPhong, IDPhong) {
+        $("#phonghop").modal();
+        $("#So_Phong_Dat").html(SPhong);
+        $("#PHONGID").val(IDPhong);
+        $("#NGAYDAT").val(NgayDatPhong);
+        $("#Ngay_Dat_Phong").html(NgayDatPhong);
+
+    }
+
+    $("select[name=GIOBATDAU]").change(function () {
+        $(".batdau .bootstrap-select button").removeClass("loigio");
+        $(".loidatgio").removeClass('hienthi').html("");
+    });
+
+    function onSubmit() {
+        var err = 0;
+        var hourStart = parseInt($("select[name=GIOBATDAU]").val());
+        var MiStart = parseInt($("select[name=PHUTBATDAU]").val());
+        var MiEnd = parseInt($("select[name=PHUTKETTHUC]").val());
+        var hourEnd = parseInt($("select[name=GIOKETTHUC]").val());
+        if (hourStart == hourEnd) {
+            if (MiStart >= MiEnd) {
+                $(".batdau .bootstrap-select button").addClass('loigio');
+                $(".loidatgio").addClass("hienthi").html("Giờ Bắt đầu phải nhỏ hơn Giờ Kết thúc");
+                NotiError("Giờ Bắt đầu phải nhỏ hơn Giờ Kết thúc. Vui lòng kiểm tra lại");
+                return false;
+            }
+        }
+        if (hourEnd < hourStart) {
+            $(".batdau .bootstrap-select button").addClass('loigio');
+            $(".loidatgio").addClass("hienthi").html("Giờ Bắt đầu phải nhỏ hơn Giờ Kết thúc");
+            NotiError("Giờ Bắt đầu phải nhỏ hơn Giờ Kết thúc. Vui lòng kiểm tra lại");
+            return false;
+        }
+        var require = requiredFieldForFormId("formQlphonghop");
+        if (!require) {
+            err++;
+        }
+        var requireDropdownlist = RequireDropDownlist("formQlphonghop");
+        if (!requireDropdownlist) {
+            err++;
+        }
+
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Có lỗi. Vui lòng kiểm tra lại");
+            return false;
+        }
+    }
+
+    function EditDatPhong(id) {
+        AjaxCall("/QLPHONGHOPArea/QLPHONGHOP/EditPhong/" + id, 'get', null, function (rs) {
+            $("#Modal_EditPhongHop").html(rs);
+            $("#Modal_EditPhongHop").modal();
+        })
+    }
+
+    function DetailDatPhong(id) {
+        AjaxCall("/QLPHONGHOPArea/QLPHONGHOP/Detail/" + id, 'get', null, function (rs) {
+            $("#Modal_DetailPhongHop").html(rs);
+            $("#Modal_DetailPhongHop").modal();
+        })
+    }
+
+    function ConfirmDatPhong(id) {
+        AjaxCall("/QLPHONGHOPArea/QLPHONGHOP/ConfirmDatPhong/" + id, 'get', null, function (rs) {
+            $("#Modal_ConfirmPhongHop").html(rs);
+            $("#Modal_ConfirmPhongHop").modal();
+        })
+    }
+
+    function DeleteDatPhong(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa lịch đặt phòng này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+
+                        $.ajax({
+                            url: '/QLPHONGHOPArea/QLPHONGHOP/Delete',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Status) {
+                                    NotiSuccess("Xóa Đặt phòng thành công");
+                                    location.reload();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+
+                            }
+                        })
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }
+                }
+            }
+        });
+    }
+    $("body").addClass("minified");
+
+</script>

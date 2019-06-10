@@ -1,0 +1,353 @@
+﻿@using Business.CommonModel.CONSTANT;
+@using Web.Areas.QL_DANGKY_XEArea.Models;
+@model DangKyXeDetailViewModel
+@{
+    ViewBag.Title = "Thông tin đăng ký xe";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<style>
+    #ribbon {
+        background-color: #57889c;
+    }
+
+    #block--info-dangkyxe {
+        width: 80%;
+    }
+
+    #table--info-dangkyxe {
+        margin-top: 5px;
+        background: #fff;
+    }
+
+        #table--info-dangkyxe td:nth-child(2n+1) {
+            font-weight: bold !important;
+            text-align: right;
+            width: 16.66666667%;
+            vertical-align: middle;
+        }
+
+            #table--info-dangkyxe td:nth-child(2n+1) label {
+                font-weight: bold !important;
+            }
+
+    .list-group {
+        list-style-type: decimal;
+    }
+
+        .list-group li {
+            position: relative;
+            display: block;
+            padding: .75rem 1.25rem;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.125);
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+            .list-group li:first-child {
+                border-top: none;
+            }
+</style>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("Create")">
+            <i class="fa fa-plus"></i> <span>Thêm mới đăng ký xe</span>
+        </a>
+        <a class="btn btn-default pull-right" href="@Url.Action("Index")">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div class="clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fa fa-cab txt-color-darken"></i>
+                </span>
+                <h2 class="hidden-xs hidden-sm">
+                    THÔNG TIN ĐĂNG KÝ XE
+                </h2>
+            </header>
+
+            <table id="table--info-dangkyxe" class="table table-bordered">
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Tên cán bộ</label>
+                    </td>
+                    <td colspan="3">
+                        <label>@Model.entity.TEN_CANBO</label>
+                    </td>
+                </tr>
+
+                @if (Model.entityCalendar != null)
+                {
+                    <tr>
+                        <td class="txt-right col-sm-2">
+                            <label class="lbl-title">
+                                Lịch công tác
+                            </label>
+                        </td>
+                        <td colspan="3">
+                            <a href="javascript:void(0)" onclick="showCalendarInfo(@Model.entityCalendar.ID)">
+                                <b>
+                                    @Model.entityCalendar.TIEUDE
+                                </b>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Mục đích</label>
+                    </td>
+                    <td>
+                        <label>@Model.entity.MUCDICH</label>
+                    </td>
+
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Nội dung</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @Model.entity.NOIDUNG
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Số người</label>
+                    </td>
+                    <td class="col-sm-4" colspan="3">
+                        <label>
+                            @(Model.entity.SONGUOI + " người")
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Thời gian xuất phát</label>
+                    </td>
+                    <td class="col-sm-4" colspan="3">
+                        <label>
+                            <b>@Model.entity.THOIGIAN_XUATPHAT</b>
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Điểm xuất phát</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @Model.entity.DIEM_XUATPHAT
+                        </label>
+                    </td>
+
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Điểm kết thúc</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @Model.entity.DIEM_KETTHUC
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Phòng ban đăng ký</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @Model.entity.PHONGBAN_DANGKY
+                        </label>
+                    </td>
+
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Người đăng ký</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>
+                            @Model.entity.NGUOIDANGKY
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Ghi chú</label>
+                    </td>
+                    <td class="col-sm-4" colspan="3">
+                        <label>
+                            @Model.entity.GHICHU
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Trạng thái</label>
+                    </td>
+                    <td class="col-sm-4" colspan="3">
+                        <label style="color:@Model.entity.MAU_TRANGTHAI;font-size:15px">
+                            <b>
+                                @Model.entity.TEN_TRANGTHAI
+                            </b>
+                        </label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        @if (Model.canSendRegistration)
+        {
+            <div class="form-actions center">
+                <center>
+                    <a class="btn btn-primary btn-sm" id="btn--send">Gửi yêu cầu</a>
+                </center>
+            </div>
+        }
+
+        @if (Model.canRecieveRegistratiion)
+        {
+            <div class="form-actions center">
+                <center>
+                    <a class="btn btn-danger btn-sm" id="btn--reject">Không tiếp nhận</a>
+                    <a class="btn btn-primary btn-sm" id="btn--accept">Tiếp nhận</a>
+                </center>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" id="modal--confirm-car-register"></div>
+
+<div class="modal fade" role="dialog" id="modal--reject-car-register"></div>
+
+<div id="modal--lichcongtac-detail" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:70%">
+    </div>
+</div>
+
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    $(function(){
+        $('#btn--reject').on('click',function(){
+            $.post('/QL_DANGKY_XEArea/QL_DANGKY_XE/ConfirmRejectCarRegistration', {"registrationId": @Model.entity.ID}, function(result){
+                $('#modal--reject-car-register').html(result);
+                $('#modal--reject-car-register').modal('show');
+            });
+        });
+
+        $('#btn--accept').on('click',function(){
+            $.post('/QL_DANGKY_XEArea/QL_DANGKY_XE/ConfirmCarRegistration', {"registrationId": @Model.entity.ID}, function(result){
+                $('#modal--confirm-car-register').html(result);
+                $('#modal--confirm-car-register').modal('show');
+            });
+        })
+
+        $('#btn--send').on('click',function(){
+            $.confirm({
+                'title': 'Xác nhận gửi yêu cầu',
+                'message': 'Bạn có chắc chắn muốn gửi yêu cầu đăng ký xe này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("SendCarRegistration")',
+                                data: { 'registrationId': @Model.entity.ID },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess(rs.Message);
+                                        setTimeout(function(){
+                                            location.reload();
+                                        }, 1000);
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+        })
+    });
+
+    function onAcceptCarSuccess(result) {
+        if (result.Status) {
+            NotiSuccess(result.Message);
+
+            setTimeout(function () {
+                location.reload();
+            }, 1000);
+        } else {
+            NotiError(result.Message);
+        }
+    }
+
+    function onAcceptCarFailure(result) {
+        NotiError('Không thể tiếp nhận yêu cầu đăng ký xe');
+    }
+
+    function onRejectSuccess(rs){
+        if(rs.Status){
+            NotiSuccess(rs.Message);
+            setTimeout(function(){
+                location.reload();
+            }, 1000);
+        } else{
+            NotiError(rs.Message);
+        }
+    }
+
+    function onRejectFailure(rs){
+        NotiError('Không thể thực hiện thao tác');
+    }
+
+    function showCalendarInfo(id){
+        $.ajax({
+                url: '/LICHCONGTACArea/LichCongTac/DetailLichCongTac',
+                data: { 'id': id },
+                type: 'post',
+                dataType:'html',
+                success: function (rs) {
+                    $('#modal--lichcongtac-detail').html(rs);
+                    $('#modal--lichcongtac-detail').modal('show');
+                },error: function () {
+                    NotiError("Không thực hiện được thao tác");
+                }
+            });
+    }
+</script>

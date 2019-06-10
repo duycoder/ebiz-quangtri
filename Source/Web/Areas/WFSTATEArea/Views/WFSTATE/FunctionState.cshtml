@@ -1,0 +1,95 @@
+﻿@using Web.Areas.WFSTATEArea.Models;
+@model FunctionStateBO
+<div class="modal-dialog">
+    @using (Ajax.BeginForm("SaveFunction", "WFSTATE", new { @area = "WFSTATEArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "functionfstateForm" }))
+    {
+        @Html.AntiForgeryToken()
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Cấu hình hành động</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" class="form-control required" name="WF_STATE_ID" value="@(Model.State != null ? Model.State.ID : 0)">
+                    <input type="hidden" class="form-control required" name="ID" value="@(Model.StateFunction != null ? Model.StateFunction.ID : 0)">
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Hành động <span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            @if (Model.StateFunction == null)
+                            {
+                                @Html.DropDownList("ACTION", Model.DsFunction, new { @class = "width100 requiredDropDownList txtSelect2" })
+                            }
+                            else
+                            {
+                                @Html.DropDownList("ACTION", Model.DsFunction, new { @class = "width100  txtSelect2" })
+                            }
+                            
+
+
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Bỏ qua</label>
+                        <div class="col-sm-8">
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="On" name="IS_BREAK" @(Model.StateFunction!=null ? (Model.StateFunction.IS_BREAK==true?" checked ":""):"") /> Bỏ qua </label>
+                            </div>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function successAjaxCreate(rs) {
+        if (rs.Status) {
+            $("#tbl-wfstate").hinetTable("reload");
+            $("#modal_function").modal("hide");
+            $("#modal_function").empty();
+            NotiSuccess("Cập nhật thành công");
+        } else {
+
+            NotiError("Không thể cập nhật");
+        }
+    }
+
+    function checkSubmid() {
+        var err = checkForm('functionfstateForm');
+        if (err) {
+            $("#functionfstateForm").submit();
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $(".txtSelect2").select2();
+        });
+    })
+</script>

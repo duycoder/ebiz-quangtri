@@ -1,0 +1,122 @@
+﻿@using Web.Areas.QuanLyHoSoArea.Models
+@model QuanLyHoSoIndexViewModel
+
+
+@using (Ajax.BeginForm("searchData", "QuanLyHoSo", new AjaxOptions()
+{
+
+    HttpMethod = "POST",
+    OnSuccess = "searchSuccess",
+    OnFailure = "failureAjax",
+}, new { id = "frmSearch" }))
+{
+    <style>
+        .tbl-search label {
+            padding-left: 50px;
+        }
+
+        .hide-search {
+            display: none;
+        }
+    </style>
+    @Html.AntiForgeryToken()
+    <div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+        <div class="well">
+            <table style="width:800px; margin:0 auto" class="tbl-search">
+                <tr style="height:20px"></tr>
+                <tr class="hide-search search-nang-cao">
+                    <td width="150px">
+                        <label>Hồ sơ năm</label>
+                    </td>
+                    <td width="250">
+                        @Html.DropDownList("HOSO_NAM", Model.ListHoSoNam, "---Hồ sơ năm---", new { @class = "form-control", @style = "width:100%" })
+                    </td>
+                    <td width="150">
+                        <label>Năm chính lý</label>
+                    </td>
+                    <td width="250">
+                        @Html.DropDownList("NAM_CHINHLY", Model.ListNamChinhLy, "---Năm chỉnh lý---", new { @class = "form-control", @style = "width:100%" })
+                    </td>
+                </tr>
+                <tr style="height:20px" class="hide-search search-nang-cao"></tr>
+                <tr class="hide-search search-nang-cao">
+                    <td>
+                        <label>Tên kho</label>
+                    </td>
+                    <td>
+                        @Html.DropDownList("KHO_ID", Model.ListKho, "---Kho---", new { @class = "form-control", @style = "width:100%" })
+                    </td>
+                    <td>
+                        <label>Phông</label>
+                    </td>
+                    <td>
+                        @Html.DropDownList("PHONG_ID", Model.ListPhongBan, "---Phông---", new { @class = "form-control", @style = "width:100%" })
+                    </td>
+                </tr>
+                <tr style="height:20px" class="hide-search search-nang-cao"></tr>
+                <tr>
+                    <td width="150px">
+                        <label>Từ khóa</label>
+                    </td>
+                    <td colspan="3">
+                        <input type="text" id="FTS" name="FTS" class="form-control" placeholder="Tên hồ sơ, phông số, mục lục số, hộp số, hồ sơ số, số lượng tờ..." />
+                    </td>
+                </tr>
+                <tr style="height:20px"></tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="text-center">
+                            <button type="submit" class="btn  btn-primary">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                                Tìm kiếm
+                            </button>
+                            &nbsp;
+                            <button type="button" onclick="SearchNangCao()" class="btn  btn-danger">
+                                <i class="fa fa-search-plus" aria-hidden="true"></i>
+                                Nâng cao
+                            </button>
+                            @*&nbsp;
+                            <button type="button" class="btn  btn-default" onclick="javascript:exportExcel()">
+                                <i class="fa fa-file-excel-o text-success" aria-hidden="true"></i>
+                                Export Excel
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn  btn-default" onclick="window.location.href='/QuanLyHoSoArea/QuanLyHoSo/Import'">
+                                <i class="fa fa-cloud-upload text-danger" aria-hidden="true"></i>
+                                Import Excel
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn  btn-default" onclick="reload()">
+                                <i class="fa fa-spinner text-danger" aria-hidden="true"></i>
+                                Tải lại
+                            </button>*@
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+<script>
+    function failureAjax() {
+        CommonJS.showNotifyError("Đã có lỗi xảy ra");
+    }
+    function searchSuccess(rs) {
+        $("#tbl-hoso").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function reload() {
+        window.location.href = '/QuanLyHoSoArea/QuanLyHoSo/Index';
+
+    }
+    function SearchNangCao() {
+        $(".search-nang-cao").toggleClass("hide-search");
+    }
+    function exportExcel() {
+        window.location.href = "/QuanLyHoSoArea/QuanLyHoSo/Export";
+    }
+</script>

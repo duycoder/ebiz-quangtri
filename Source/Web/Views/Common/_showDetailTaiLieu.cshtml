@@ -1,0 +1,20 @@
+﻿@model Web.Models.ViewTaiLieuVM
+@{
+    var contentfile = "";
+}
+<div>
+    @if (Model.Extension == "pdf" || Model.Extension == "docx" || Model.Extension == "doc")
+    {
+        <embed src="@Model.fullPath" type="application/pdf" width="100%" height="700px">
+    }else if(Model.Extension == "png" || Model.Extension == "jpg" || Model.Extension == "gif")
+    {
+        <img src="@Model.fullPath" />
+    }
+    else
+    {
+    <div style="color: red; text-transform: uppercase; font-weight: bold">
+        Tài liệu này không hỗ trợ bản xem trước
+    </div>
+    }
+
+</div>

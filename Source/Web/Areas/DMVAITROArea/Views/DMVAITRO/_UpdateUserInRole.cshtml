@@ -1,0 +1,21 @@
+﻿@using Web.Areas.DMVAITROArea.Models
+
+@model PhanQuyenVM
+@{
+    var stt = 1;
+}
+@foreach (var item in Model.ListUserInRole)
+{
+    <tr>
+        <td>@stt</td>
+        <td>
+            @item.HOVATEN
+        </td>
+        <td style="text-align: center;">
+            <a href="javascript:void(0)" onclick="RemoveUsserInRole(@item.NGUOIDUNG_VAITRO_ID)">
+                <i class=" glyphicon glyphicon-remove fa-lg" style="color:red"> </i>
+            </a>
+        </td>
+    </tr>
+    stt++;
+}

@@ -1,0 +1,115 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models
+@model DungLuongLuuTruModel
+<div class="modal-dialog">
+    @using (Ajax.BeginForm("Save", "DUNGLUONGLUUTRU", new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "createattributeForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal-content" style="width:750px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">@(Model.Storage.ID > 0 ? "Cập nhật dung lượng lưu trữ" : "Thiết lập dung lượng lưu trữ")</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" name="USER_ID" value="@Model.NguoiDung.ID" />
+                    <input type="hidden" name="ID" value="@Model.Storage.ID" />
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Họ và tên:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Model.NguoiDung.HOTEN
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Đơn vị:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Model.DonVi.NAME
+                        </div>
+                    </div>
+                    <div class="form-group row">&nbsp;</div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Dung lượng:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" value="@(Model.Storage.DUNGLUONG.HasValue ? Model.Storage.DUNGLUONG.Value : ThuMucLuuTruConstant.DefaultStorage)" name="DUNGLUONG" id="" class="form-control required" />
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Đon vị tính:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <select name="TYPE" id="TYPE" class="txt-select2 requiredDropDownList" style="width:100%">
+                                <option @((Model.Storage.TYPE.HasValue && Model.Storage.TYPE.Value == ThuMucLuuTruConstant.Terabyte) || (ThuMucLuuTruConstant.DetaultType == ThuMucLuuTruConstant.Terabyte) ? "selected='selected'" : "") value="@ThuMucLuuTruConstant.Terabyte">Terabyte (Tb)</option>
+                                <option @((Model.Storage.TYPE.HasValue && Model.Storage.TYPE.Value == ThuMucLuuTruConstant.Gigabyte) || (ThuMucLuuTruConstant.DetaultType == ThuMucLuuTruConstant.Gigabyte) ? "selected='selected'" : "") value="@ThuMucLuuTruConstant.Gigabyte">Gigabyte (Gb)</option>
+                                <option @((Model.Storage.TYPE.HasValue && Model.Storage.TYPE.Value == ThuMucLuuTruConstant.Megabyte) || (ThuMucLuuTruConstant.DetaultType == ThuMucLuuTruConstant.Megabyte) ? "selected='selected'" : "") value="@ThuMucLuuTruConstant.Megabyte">Megabyte (Mb)</option>
+                                <option @((Model.Storage.TYPE.HasValue && Model.Storage.TYPE.Value == ThuMucLuuTruConstant.Kilobyte) || (ThuMucLuuTruConstant.DetaultType == ThuMucLuuTruConstant.Kilobyte) ? "selected='selected'" : "") value="@ThuMucLuuTruConstant.Kilobyte">Kilobyte (Kb)</option>
+                            </select>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2">Trạng thái<span class="red">*</span></label>
+                        <div class="col-sm-4">
+                            <select name="TRANGTHAI" id="TRANGTHAI" class="txt-select2 requiredDropDownList" style="width:100%">
+                                <option @((Model.Storage.TRANGTHAI.HasValue && Model.Storage.TRANGTHAI.Value) || (!Model.Storage.TRANGTHAI.HasValue) ? "selected='selected'" : "") value="True">Sử dụng</option>
+                                <option @(Model.Storage.TRANGTHAI.HasValue && !Model.Storage.TRANGTHAI.Value ? "selected='selected'" : "") value="False">Không sử dụng</option>
+                            </select>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">&nbsp;</div>
+                        <div class="col-sm-4">&nbsp;</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" id="btnSave">Lưu lại</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    $("#btnSave").click(function () {
+        var err = checkForm('createattributeForm');
+        if (err) {
+            $("#createattributeForm").submit();
+            return false;
+        } else {
+            NotiError("Vui lòng kiểm tra lại thông tin nhập");
+        }
+        return false;
+    });
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $("#createattributeForm .txt-select2").select2();
+        });
+    });
+    function successAjaxCreate(rs) {
+        if (rs.Type == "SUCCESS") {
+            $("#modal_create").modal("hide");
+            $("#modal_create").empty("");
+            UserModalOpen(deptId);
+            NotiSuccess(rs.Message);
+        } else {
+            NotiError(rs.Message);
+        }
+    }
+    function failureAjax(err) {
+        NotiError("Không thể thực hiện thao tác này");
+    }
+</script>

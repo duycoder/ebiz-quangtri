@@ -1,0 +1,111 @@
+﻿@model Web.Areas.THUMUCLUUTRUArea.Models.TaiLieuThuocTinhModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+
+        @using (Ajax.BeginForm("searchData", "TAILIEUTHUOCTINH",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+                <div class="col-md-12">
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-4 txt-label">Tên thuộc tính:</div>
+                        <div class="col-md-8">
+                            <input name="TEN_THUOCTINH" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-4 txt-label">&nbsp;</div>
+                        <div class="col-md-8">&nbsp;</div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-4 txt-label">Loại tài liệu:</div>
+                        <div class="col-md-8">
+                            <select class="select2" name="LOAI_TAILIEU" style="width:100%">
+                                <option value="">Tất cả</option>
+                                @{
+                                    foreach (var item in Model.ListLoaiTaiLieu)
+                                    {
+                                        <option value="@item.ID">@item.TEXT</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-4 txt-label">Trạng thái:</div>
+                        <div class="col-md-8">
+                            <select class="select2" name="TRANGTHAI" style="width:100%">
+                                <option value="">Tất cả</option>
+                                <option value="1">Sử dụng</option>
+                                <option value="2">Không sử dụng</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<script>
+    function failure(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-attribute").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $(".select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+
+
+</script>

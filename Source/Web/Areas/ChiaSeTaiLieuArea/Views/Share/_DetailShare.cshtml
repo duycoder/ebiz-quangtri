@@ -1,0 +1,140 @@
+﻿@using Business.CommonBusiness
+@using Web.FwCore
+@using Web.Common
+@using Web.Areas.ChiaSeTaiLieuArea.Models
+@model ShareApproveFormModel
+
+<div class="modal-dialog" style="margin:30px 30px 30px 20%">
+    <div class="modal-content" style="width:1000px">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Chi tiết yêu cầu chia sẻ tài liệu</h4>
+        </div>
+        <div class="modal-body" style="height:470px;overflow:auto">
+            <div class="form-group col-sm-12">
+                <label class="col-sm-2">Người yêu cầu:</label>
+                <label class="col-sm-4">@Model.Share.USER_NAME_YEU_CAU</label>
+                <label class="col-sm-2">Ngày yêu cầu:</label>
+                <label class="col-sm-4">@string.Format("{0:dd/MM/yyyy}", Model.Share.DATE_YEU_CAU)</label>
+            </div>
+            <div class="form-group col-sm-12">
+                <div class="col-sm-2">
+                    <label>Tiêu đề:</label>
+                </div>
+                <div class="col-sm-10">
+                    @Model.Share.TIEUDE
+                </div>
+            </div>
+            <div class="form-group col-sm-12">
+                <div class="col-sm-2">
+                    <label>Nội dung yêu cầu:</label>
+                </div>
+                <div class="col-sm-10">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.Share.NOIDUNG_YEUCAU))
+                        {
+                            @Model.Share.NOIDUNG_YEUCAU
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group col-sm-12">
+                <label class="col-sm-2">Người phê duyệt:</label>
+                <label class="col-sm-4">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.Share.USER_NAME_PHE_DUYET))
+                        {
+                            @Model.Share.USER_NAME_PHE_DUYET
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+                        }
+                    }
+                </label>
+                <label class="col-sm-2">Ngày phê duyệt:</label>
+                <label class="col-sm-4">
+                    @{
+                        if (Model.Share.DATE_PHE_DUYET.HasValue)
+                        {
+                            <span>@string.Format("{0:dd/MM/yyyy}", Model.Share.DATE_PHE_DUYET)</span>
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+                        }
+                    }
+                </label>
+            </div>
+            <div class="form-group col-sm-12">
+                <div class="col-sm-2">
+                    <label>Nội dung phê duyệt:</label>
+                </div>
+                <div class="col-sm-10">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.Share.NOIDUNG_PHEDUYET))
+                        {
+                            @Model.Share.NOIDUNG_PHEDUYET
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group col-sm-12">
+                <label class="col-sm-2">Người chia sẻ:</label>
+                <label class="col-sm-4">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.Share.USER_NAME_CHIA_SE))
+                        {
+                            @Model.Share.USER_NAME_CHIA_SE
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+                        }
+                    }
+                </label>
+                <label class="col-sm-2">Ngày chia sẻ:</label>
+                <label class="col-sm-4">
+                    @{
+                        if (Model.Share.DATE_CHIA_SE.HasValue)
+                        {
+                            <span>@string.Format("{0:dd/MM/yyyy}", Model.Share.DATE_CHIA_SE)</span>
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+                        }
+                    }
+                </label>
+            </div>
+            <div class="form-group col-sm-12">
+                <label class="col-sm-2">Nội dung chia sẻ</label>
+                <div class="col-sm-10">
+                    @{
+                        if (!string.IsNullOrEmpty(Model.Share.NOIDUNG_CHIASE))
+                        {
+                            @Model.Share.NOIDUNG_CHIASE
+                        }
+                        else
+                        {
+                            <span>Chưa có thông tin</span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>

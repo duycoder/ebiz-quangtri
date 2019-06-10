@@ -1,0 +1,365 @@
+﻿@{
+    ViewBag.Title = "Quản lý văn bản đã phát hành";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Web.Areas.HSCV_VANBANPHATHANHArea.Models
+@using Newtonsoft.Json
+@model HscvVanBanPhatHanhModel
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListResult.ListItem));
+    var jsonDatas = Html.Raw(JsonConvert.SerializeObject(Model.TreeData));
+}
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="@Url.Action("Create")">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<style>
+    #tbl-vanbanden table tr {
+        font-weight: bolder;
+    }
+</style>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý văn bản đã phát hành
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            @{
+                if (Model.TreeData != null && Model.TreeData.Child != null)
+                {
+                    <div class="col-sm-3" id="TreeDonVi" style="padding-right:0px;overflow:auto;height:100vh">
+                        @Html.Partial("TreeDonViPartial", Model.TreeData)
+                    </div>
+                    <div class="col-sm-9" style="padding-left:0px">
+                        <div id="tbl-vanbanden" class="hntbl-cover" style="padding:10px;">
+                            <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Đơn vị</th>
+                                        <th>Số/Ký hiệu</th>
+                                        <th>Trích yếu</th>
+                                        <th>Hình thức</th>
+                                        <th>Lĩnh vực</th>
+                                        <th>Độ khẩn</th>
+                                        <th>Độ ưu tiên</th>
+                                        <th>Ngày ban hành</th>
+                                        <th>Người ký</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="tbl-vanbanden" class="hntbl-cover" style="padding:10px;">
+                        <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Đơn vị</th>
+                                    <th>Số/Ký hiệu</th>
+                                    <th>Trích yếu</th>
+                                    <th>Hình thức</th>
+                                    <th>Lĩnh vực</th>
+                                    <th>Độ khẩn</th>
+                                    <th>Độ ưu tiên</th>
+                                    <th>Ngày ban hành</th>
+                                    <th>Người ký</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    var typeId = 0;
+    function ActionCreate() {
+        AjaxCall("@Url.Action("Create")", 'get', null, function (rs) {
+            $("#modal_create").html(rs);
+            $("#modal_create").modal("show");
+        });
+    }
+    function Remove(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa văn bản ban hành này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Type == "SUCCESS") {
+                                    NotiSuccess(rs.Message);
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+                            }
+                        });
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    var lstData = eval(@lstData);
+
+    function pagefunction() {
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort: false,
+                nameModel: 'TEN_DONVI',
+                content: function (data) {
+                    if (data.ListDonViNhan != null) {
+                        var length = data.ListDonViNhan.length;
+                        var html = "";
+                        var count = length;
+                        if (length > 2) {
+                            length = 2;
+                        }
+                        for (var i = 0; i <= length; i++) {
+                            html += data.ListDonViNhan[i].TEN_DONVI;
+                            if (i != length-1) {
+                                html += ", ";
+                            }
+                        }
+
+                        if (count > 2) {
+                            html += " và " + (count - 3) + " đơn vị khác <i onclick='ShowDepartment(" + data.ID + ")' class='fa fa-eye' title='Chi tiết'></i>";
+                        }
+                    }
+                    return html;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'SOHIEU',
+                content: function (data) {
+                    return "<a href='javascript:void(0)' onclick='Detail(" + data.ID + ")' title = 'Chi tiết'>" + data.SOHIEU+"</a>";
+                }
+            },
+            {
+                tdClass: "text-justify",
+                isSort:true,
+                nameModel:'TRICHYEU',
+                content: function (data) {
+                    var html = "<a class='text-ellipsis' href='javascript:void(0)' onclick='Detail(" + data.ID + ")' title = '" + data.TRICHYEU + "'>" + data.TRICHYEU + "</a>"
+                    var result = "";
+                    if (parseInt('@Model.UserInfoBO.ID') == data.NGUOITAO) {
+                        result = "<div class='btn-group col-sm-12 no-padding'>"
+                        result += "<a href='javascript:void(0)' onclick='Edit(" + data.ID + ")' title = 'Chỉnh sửa'><i class='fa fa-pencil-square-o fa-lg bigger-150 cl-primary'></i></a> ";
+                        result += "<a href='javascript:void(0)' onclick='Remove(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-trash bigger-150 cl-primary'> </i></a>";
+                        result += "</div>";
+                    }
+                    return html + result;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_HINHTHUC',
+                content: function (data) {
+                    return data.TEN_HINHTHUC
+                }
+            },
+
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_LINHVUC',
+                content: function (data) {
+                    return data.TEN_LINHVUC
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOKHAN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOKHAN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOKHAN + '" title="' + data.TEN_DOKHAN + '" />';
+                    } else {
+                        return data.TEN_DOKHAN;
+                    }
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOMAT',
+                content: function (data) {
+                    if (data.ICON_DOMAT != null && data.ICON_DOMAT != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOMAT + '" title="' + data.TEN_DOMAT + '" />';
+                    } else {
+                        return data.TEN_DOMAT;
+                    }
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'NGUOIKY',
+                content: function (data) {
+                    return ToDate(data.NGAY_BANHANH);
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'NGUOIKY',
+                content: function (data) {
+                    var html = "<label>" + data.NGUOIKY + "</label>";
+                    html += "<label><i>"+data.CHUCVU+"</i></label>";
+                    return html
+                }
+            },
+            @*{
+                isSort:false,
+                tdClass:"center",
+                content: function (data) {
+                    var result = "<div class='btn-group'>";
+                    result += "<a href='javascript:void(0)' onclick='Detail(" + data.ID + ")' title = 'Chi tiết'><i class='fa fa-eye fa-lg bigger-150 cl-primary'></i></a> ";
+                    if (parseInt('@Model.UserInfoBO.ID') == data.NGUOITAO) {
+                        result += "<a href='javascript:void(0)' onclick='Edit(" + data.ID + ")' title = 'Chỉnh sửa'><i class='fa fa-pencil-square-o fa-lg bigger-150 cl-primary'></i></a> ";
+                        result += "<a href='javascript:void(0)' onclick='Remove(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-trash bigger-150 cl-primary'> </i></a>";
+                    }
+                    result += "</div>";
+                       return result;
+                }
+            },*@
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.ListResult.TotalPage,
+            recordCount: @Model.ListResult.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+    }
+    function Edit(id) {
+        location.href = '/HSCV_VANBANPHATHANHArea/HSCV_VANBANPHATHANH/Edit/' + id;
+    }
+    function Detail(id) {
+        location.href = '/HSCV_VANBANPHATHANHArea/HSCV_VANBANPHATHANH/Detail/' + id;
+    }
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+    function ShowDepartment(obj) {
+        $.ajax({
+            url: '@Url.Action("ShowDepartment")',
+            data: { id: obj},
+            type:"get",
+            async: false,
+            success: function (rs) {
+                $("#modal_create").html(rs);
+                $("#modal_create").modal("show");
+            }, error: function (mes) {
+                NotiError("Có lỗi");
+            }
+        });
+    }
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+
+    .hinet-table td:nth-child(4) {
+        width: 25% !important;
+    }
+
+    .text-justify, .text-justify a {
+        text-align: justify !important;
+    }
+    .fa-eye:hover{
+        cursor:pointer;
+    }
+    .hinet-table td:nth-child(2){
+        width:15%;
+    }
+</style>

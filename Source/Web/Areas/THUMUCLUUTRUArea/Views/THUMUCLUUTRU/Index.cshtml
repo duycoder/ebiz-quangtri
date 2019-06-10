@@ -1,0 +1,946 @@
+﻿@{
+    ViewBag.Title = "Quản lý thư mục lưu trữ";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using Newtonsoft.Json;
+@using Web.Areas.THUMUCLUUTRUArea.Models;
+@model ThuMucLuuTruModel
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListThuMuc.ListItem));
+}
+<link href="~/Content/ContextMenu/contextMenu.css" rel="stylesheet" />
+<link href="~/Content/treeview/jquery.treeview.css" rel="stylesheet" />
+<script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
+<link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<script src="~/Scripts/Custom/folder.js"></script>
+<style>
+    #parent {
+        /*position: absolute;*/
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    #treeview {
+        position: relative;
+        float: left;
+        height: 100%;
+        width: 20%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+
+    #div-table {
+        position: relative;
+        float: left;
+        /*height: 100%;*/
+        width: 80%;
+    }
+
+    #treeview .ui-icon-gripsmall-diagonal-se {
+        background: none !important;
+    }
+
+    #dragbar {
+        position: absolute;
+        cursor: col-resize;
+        z-index: 3;
+        padding: 5px;
+    }
+
+    #tbl-thumucluutru {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+
+    .error {
+        color: red;
+    }
+
+    .hinet-table thead th {
+        text-align: center
+    }
+
+    .allsystem {
+        background: url(/Content/images/if_folder-horizontal-open_26356.png) 0 0 no-repeat;
+    }
+
+    .allsystem1 {
+        background: url(/Content/images/if_folder-horizontal-open_26356.png) 0 0 no-repeat;
+        padding: 6px 32px !important
+    }
+
+    .folder-common {
+        padding: 6px 10px 10px 30px;
+        background-repeat: no-repeat;
+        background-position: 4px 2px;
+        margin-left: 5px;
+        float: left;
+        line-height: 1.3em;
+        text-align: center;
+        background-size: 22px 22px;
+        margin-left: 5px;
+    }
+
+    .selected {
+        font-weight: bold;
+    }
+
+    #treeview ul, #Path, #URL_PATH {
+        list-style-type: none !important;
+    }
+
+    .folder_arrow {
+        border: none;
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        position: absolute;
+        display: block;
+        height: 12px;
+        width: 12px;
+        padding: 0;
+        left: 2px;
+        border: none;
+        opacity: .4;
+        overflow: hidden;
+        -webkit-transition: all .5s ease;
+        -moz-transition: all .5s ease;
+        -o-transition: all .5s ease;
+        transition: all .5s ease;
+    }
+
+    .selected {
+        font-weight: bold;
+    }
+
+    .collapsed > .folder_arrow {
+        background: url(/Content/Images/smArrow.png) -36px 0px no-repeat;
+    }
+
+    .expanded > .folder_arrow {
+        background: url(/Content/Images/smArrow.png) 0 0 no-repeat;
+        opacity: 1;
+    }
+
+    #browser li {
+        margin-top: 3px;
+    }
+
+    .filetree li {
+        padding: 3px 0 2px 16px;
+        margin-bottom: 3px;
+    }
+
+    .filetree li {
+        padding: 3px 0 2px 16px;
+    }
+
+    #Path li, #URL_PATH li {
+        float: left;
+    }
+
+    #browser, #Path, #browser ul {
+        margin-left: -40px;
+    }
+
+
+    img:hover, .folder_root {
+        cursor: pointer;
+    }
+
+    #DUONGDAN #URL_PATH {
+        margin-left: -40px
+    }
+
+    #DUONGDAN {
+        margin-left: -40px;
+        text-align: left
+    }
+
+    .btn-secondary:hover {
+        color: #292b2c;
+        background-color: #e6e6e6;
+        border-color: #adadad;
+    }
+
+    .btn-secondary {
+        color: #292b2c;
+        background-color: #fff;
+        border-color: #ccc;
+    }
+
+    .dropdown-toggle::after {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: .3em;
+        vertical-align: middle;
+        content: "";
+        border-top: .3em solid;
+        border-right: .3em solid transparent;
+        border-left: .3em solid transparent;
+    }
+
+    .show > .dropdown-menu {
+        display: block;
+        width: 220px !important;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        float: left;
+        min-width: 10rem;
+        padding: .5rem 0;
+        margin: .125rem 0 0;
+        font-size: 13px;
+        color: #292b2c;
+        text-align: left;
+        list-style: none;
+        background-color: #fff;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: .25rem;
+    }
+
+    .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 3px 1.5rem;
+        clear: both;
+        font-weight: 400;
+        color: #292b2c;
+        text-align: inherit;
+        /*white-space: nowrap;*/
+        background: 0 0;
+        border: 0;
+    }
+
+        .dropdown-item:hover {
+            background-color: rgba(0,0,0,.15) !important;
+        }
+
+    .hinet-table tr:hover {
+        cursor: pointer;
+    }
+
+    #URLPath {
+        margin-top: 10px
+    }
+
+    .folder-left {
+        cursor: pointer
+    }
+
+    .hinet-table td:first-child, .hinet-table td:nth-child(5), .hinet-table td:nth-child(6) {
+        text-align: center !important;
+    }
+</style>
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6">
+        <a id="THEMTHUMUC" data-pid="0" class="btn btn-default pull-right" href="javascript:void(0)">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a style="display:none" id="THEMTAILIEU" class="btn btn-default pull-right" href="javascript:void(0)" data-pid="0">
+            <i class="fa fa-plus"></i> <span>Tải lên tài liệu</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+
+        <a class="btn btn-default pull-right" data-toggle="modal" data-target="#modal-gram-file" style="margin-right: 5px;">
+            Tạo file gram
+        </a>
+    </div>
+</div>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý thư mục lưu trữ
+            </h2>
+        </header>
+
+        <div class="widge-t-body no-padding" style="background:#fff;" oncontextmenu="return false;">
+            <div id="URLPath" class="col-sm-12">
+                <ul id="Path">
+                    <li data-fid='F_0'>
+                        <span class='folder_root' data-loaded='false' data-pid='0'><i class="fa fa-folder-open-o url-folder"></i>Gốc<i class="fa fa-chevron-right"></i></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-12">&nbsp;</div>
+            <div class="col-sm-12 no-padding" id="parent">
+                <div class="col-sm-3 no-padding" id="treeview" style="resize:vertical !important">
+                    <div>
+                        @Html.Partial("_ThuMucLeft")
+                    </div>
+                </div>
+                <div class="col-sm-9 no-padding" id="div-table">
+                    <div id="tbl-thumucluutru" class="hntbl-cover">
+                        <table class="hinet-table table table-striped  table-hover" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên thư mục</th>
+                                    <th>Đơn vị</th>
+                                    <th>Người tạo</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="0" id="THUMUC_ID_HIDDEN" />
+<input type="hidden" value="0" id="TAILIEU_HIDDEN_ID" />
+<input type="hidden" id="THUMUC_CONGVIEC" value="@ThuMucLuuTruConstant.DefaultCongViec" />
+<input type="hidden" id="THUMUC_VANBAN" value="@ThuMucLuuTruConstant.DefaultVanban" />
+<input type="hidden" id="THUMUC_VANBANDEN" value="@ThuMucLuuTruConstant.DefaultVbDen" />
+<input type="hidden" id="CAN_READ" value="@FolderPermission.CAN_READ" />
+<input type="hidden" id="CAN_WRITE" value="@FolderPermission.CAN_WRITE" />
+<input type="hidden" id="CAN_READ_WRITE" value="@FolderPermission.BOTH" />
+<input type="hidden" id="USER_ID" value="@Model.userInfoBo.ID" />
+<input type="hidden" id="ACCESS_SYSTEM" value="@AccessModifier.ACCESS_SYSTEM" />
+<input type="hidden" id="ACCESS_UNIT" value="@AccessModifier.ACCESS_UNIT" />
+<input type="hidden" id="ACCESS_DEPT" value="@AccessModifier.ACCESS_DEPT" />
+<input type="hidden" id="ACCESS_PRIVATE" value="@AccessModifier.PRIVATE" />
+<input type="hidden" id="ACCESS_FOLDER" value="@Model.AccessModifer" />
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="CreateThuMuc" class="modal fade" role="dialog"></div>
+
+<!--START CREATE GRAM FILE-->
+<div class="modal" tabindex="-1" role="dialog" id="modal-gram-file">
+
+    <form method="post" action="/THUMUCLUUTRUArea/THUMUCLUUTRU/UploadFileGram" enctype="multipart/form-data">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">TẠO FILE GRAM</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <label>Độ dài gram</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="number" min="1" max="100" name="nGramSize" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <label>Chọn tài liệu: </label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="file" value="Chọn tài liệu" id="filebase" name="filebase" style="width:100%;float:left;border:none" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Tải lên</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!--END CREATE GRAM FILE-->
+@{
+    if (!string.IsNullOrEmpty(Request.QueryString["FOLDER"]))
+    {
+        <script>
+            $(function () {
+                LoadDataByID('@Request.QueryString["FOLDER"]');
+            });
+        </script>
+    }
+}
+<script>
+    var folderId = [];
+    folderId.push('@ThuMucLuuTruConstant.DefaultPrivate');
+    folderId.push('@ThuMucLuuTruConstant.DefaultDept');
+    folderId.push('@ThuMucLuuTruConstant.DefaultUnit');
+    folderId.push('@ThuMucLuuTruConstant.DefaultSys');
+    folderId.push('@ThuMucLuuTruConstant.DefaultVanban');
+    folderId.push('@ThuMucLuuTruConstant.DefaultCongViec');
+    folderId.push('@ThuMucLuuTruConstant.DefaultVbDen');
+    var currentFolderId = 0;
+    var ids = [];
+    ids.push('@ThuMucLuuTruConstant.DefaultPrivate');
+    ids.push('@ThuMucLuuTruConstant.DefaultDept');
+    ids.push('@ThuMucLuuTruConstant.DefaultUnit');
+    ids.push('@ThuMucLuuTruConstant.DefaultSys');
+    $("body").addClass("minified");
+    $(function () {
+        $('#selectAll').click(function (event) {
+            if (this.checked) {
+                $('.checkbox1').each(function () {
+                    this.checked = true;
+                });
+            } else {
+                $('.checkbox1').each(function () {
+                    this.checked = false;
+                });
+            }
+        });
+    });
+    var lstData = eval(@lstData);
+    $(document).on('click', '#THEMTHUMUC', function () {
+        CreateThuMuc($(this).attr('data-pid'),false);
+    });
+    function CreateThuMuc(id,isEdit) {
+         $.ajax({
+            url: '@Url.Action("EditFolder")',
+            type: 'GET',
+            cache: false,
+            data: {
+                id: id,
+                isEdit: isEdit
+            },
+            success: function (data) {
+                    $("#CreateThuMuc").html(data);
+                    $("#CreateThuMuc").modal('show');
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+    function pagefunction() {
+        var conf = [
+        {
+            tdClass: "center",
+            isSort: false,
+            isCounter: true,
+            nameModel: "",
+            content: function (data) {
+                return "<input type='checkbox' />"
+            }
+        },
+        {
+            isSort: true,
+            tdClass: "center",
+            tdAttr:"data-fid",
+            nameModel: 'TENTHUMUC',
+            content: function (data) {
+                var html = "";
+                var thumuc_trangthai = "";
+                if (data.IS_THUMUC) {
+                    html = '<div style="width:100%;float:left" class="TENTHUMUC">';
+                    if (data.CLASS != null && data.CLASS != "") {
+                        if (data.PERMISSION == parseInt($("#CAN_WRITE").val())) {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder-write folder-common " + data.CLASS + "' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        } else if (data.PERMISSION == parseInt($("#CAN_READ").val())) {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder-read folder-common " + data.CLASS + "' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        } else if (data.USER_ID != parseInt($("#USER_ID").val())) {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder-both folder-common " + data.CLASS + "' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        } else {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder folder-common " + data.CLASS + "' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        }
+                        //html += '<span data-sort="0" class="folder-right folder-common ' + data.CLASS + '" title="' + data.TENTHUMUC + '" data-pid="' + data.ID + '" data-loaded="false">' + data.TENTHUMUC + '</span></div>';
+                    } else {
+                        if (data.PERMISSION == parseInt($("#CAN_WRITE").val())) {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder-write folder-common allsystem' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        } else if (data.PERMISSION == parseInt($("#CAN_READ").val())) {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder-read folder-common allsystem' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        } else if (data.USER_ID != parseInt($("#USER_ID").val())) {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder-both folder-common allsystem' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        } else {
+                            thumuc_trangthai = "<span data-per='" + data.PERMISSION + "' data-sort='0' class='folder folder-common allsystem' title ='" + data.TENTHUMUC + "' data-loaded='false' data-pid='" + data.ID + "'>" + data.TENTHUMUC + "</span>";;
+                        }
+                        //html += '<span data-sort="0" class="folder-right folder-common allsystem" title="' + data.TENTHUMUC + '" data-pid="' + data.ID + '" data-loaded="false">' + data.TENTHUMUC + '</span></div>';
+                    }
+                    html += thumuc_trangthai +"</div>" ;
+                } else {
+                    var extension = data.THUMUCCHA;
+                    var docx = "";
+                    if (extension.split('/')[1] == "vnd.openxmlformats-officedocument.wordprocessingml.document" || extension == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || extension == "vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                        docx = "msword";
+                    } else if (extension == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                        docx = "ms-excel";
+                    } else if (extension.split('/')[1] == "vnd.openxmlformats-officedocument.presentationml.presentation") {
+                        docx = "ms-powerpoint";
+                    }
+                    if (data.PERMISSION == parseInt($("#CAN_WRITE").val())) {
+                        html += "<span data-per='" + data.PERMISSION + "' data-sort='0' class='" + extension.split('/')[1] + " " + docx + " " + extension.split('.')[1] + " file-write' data-file='true' data-pid='" + data.ID + "'>" + htmlDecode(data.TENTHUMUC) + "</span>";
+                    } else if (data.PERMISSION == parseInt($("#CAN_READ").val())) {
+                        html += "<span data-per='" + data.PERMISSION + "' data-sort='0' class='" + extension.split('/')[1] + " " + docx + " " + extension.split('.')[1] + " file-read' data-file='true' data-pid='" + data.ID + "'>" + htmlDecode(data.TENTHUMUC) + "</span>";
+                    } else {
+                        if (ids.indexOf(currentFolderId) == 3 && data.USER_ID != parseInt($("#USER_ID").val())) {
+                            html += "<span data-per='" + data.PERMISSION + "' data-sort='0' class='" + extension.split('/')[1] + " " + docx + " " + extension.split('.')[1] + " file-both' data-file='true' data-pid='" + data.ID + "'>" + htmlDecode(data.TENTHUMUC) + "</span>";
+                        } else {
+                            html += "<span data-per='" + data.PERMISSION + "' data-sort='0' class='" + extension.split('/')[1] + " " + docx + " " + extension.split('.')[1] + " public-files' data-file='true' data-pid='" + data.ID + "'>" + htmlDecode(data.TENTHUMUC) + "</span>";
+                        }
+                    }
+                }
+                return html;
+            }
+        },
+        {
+            isSort: true,
+            nameModel: 'TEN_DONVI',
+            content: function (data) {
+                return data.TEN_DONVI
+            }
+        },
+        {
+            nameModel: 'TEN_NGUOITAO',
+            content: function (data) {
+                return data.TEN_NGUOITAO;
+            }
+            },
+        {
+            nameModel: 'NGAYTAO',
+            content: function (data) {
+                return ToDate(data.NGAYTAO);
+            }
+        },
+        {
+            isSort: false,
+            nameModel: "",
+            content: function (data) {
+                if (folderId.indexOf(data.ID+"") >= 0) {
+                    return "";
+                } else {
+                    return initContext(data);
+                }
+                //return "";
+            }
+        }];
+        var getdatafunc = function (page, sortQuery, pageSize) {
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data: { "indexPage": page, "sortQuery": sortQuery, "pageSize": pageSize },
+                success: function (data) {
+                    $("#tbl-thumucluutru").hinetTable("data", {
+                        pageSize: pageSize != -1 ? pageSize : data.Count,
+                        pageIndex: page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,
+                    });
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData = $("#tbl-thumucluutru").hinetTable("init", {
+            pageSizeList: { size: [20, 50, 100, -1], label: ['20', '50', '100', 'Tất cả'] },
+            pagecount: '@Model.ListThuMuc.TotalPage',
+            recordCount: '@Model.ListThuMuc.Count',
+            getData: getdatafunc,
+            listItem: lstData,
+            config: conf
+        });
+    }
+    function reloadData() {
+        $("#tbl-thumucluutru").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+    $(".AddFolder").click(function () {
+        CreateThuMuc(0, false);
+    });
+    $("#treeview").resizable();
+    $('#treeview').resize(function () {
+        $('#div-table').width($("#parent").width() - $("#treeview").width() - 20);
+    });
+    $(window).resize(function () {
+        $('#div-table').width($("#parent").width() - $("#treeview").width() - 20);
+        $('#treeview').height($("#parent").height());
+    });
+     function reloadGrid() {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("ReloadTree", "ThuMucLuuTru")',
+                data: {
+                    nam: '@DateTime.Now.Year'
+                },
+                cache: false,
+                dataType: "html",
+                success: function (data) {
+                    $("#treeview").html(data);
+                    $("#treeview").append("<div class='ui-resizable-handle ui-resizable-e' style='z-index: 90;'></div>")
+                    $("#treeview").append("<div class='ui-resizable-handle ui-resizable-s' style='z-index: 90;'></div>")
+                    $("#treeview").append("<div class='ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se' style='z-index: 90; display: block;'></div>")
+                }
+            });
+    }
+    function reloadTable() {
+        reloadData();
+    }
+    function Delete(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa thư mục này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: { id: id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Type== "SUCCESS") {
+                                    NotiSuccess(rs.Message);
+                                    reloadGrid();
+                                    reloadTable();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err);
+                                NotiError("Không thực hiện được thao tác");
+
+                            }
+                        })
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+
+    }
+    $.contextMenu({
+        selector: '.folder',
+        callback: function (key, options) {
+            switch (key) {
+                case "download":
+                    location.href = "/ThuMucLuuTruArea/ThuMucLuuTru/DownloadZipFile?id=" + options.$trigger.attr("data-pid");
+                    break;
+                case "Edit":
+                    CreateThuMuc(options.$trigger.attr("data-pid"),true);
+                    break;
+                case "Trash":
+                    CheckFolderRemove(options.$trigger.attr("data-pid"));
+                    break;
+                case "plus":
+                    CreateThuMuc(options.$trigger.attr("data-pid"), false);
+                    break;
+                case "upload":
+                    UploadFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "dragdrop":
+                    DragDrop(options.$trigger.attr("data-pid"));
+                    break;
+                case "zip":
+                    UploadZipFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "single":
+                    UploadSingle(options.$trigger.attr("data-pid"));
+                    break;
+                case "share":
+                    SharingFolder(options.$trigger.attr("data-pid"));
+                    break;
+            }
+        },
+        items: {
+            "download": { "name": "Download dạng ZIP", "icon": "fa-download" },
+            "sep1": "---------",
+            "single": { "name": "Upload 01 file", "icon": "fa-cloud-upload" },
+            "upload": { "name": "Upload nhiều file (bằng cách chọn từng file)", "icon": "fa-upload" },
+            "zip": { "name": "Upload file Zip/Rar và giải nén", "icon": "fa-file-archive-o" },
+            "dragdrop": { "name": "Upload nhiều file (bằng cách chọn nhiều)", "icon": "fa-icon-dropbox" },
+            "sep2": "---------",
+            "plus": { "name": "Thêm thư mục", "icon": "fa-folder-open-o" },
+            "share": { "name": "Chia sẻ", "icon": "fa-share-alt" },
+            "Edit": { "name": "Cập nhật", "icon": "fa-edit" },
+            "Trash": { "name": "Xóa", "icon": "fa-trash" }
+        }
+    });
+    $.contextMenu({
+        selector: '.filearchive',
+        callback: function (key, options) {
+            //var m = "clicked: " + key;
+            if (key == "Edit") {
+                DoiTenFile(options.$trigger.attr("data-pid"));
+            }
+            if (key == "Trash") {
+                CheckFileRemove(options.$trigger.attr("data-pid"));
+            }
+            if (key == "download") {
+                DownloadFileIndex(options.$trigger.attr("data-pid"), options.$trigger.attr("data-gui"));
+            }
+            if (key == "Link") {
+                var linkdownload = window.location.href + options.$trigger.attr("data-pid");
+                ReceiverLink(linkdownload);
+            }
+            if (key == "View") {
+                FileDetail(options.$trigger.attr("data-pid"), "chitiet");
+            }
+            if (key == "Modify") {
+                FileDetail(options.$trigger.attr("data-pid"), "chinhsua");
+            }
+            if (key == "Manager") {
+                ManagerVersion(options.$trigger.attr("data-pid"));
+            }
+            if (key == "Share") {
+                SharingFile(options.$trigger.attr("data-pid"));
+            }
+        },
+        items: {
+            "download": { "name": "Tải xuống", "icon": "fa-download" },
+            "Edit": { "name": "Đổi tên", "icon": "fa-edit" },
+            "View": { "name": "Chi tiết", "icon": "fa-eye" },
+            "Modify": { "name": "Chỉnh sửa", "icon": "fa-pencil-square-o" },
+            "Manager": { "name": "Quản lý phiên bản", "icon": "fa-archive" },
+            "Trash": { "name": "Xóa", "icon": "fa-trash" }
+        }
+    });
+
+    $.contextMenu({
+        selector: '.public-files',
+        callback: function (key, options) {
+            //var m = "clicked: " + key;
+            switch (key) {
+                case "Edit":
+                    DoiTenFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "Trash":
+                    CheckFileRemove(options.$trigger.attr("data-pid"));
+                    break;
+                case "download":
+                    DownloadFileIndex(options.$trigger.attr("data-pid"), options.$trigger.attr("data-gui"));
+                    break;
+                case "View":
+                    FileDetail(options.$trigger.attr("data-pid"), "chitiet");
+                    break;
+                case "Modify":
+                    FileDetail(options.$trigger.attr("data-pid"), "chinhsua");
+                    break;
+                case "Manager":
+                    ManagerVersion(options.$trigger.attr("data-pid"));
+                    break;
+                case "Share":
+                    SharingFile(options.$trigger.attr("data-pid"), false);
+                    break;
+            }
+            if (key == "Link") {
+                var linkdownload = window.location.href + options.$trigger.attr("data-pid");
+                ReceiverLink(linkdownload);
+            }
+        },
+        items: {
+            "download": { "name": "Tải xuống", "icon": "fa-download" },
+            "Edit": { "name": "Đổi tên", "icon": "fa-edit" },
+            "Share": { "name": "Chia sẻ", "icon": "fa-share-alt" },
+            "View": { "name": "Chi tiết", "icon": "fa-eye" },
+            "Modify": { "name": "Chỉnh sửa", "icon": "fa-pencil-square-o" },
+            "Manager": { "name": "Quản lý phiên bản", "icon": "fa-archive" },
+            "Trash": { "name": "Xóa", "icon": "fa-trash" }
+        }
+    });
+    $(document).on("click", ".expanded .folder_arrow", function () {
+        $(this).closest("li").removeClass('expanded').addClass('collapsed');
+        $(this).closest("li").find("ul").remove();
+    });
+    $(document).on("click", ".collapsed .folder_arrow", function () {
+        $(this).closest("li").removeClass('collapsed').addClass('expanded');
+        $(this).closest("li").find("ul").remove();
+        loadDataById(this, false);
+    });
+    $.contextMenu({
+        selector: '.folder-read',
+        callback: function (key, options) {
+            switch (key) {
+                case "download":
+                    location.href = "/ThuMucLuuTruArea/ThuMucLuuTru/DownloadZipFile?id=" + options.$trigger.attr("data-pid");
+                    break;
+            }
+        },
+        items: {
+            "download": { "name": "Download dạng ZIP", "icon": "fa-download" },
+        }
+    });
+    $.contextMenu({
+        selector: '.folder-write',
+        callback: function (key, options) {
+            switch (key) {
+                case "Edit":
+                    CreateThuMuc(options.$trigger.attr("data-pid"), true);
+                    break;
+                case "Trash":
+                    CheckFolderRemove(options.$trigger.attr("data-pid"));
+                    break;
+                case "plus":
+                    CreateThuMuc(options.$trigger.attr("data-pid"), false);
+                    break;
+                case "upload":
+                    UploadFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "dragdrop":
+                    DragDrop(options.$trigger.attr("data-pid"));
+                    break;
+                case "zip":
+                    UploadZipFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "single":
+                    UploadSingle(options.$trigger.attr("data-pid"));
+                    break;
+            }
+        },
+        items: {
+            "single": { "name": "Upload 01 file", "icon": "fa-cloud-upload" },
+            "upload": { "name": "Upload nhiều file (bằng cách chọn từng file)", "icon": "fa-upload" },
+            "zip": { "name": "Upload file Zip/Rar và giải nén", "icon": "fa-file-archive-o" },
+            "dragdrop": { "name": "Upload nhiều file (bằng cách chọn nhiều)", "icon": "fa-icon-dropbox" },
+            "sep2": "---------",
+            "plus": { "name": "Thêm thư mục", "icon": "fa-folder-open-o" }
+            //"Edit": { "name": "Cập nhật", "icon": "fa-edit" }
+        }
+    });
+    $.contextMenu({
+        selector: '.folder-both',
+        callback: function (key, options) {
+            switch (key) {
+                case "download":
+                    location.href = "/ThuMucLuuTruArea/ThuMucLuuTru/DownloadZipFile?id=" + options.$trigger.attr("data-pid");
+                    break;
+                case "Edit":
+                    CreateThuMuc(options.$trigger.attr("data-pid"), true);
+                    break;
+                case "Trash":
+                    CheckFolderRemove(options.$trigger.attr("data-pid"));
+                    break;
+                case "plus":
+                    CreateThuMuc(options.$trigger.attr("data-pid"), false);
+                    break;
+                case "upload":
+                    UploadFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "dragdrop":
+                    DragDrop(options.$trigger.attr("data-pid"));
+                    break;
+                case "zip":
+                    UploadZipFile(options.$trigger.attr("data-pid"));
+                    break;
+                case "single":
+                    UploadSingle(options.$trigger.attr("data-pid"));
+                    break;
+            }
+        },
+        items: {
+            "download": { "name": "Download dạng ZIP", "icon": "fa-download" },
+            "single": { "name": "Upload 01 file", "icon": "fa-cloud-upload" },
+            "upload": { "name": "Upload nhiều file (bằng cách chọn từng file)", "icon": "fa-upload" },
+            //"Share": { "name": "Chia sẻ", "icon": "fa-share-alt" },
+            "zip": { "name": "Upload file Zip/Rar và giải nén", "icon": "fa-file-archive-o" },
+            "dragdrop": { "name": "Upload nhiều file (bằng cách chọn nhiều)", "icon": "fa-icon-dropbox" },
+            "sep2": "---------",
+            "plus": { "name": "Thêm thư mục", "icon": "fa-folder-open-o" }
+            //"Edit": { "name": "Cập nhật", "icon": "fa-edit" }
+        }
+    });
+    $.contextMenu({
+        selector: '.file-write',
+        callback: function (key, options) {
+            if (key == "Edit") {
+                DoiTenFile(options.$trigger.attr("data-pid"));
+            }
+            if (key == "Modify") {
+                FileDetail(options.$trigger.attr("data-pid"), "chinhsua");
+            }
+            if (key == "Manager") {
+                ManagerVersion(options.$trigger.attr("data-pid"));
+            }
+            if (key == "Share") {
+                SharingFile(options.$trigger.attr("data-pid"), false);
+            }
+        },
+        items: {
+            //"Edit": { "name": "Đổi tên", "icon": "fa-edit" },
+            "Share": { "name": "Chia sẻ", "icon": "fa-share-alt" },
+            //"Modify": { "name": "Chỉnh sửa", "icon": "fa-pencil-square-o" },
+            "Manager": { "name": "Quản lý phiên bản", "icon": "fa-archive" }
+        }
+    });
+    $.contextMenu({
+        selector: '.file-read',
+        callback: function (key, options) {
+            if (key == "download") {
+                DownloadFileIndex(options.$trigger.attr("data-pid"), options.$trigger.attr("data-gui"));
+            }
+            if (key == "View") {
+                FileDetail(options.$trigger.attr("data-pid"), "chitiet");
+            }
+        },
+        items: {
+            "download": { "name": "Tải xuống", "icon": "fa-download" },
+            "View": { "name": "Chi tiết", "icon": "fa-eye" },
+        }
+    });
+    $.contextMenu({
+        selector: '.file-both',
+        callback: function (key, options) {
+            //var m = "clicked: " + key;
+            switch (key) {
+                case "download":
+                    DownloadFileIndex(options.$trigger.attr("data-pid"), options.$trigger.attr("data-gui"));
+                    break;
+                case "View":
+                    FileDetail(options.$trigger.attr("data-pid"), "chitiet");
+                    break;
+                case "Manager":
+                    ManagerVersion(options.$trigger.attr("data-pid"));
+                    break;
+            }
+        },
+        items: {
+            "download": { "name": "Tải xuống", "icon": "fa-download" },
+            "View": { "name": "Chi tiết", "icon": "fa-eye" },
+            "Manager": { "name": "Quản lý phiên bản", "icon": "fa-archive" },
+        }
+    });
+    $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+
+    });
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $(document).on("click", ".public-files,.file-both,.file-read,.file-write", function () {
+        var id = $(this).attr("data-pid");
+        FileDetail(id, "chitiet");
+    });
+</script>

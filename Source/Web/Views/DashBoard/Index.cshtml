@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+    table tr td {
+        vertical-align: middle !important;
+    }
+
+        table tr td:first-child {
+            text-align: center;
+        }
+
+        table tr td .custom-span {
+            color: #333;
+        }
+
+    .hinet-table {
+        margin-bottom: 0px;
+    }
+
+    .jarviswidget .widget-body {
+        padding-bottom: 0px;
+    }
+
+    .jarviswidget {
+        margin-bottom: 0px;
+    }
+
+    #btnSearchChart {
+        margin-bottom: 6px;
+        border: 0px;
+        box-shadow: none;
+        border-radius: 0px;
+    }
+
+    .item-notif .notif-icon i {
+        transform: translate(-50%, calc(50% + 4px));
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        font-size: 24px;
+        color: #bcbcbc;
+        margin-left: -5px;
+    }
+
+    .no-padding.item-notif {
+        border-bottom: 1px solid #ccc;
+        margin-top: 8px !important;
+    }
+
+    .col-sm-12 > .item-notif:last-child {
+        border-bottom: 0px;
+    }
+</style>
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+</div>
+@*@Html.Action("ChartTienDoCongViec", "Common", new { area = "" })*@
+@Html.Action("ChartVanBan", "Common", new { area = "" })
+@Html.Action("NewNotification", "Common", new { area = "" })
+@Html.Action("RecentVanBan", "Common", new { area = "" })
+@*@Html.Action("MyJob", "Common", new { area = "" })*@
+@*@Html.Action("ThongKeCongViec", "Common", new { area = "" })*@
+
+
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>

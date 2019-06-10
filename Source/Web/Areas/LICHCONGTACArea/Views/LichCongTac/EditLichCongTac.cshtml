@@ -1,0 +1,40 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@model EditLichCongTacViewModel
+
+@{
+    ViewBag.Title = Model.entityLichCongTac.ID > 0 ? "Cập nhật lịch công tác" : "Tạo mới lịch công tác";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<div id="ribbon" style=" background-color:#57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+        <a class="btn btn-default pull-right" href="/LICHCONGTACArea/LICHCONGTAC/Index">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div class="clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fa fa-file-image-o txt-color-darken"></i>
+                </span>
+                <h2 class="hidden-xs hidden-sm">
+                    @(Model.entityLichCongTac.ID > 0 ? "Cập nhật lịch công tác" : "Thêm mới lịch công tác")
+                </h2>
+            </header>
+
+            <div role="contentinfo">
+                <div class="widget-body">
+                    @Html.Partial("_EditLichCongTacPartial")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

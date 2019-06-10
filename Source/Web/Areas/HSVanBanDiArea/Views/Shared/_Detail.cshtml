@@ -1,0 +1,612 @@
+﻿@using Business.CommonModel.CONSTANT
+@using Business.CommonModel.DMNguoiDung;
+@using CommonHelper
+@model Web.Areas.HSVanBanDiArea.Models.ThongTinVanBanDiVM
+@{
+    var GroupUsersReceiveInternal = Model.GroupUsersReceiveInternal.Where(x => x.ID != Model.VanBanTrinhKy.CREATED_BY).ToList();
+    DM_NGUOIDUNG_BO sender = Model.GroupUsersReceiveInternal.Where(x => x.ID == Model.VanBanTrinhKy.CREATED_BY).FirstOrDefault();
+}
+<div id="content" style="width: 80%">
+    <div id="block--info-vanbanden" class="clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon"><i class="fa  fa-list-alt txt-color-darken"></i></span>
+                <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+                    Thông tin văn bản đi
+                </h2>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+            </header>
+            <table id="tbl_view_vanbanden" class="table table-bordered" style="margin-top: 5px; background: #ffffff">
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Thể loại văn bản</label>
+                    </td>
+                    <td>
+                        <label>@Model.STR_LOAIVANBAN</label>
+                    </td>
+                    <td class="td-label col-sm-2">
+                        <label class="lbl-title">Lĩnh vực</label>
+                    </td>
+                    <td class="col-sm-4">
+                        <label>@Model.STR_LINHVUCVANBAN</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Loại văn bản</label>
+                    </td>
+                    <td>
+                        <label>@Model.STR_PHAN_LOAI_VANBAN</label>
+                    </td>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Loại cơ quan</label>
+                    </td>
+                    <td>
+                        <label>@Model.STR_LOAI_COQUAN</label>
+                    </td>
+                </tr>
+
+                <!--SỐ KÝ HIỆU-->
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Trích yếu</label>
+                    </td>
+                    <td colspan="3">
+                        <span style="word-break: break-word">
+                            @Model.VanBanTrinhKy.TRICHYEU
+                        </span>
+                    </td>
+                </tr>
+                <!--TRÍCH YẾU-->
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Ngày ban hành</label>
+                    </td>
+                    <td>
+                        @string.Format("{0:dd-MM-yyyy}", Model.VanBanTrinhKy.NGAYBANHANH)
+                    </td>
+                    <td class="td-label">
+                        <label class="lbl-title">Số hiệu</label>
+                    </td>
+                    <td>
+                        <label>@Model.VanBanTrinhKy.SOHIEU</label>
+                    </td>
+                </tr>
+                <!--NGÀY TẠO + NGÀY VĂN BẢN-->
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Ngày tạo</label>
+                    </td>
+                    <td>
+                        @string.Format("{0:dd-MM-yyyy}", Model.VanBanTrinhKy.CREATED_AT)
+                    </td>
+                    <td class="td-label">
+                        <label class="lbl-title">Ngày văn bản</label>
+                    </td>
+                    <td>
+                        <label>@string.Format("{0:dd-MM-yyyy}", Model.VanBanTrinhKy.NGAYVANBAN)</label>
+                    </td>
+                </tr>
+                <!-- end -->
+                <!--Ngày có hiệu lực + Ngày hết hiệu lực-->
+                <tr>
+                    <td class="txt-right col-sm-2">
+                        <label class="lbl-title">Ngày có hiệu lực</label>
+                    </td>
+                    <td>
+                        @string.Format("{0:dd-MM-yyyy}", Model.VanBanTrinhKy.NGAYCOHIEULUC)
+                    </td>
+                    <td class="td-label">
+                        <label class="lbl-title">Ngày hết hiệu lực</label>
+                    </td>
+                    <td>
+                        <label>@string.Format("{0:dd-MM-yyyy}", Model.VanBanTrinhKy.NGAYHETHIEULUC)</label>
+                    </td>
+                </tr>
+                <!--SỐ VĂN BẢN ĐẾN + SỐ ĐẾN-->
+                <tr>
+                    <td class="txt-right">
+                        <label class="lbl-title">Độ mật</label>
+                    </td>
+                    <td>
+                        @Model.STR_DOKHAN
+                    </td>
+                    <td class="td-label">
+                        <label class="lbl-title">Độ khẩn</label>
+                    </td>
+                    <td>
+                        <label>@Model.STR_DOUUTIEN</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="txt-right">
+                        <label class="lbl-title">Mã đăng ký</label>
+                    </td>
+                    <td>
+                        @Model.VanBanTrinhKy.MA_DANGKY
+                    </td>
+                    <td class="td-label">
+                        <label class="lbl-title">Tác giả</label>
+                    </td>
+                    <td>
+                        <label>@Model.STR_TACGIA</label>
+                    </td>
+                </tr>
+                <!--ĐỘ KHẨN + SỐ TRANG-->
+                <tr>
+                    <td class="txt-right">
+                        <label class="lbl-title">Người ký</label>
+                    </td>
+                    <td>
+                        @Model.STR_NGUOIKY
+                    </td>
+
+                    <td class="txt-right">
+                        <label class="lbl-title">Chức vụ người ký</label>
+                    </td>
+                    <td>
+                        @Model.VanBanTrinhKy.CHUCVU
+                    </td>
+                </tr>
+                <!--NGƯỜI KÝ-->
+                <tr>
+                    <td class="txt-right">
+                        <label class="lbl-title">Nội dung văn bản</label>
+                    </td>
+                    <td colspan="3">
+                        <span style="word-break: break-all">
+                            @HttpUtility.HtmlDecode(Model.VanBanTrinhKy.NOIDUNG.RemoveHtml())
+                        </span>
+                    </td>
+                </tr>
+                @if (Model.VanBanTrinhKy.IS_INTERNAL != true)
+                {
+                    <tr>
+                        <td class="txt-right">Đơn vị/ phòng ban nhận văn bản</td>
+                        <td>
+                            <ul class="list-group">
+
+                                <li>
+                                    <a class="btn btn-primary btn-sm" id="btn--send-depts">
+                                        <i class="fa fa-arrow-right"></i>&nbsp;Gửi đơn vị khác
+                                    </a>
+                                </li>
+
+                                @if (Model.CanSendOthers)
+                                {
+
+                                }
+                                @{
+                                    foreach (var item in Model.ListDonVi)
+                                    {
+                                        bool isRead = Model.GroupDonViRead != null ? Model.GroupDonViRead.Contains(item.ID) : false;
+                                        <li>
+                                            @item.NAME @(isRead ? Html.Raw("<b class='text-info'>(<i class='fa fa-eye'></i>&nbsp;Đã đọc)</b>") : Html.Raw("<b class='text-danger'>(<i class='fa fa-eye-slash'></i>&nbsp;Chưa đọc)</b>") )
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </td>
+
+                        <td class="txt-right">Người nhận đích danh</td>
+                        <td>
+                            <ul class="list-group">
+                                @if (Model.CanSendOthers)
+                                {
+                                    <li>
+                                        <a class="btn btn-primary btn-sm" id="btn--send-users">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;Gửi cá nhân khác
+                                        </a>
+                                    </li>
+                                }
+                                @{
+                                    foreach (var item in Model.GroupUsersReceiveDirectly)
+                                    {
+                                        bool isRead = Model.GroupUsersRead != null ? Model.GroupUsersRead.Any(x => x.ID == item.ID) : false;
+                                        <li>
+                                            @item.HOTEN @(isRead ? Html.Raw("<b class='text-info'>(<i class='fa fa-eye'></i>&nbsp;Đã đọc)</b>") : Html.Raw("<b class='text-danger'>(<i class='fa fa-eye-slash'></i>&nbsp;Chưa đọc)</b>") )
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                    if (!string.IsNullOrEmpty(Model.VanBanTrinhKy.NOI_NHAN))
+                    {
+                        <tr>
+                            <td class="txt-right">Đơn vị nhận văn bản bên ngoài</td>
+                            <td colspan="3">
+                                <p>
+                                    @Model.VanBanTrinhKy.NOI_NHAN
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                    <!--NỘI DUNG VĂN BẢN-->
+                }
+                else
+                {
+                    <tr>
+                        <td class="txt-right">
+                            <label class="lbl-title">Người gửi</label>
+                        </td>
+                        <td colspan="3">
+                            <span style="word-break: break-all">
+                                @(sender != null ? sender.HOTEN : string.Empty)
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="txt-right">
+                            <label class="lbl-title">Người nhận</label>
+                        </td>
+
+                        <td colspan="3">
+                            <ul class="list-group">
+                                @{
+                                    foreach (var item in GroupUsersReceiveInternal)
+                                    {
+                                        bool isRead = Model.GroupUsersRead != null ? Model.GroupUsersRead.Any(x => x.ID == item.ID) : false;
+                                        <li>
+                                            @item.HOTEN @(isRead ? Html.Raw("<b class='text-info'>(<i class='fa fa-eye'></i>&nbsp;Đã đọc)</b>") : Html.Raw("<b class='text-danger'>(<i class='fa fa-eye-slash'></i>&nbsp;Chưa đọc)</b>") )
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                }
+            </table>
+
+            @if (Model.ListTaiLieu.Any())
+            {
+                @Html.Partial("../Common/UploadFile", Model.ListTaiLieu, new ViewDataDictionary() { { "detail", 1 }, { "ITEM_TYPE", MODULE_CONSTANT.VANBANTRINHKY }, { "allowviewpdf", 0 }, { "allowoveride", (Model.HasPermissionMainProcess != null && Model.HasPermissionMainProcess) ? 1 : 0 } })
+            }
+            @if (Model.VanBanDen != null)
+            {
+                <div class="jarviswidget" style="padding: 0px; border: none;margin-top:10px">
+                    <header role="heading">
+                        <span class="widget-icon"><i class="fa fa-paperclip txt-color-red"></i></span>
+                        <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+                            Văn bản đến liên quan
+                        </h2>
+                        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    </header>
+
+                    <table class="hinet-table table table-bordered table-hover" width="100%" style="margin-bottom: 0px;">
+                        <thead>
+                            <tr>
+                                <th>Số hiệu</th>
+                                <th>Trích yếu</th>
+                                <th>Người ký</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <a href="/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen?id=@Model.VanBanDen.ID" target="_blank">
+                                        @Model.VanBanDen.SOHIEU
+                                    </a>
+                                </td>
+                                <td>@Model.VanBanDen.TRICHYEU</td>
+                                <td>
+                                    @Model.VanBanDen.NGUOIKY
+                                    <br />
+                                    <i>@Model.VanBanDen.CHUCVU</i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+            @if (Model.VanBanTrinhKy.IS_INTERNAL != true)
+            {
+                <div class="col-md-12 col-sm-12" style="padding:10px; text-align: center; margin-top: 0px; background-color: transparent !important;border: none">
+                    @{Html.RenderAction("GetAction", "WFSTREAM", new { area = "WFSTREAMAREA", idItem = Model.VanBanTrinhKy.ID, itemType = MODULE_CONSTANT.VANBANTRINHKY });}
+                </div>
+            }
+
+
+            <div class="col-sm-12" style="padding: 0px;border:none">
+                <form style="border:none" enctype="multipart/form-data" method="post" class="well padding-bottom-10" action="/HSVanBanDiArea/HSVanBanDi/SaveCommentRootLevel" id="SaveCommentRootLevelForm">
+                    <input type="hidden" name="COMMENTFORTASK" value="@Model.VanBanTrinhKy.ID" />
+                    <input type="hidden" name="DOC_TYPE" value="@Model.DocType" />
+                    <textarea rows="2" class="form-control required" placeholder="Nội dung trao đổi" id="NOIDUNGTRAODOI" name="NOIDUNGTRAODOIFORTASK"></textarea>
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                    <span style="color: red">Chỉ được upload các file định dạng .jpg,.pdf,.png,.doc,.docx,.xls,.xlsx,.zip,.rar với dung lượng không vượt quá 20Mb</span>
+                    <div class="margin-top-10">
+                        <button type="button" class="btn btn-sm btn-primary pull-right" onclick="saveNoiDungTraoDoi()">
+                            Gửi
+                        </button>
+                        <input type="hidden" maxlength="500" class="form-control" placeholder="Nhập tên tài liệu" name="filename">
+                        <input type="file" name="FILECOMMENTFORTASK" class="btn btn-link profile-link-btn" style="width: 80% !important;" />
+                    </div>
+                </form>
+
+                @foreach (var comment in Model.LstRootComment)
+                {
+                    <span class="timeline-seperator text-center">
+                        <span>@string.Format("{0:dd/MM/yyyy}", comment.NGAYTAO)</span>
+
+                    </span>
+                    <div class="chat-body no-padding profile-message">
+                        <ul>
+                            @{
+                                var LstSubComment = Model.LstNoiDungTraoDoi.Where(x => x.REPLY_ID == comment.ID).ToList();
+                                var tmp_idx = 0;
+
+                                long TAILIEU_ID = 0;
+                                if (Model.LstTaiLieuComment.Count > 0)
+                                {
+                                    var TaiLieuComment = Model.LstTaiLieuComment.Where(x => x.ITEM_ID == comment.ID).FirstOrDefault();
+                                    if (TaiLieuComment != null)
+                                    {
+                                        TAILIEU_ID = TaiLieuComment.TAILIEU_ID;
+                                    }
+
+                                }
+
+                            }
+                            <li class="message">
+                                <img src="@(string.IsNullOrEmpty(comment.UserAvatar) ? "/../../Content/Images/Avatar/users_woman-512.png" : comment.UserAvatar)" class="online" style="max-width: 45px;">
+                                <span class="message-text" style="min-height: 45px;">
+                                    <a href="javascript:void(0);" class="username">@comment.FullName<small class="text-muted pull-right ultra-light"> </small></a>
+                                    @comment.NOIDUNG
+                                    @if (TAILIEU_ID > 0)
+                                    {
+                                        <a class="btn btn-default btn-xs" href="javascript:void(0)" onclick="DowloadFile(@TAILIEU_ID)"><i class="glyphicon glyphicon-save"></i></a>
+                                    }
+
+                                </span>
+                                <ul class="list-inline font-xs">
+                                    <li>
+                                        <a href="javascript:showFormComment(@comment.ID);" class="text-info"><i class="fa fa-reply"></i>Reply</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:showAllComment(@comment.ID);" class="text-muted">Hiển thị hết các comment (@LstSubComment.Count)</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            @foreach (var subcomment in LstSubComment)
+                            {
+                                <li class="message message-reply message-reply-for-comment-@comment.ID" style="display: @(tmp_idx > 2 ? " none" : "block")">
+                                    <img src="@(string.IsNullOrEmpty(subcomment.UserAvatar) ? " /../../Content/Images/Avatar/users_woman-512.png" : subcomment.UserAvatar)" class="online" style="max-width: 30px;">
+                                    <span class="message-text">
+                                        <a href="javascript:void(0);" class="username">@subcomment.FullName</a>
+                                        @subcomment.NOIDUNG
+                                    </span>
+
+                                    <ul class="list-inline font-xs">
+                                        <li>
+                                            <a href="javascript:void(0);" class="text-muted">@string.Format("{0:dd/MM/yyyy}", subcomment.NGAYTAO)</a>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                tmp_idx = tmp_idx + 1;
+                            }
+                            <li id="comment-for-task-@comment.ID" style="display:none">
+                                <div class="input-group wall-comment-reply">
+                                    <input id="btn-input-for-task-@comment.ID" type="text" class="form-control required" placeholder="Type your message here...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" onclick="saveCommentForTask(@comment.ID, @Model.VanBanTrinhKy.ID, @Model.DocType)">
+                                            <i class="fa fa-reply"></i>Reply
+                                        </button>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="DONVINHAN_ID" value="" />
+<div id="dialogChonPhongBan" class="modal fade" role="dialog">
+    @using (Ajax.BeginForm("SendVanBanPhatHanhToDonVi", "HSVanBanDi", new { @area = "HSVanBanDiArea" }, new AjaxOptions
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successSendVanBanPhatHanhDonVi"
+    }, new { @id = "formSendVanBanPhatHanhDonVi" }))
+    {
+        <div class="modal-dialog" style="width:80%">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">CHỌN PHÒNG BAN/ ĐƠN VỊ</h4>
+                </div>
+                <div class="modal-body" style="max-height: 500px; overflow-y: scroll;" id="TreeChonDonViPartial">
+                    <input type="hidden" name="VANBANDI_ID" value="@Model.VanBanTrinhKy.ID"/>
+                    <div id="bodyTreeDonVi"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="onSendOtherDepts()">Gửi</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+@Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary {
+    {"VANBANDI_ID", Model.VanBanTrinhKy.ID }
+})
+
+<style>
+    #tbl_view_vanbanden td:nth-child(2n+1) {
+        font-weight: bold !important;
+        text-align: right;
+        width: 16.66666667%;
+        vertical-align: middle;
+    }
+
+        #tbl_view_vanbanden td:nth-child(2n+1) label {
+            font-weight: bold !important;
+        }
+
+    .list-group {
+        list-style-type: decimal;
+    }
+
+        .list-group li {
+            position: relative;
+            display: block;
+            padding: .75rem 1.25rem;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.125);
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+        }
+
+            .list-group li:first-child {
+                border-top: none;
+            }
+
+    .message-reply {
+        border-top: 1px dashed rgba(0, 0, 0, .1);
+        background: transparent !important;
+    }
+</style>
+
+<script>
+    function saveNoiDungTraoDoi() {
+        var checkRequired = requiredFieldForFormId("SaveCommentRootLevelForm");
+        if (checkRequired == false) {
+            NotiError("Kiểm tra lại các thông tin cần nhập");
+        } else {
+            $("#SaveCommentRootLevelForm").submit();
+        }
+        return false;
+    }
+    function showAllComment(id) {
+        $(".message-reply-for-comment-" + id).show();
+    }
+    function saveCommentForTask(id, task_id, docType) {
+        if ($("#btn-input-for-task-" + id).val() == "") {
+            $("#btn-input-for-task-" + id).focus();
+            NotiError("Bạn phải nhập nội dung trao đổi");
+        } else {
+            $.ajax({
+                url: '/HSVanBanDiArea/HSVanBanDi/SaveReplyForComment',
+                type: 'post',
+                cache: false,
+                data: { COMMENT_ID: id, COMMENT: $("#btn-input-for-task-" + id).val(), TASK_ID: task_id, DOC_TYPE: docType },
+                success: function (data) {
+                    NotiSuccess("Lưu nội dung trao đổi thành công");
+                    setTimeout(location.reload(), 1000);
+                },
+                error: function (err) {
+                    CommonJS.alert(err.responseText);
+                }
+            });
+        }
+    }
+    function showFormComment(id) {
+        $("#comment-for-task-" + id).show();
+        $("#comment-for-task-" + id + " input").focus();
+    }
+    if ('@Model.VanBanTrinhKy.HAS_SIGNED' == null || '@Model.VanBanTrinhKy.HAS_SIGNED' != 'True') {
+        $("#KYDUYETVANBAN").remove();
+    }
+
+    $(function(){
+        if ('@TempData["UpdateFiles"]' == 'True') {
+            setTimeout(function () {
+                NotiSuccess("Cập nhật tài liệu thành công");
+            }, 500);
+        } else if ('@TempData["UpdateFiles"]' != '') {
+            setTimeout(function () {
+                NotiError('Cập nhật chương trình khóa học thất bại!');
+            }, 500);
+        }
+
+        if ('@TempData["RollBackSuccess"]' == 'True') {
+                setTimeout(function () {
+                    NotiSuccess("Quay về bản trước thành công");
+                }, 500);
+            } else if ('@TempData["RollBackSuccess"]' != '') {
+                setTimeout(function () {
+                    NotiError('Quay về bản trước thất bại!');
+                }, 500);
+        }
+
+        if ($('#btn--send-depts').length > 0) {
+            $('#btn--send-depts').on('click', function () {
+                if ($('#dialogChonPhongBan #bodyTreeDonVi').html() === '') {
+                    var callBack = function (result) {
+                        $('#dialogChonPhongBan #bodyTreeDonVi').html(result);
+                        $("#dialogChonPhongBan").modal('show');
+                    }
+                    AjaxCall('/HSVanBanDiArea/HSVanBanDi/GetTreeDonVi', 'post', { idVanBanDi: @Model.VanBanTrinhKy.ID}, callBack);
+                } else {
+                    $("#dialogChonPhongBan").modal('show');
+                }
+            });
+        }
+
+        if ($('#btn--send-users').length > 0) {
+            $('#btn--send-users').on('click', function () {
+                $('#modal--other-recipients').modal('show');
+            })
+        }
+    });
+
+    function onSendOtherDepts() {
+        var checkboxes = $('#dialogChonPhongBan input[type=checkbox][name=chonphongban]:checked');
+        if (checkboxes.length > 0) {
+            $.confirm({
+                'title': 'Xác nhận gửi văn bản',
+                'message': 'Bạn có chắc chắn muốn gửi văn bản này ?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $('#dialogChonPhongBan').modal('hide');
+                            $('#formSendVanBanPhatHanhDonVi').submit();
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-danger',
+                        'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                    }
+                }
+            });
+        } else {
+            NotiError('Vui lòng chọn phòng ban');
+            return false;
+        }
+    }
+
+    function successSendVanBanPhatHanhDonVi(result) {
+        if (result.Status) {
+            NotiSuccess('Gửi văn bản thành công');
+            location.reload();
+        } else {
+            NotiError(result.Message);
+        }
+    }
+
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+</script>

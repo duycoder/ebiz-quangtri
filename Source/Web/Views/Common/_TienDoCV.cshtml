@@ -1,0 +1,155 @@
+﻿@using Web.Models
+@model TienDoCongViecModel
+
+<div class="col-sm-12 no-padding" id="statistics-middle">
+    <div class="col-sm-5 no-padding color-white">
+        <div id='myChart'></div>
+    </div>
+    <div class="col-sm-3" style="padding:0px 10px 0px 10px !important">
+        <div class="middle-statis color-white bottom-10">
+            <div class="col-sm-5 " style="background-color:#5B99D4;text-align:center">
+                <img class="statistics" src="~/Content/Images/Dashboard/good.png" />
+            </div>
+            <div class="col-sm-7 no-padding" style="text-align:center">
+                <label>Tốt<br />@(Model.TOT)%</label>
+            </div>
+        </div>
+        <div class="middle-statis color-white bottom-10">
+            <div class="col-sm-5" style="background-color:#FFC301;text-align:center">
+                <img class="statistics" src="~/Content/Images/Dashboard/like.png" />
+            </div>
+            <div class="col-sm-7 no-padding" style="text-align:center">
+                <label>Khá<br />@(Model.KHA)%</label>
+            </div>
+        </div>
+        <div class="middle-statis color-white bottom-10">
+            <div class="col-sm-5" style="background-color:#F18032;text-align:center">
+                <img class="statistics" src="~/Content/Images/Dashboard/check .png" />
+            </div>
+            <div class="col-sm-7 no-padding" style="text-align:center">
+                <label>Đạt<br />@(Model.DAT)%</label>
+            </div>
+        </div>
+        <div class="middle-statis color-white">
+            <div class="col-sm-5" style="background-color:#F9493A;text-align:center">
+                <img class="statistics" src="~/Content/Images/Dashboard/alert.png" />
+            </div>
+            <div class="col-sm-7 no-padding" style="text-align:center">
+                <label>Không đạt<br />@(Model.KHONGDAT)%</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 no-padding color-white">
+        <div id='chartCongViec'></div>
+        <div class="col-sm-12 no-padding">
+            <div style="background-color:#5B99D4;text-align:center;width:48%;float:left;margin-right:4%;text-align: center">
+                <label style="color:#FFFFFF;padding:10px;margin-bottom:0px">Đúng hạn: <br>@(Model.DUNGHAN)%</label>
+            </div>
+            @*<div class="col-sm-2 no-padding">&nbsp;</div>*@
+            <div class="" style="background-color:#F9493A;width:48%;float:left;text-align: center">
+                <label style="color:#FFFFFF;padding:10px; margin-bottom: 0px">Trễ hạn: <br>@(Model.TREHAN)%</label>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var detached_tot = (parseFloat('@Model.TOT') > 0 && parseFloat('@Model.TOT') < 100) ? true : false;
+    var detached_kha = (parseFloat('@Model.KHA') > 0 && parseFloat('@Model.KHA') < 100) ? true : false;
+    var detached_dat = (parseFloat('@Model.DAT') > 0 && parseFloat('@Model.DAT') < 100) ? true : false;
+    var detached_khongdat = (parseFloat('@Model.KHONGDAT') > 0 && parseFloat('@Model.KHONGDAT') < 100) ? true : false;
+    if (detached_tot) {
+        detached_kha = false;
+        detached_dat = false;
+        detached_khongdat = false;
+    } else if (detached_kha) {
+        detached_tot = false;
+        detached_dat = false;
+        detached_khongdat = false;
+    } else if (detached_dat) {
+        detached_tot = false;
+        detached_kha = false;
+        detached_khongdat = false;
+    } else if (detached_khongdat) {
+        detached_tot = false;
+        detached_kha = false;
+        detached_dat = false;
+    }
+    var myConfig = {
+        "type": "pie3d",
+        "title": {
+            "text": "Chất lượng công việc",
+            "offset-x": 10,
+            "offset-y": 10,
+            "color": "#000000",
+            "border-radius": "4px",
+            "font-weight": "bold",
+            "font-size": 15
+        },
+        "series": [
+            {
+                "values": [parseFloat('@Model.TOT')],
+                "detached": detached_tot,
+                "background-color": "#5B99D4",
+                "text": ""
+            },
+            {
+                "values": [parseFloat('@Model.KHA')],
+                "detached": detached_kha,
+                "background-color": "#FFC301",
+                "text": ""
+            },
+            {
+                "values": [parseFloat('@Model.DAT')],
+                "detached": detached_dat,
+                "background-color": "#F18032",
+                "text": ""
+            },
+            {
+                "values": [parseFloat('@Model.KHONGDAT')],
+                "detached": detached_khongdat,
+                "background-color": "#F9493A",
+                "text": ""
+            }
+        ]
+    };
+
+    zingchart.render({
+        id: 'myChart',
+        data: myConfig,
+        height: 314,
+        width: "100%"
+    });
+    var jobConfig = {
+        "type": "pie3d",
+        "title": {
+            "text": "Tiến độ công việc",
+            "offset-x": 10,
+            "offset-y": 10,
+            "color": "#000000",
+            "border-radius": "4px",
+            "font-weight": "bold",
+            "font-size": 15
+        },
+        "series": [
+            {
+                "values": [parseFloat('@Model.DUNGHAN')],
+                "background-color": "#5B99D4",
+                "text": ""
+            },
+            {
+                "values": [parseFloat('@Model.TREHAN')],
+                "background-color": "#F9493A",
+                "text": ""
+            }
+        ]
+    };
+    zingchart.render({
+        id: 'chartCongViec',
+        data: jobConfig,
+        height: 314,
+        width: "100%"
+    });
+    var height = $("#statistics-middle").height();
+    $("#statistics-middle .middle-statis").height(((height - 30) / 4) + "px");
+    $("#statistics-middle #myChart,#statistics-middle #myChart-wrapper").height(height + "px");
+</script>

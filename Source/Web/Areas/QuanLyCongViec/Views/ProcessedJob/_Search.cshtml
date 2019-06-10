@@ -1,0 +1,178 @@
+﻿@model Web.Areas.CongViecArea.Models.CongViecIndexViewModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("searchData", "ProcessedJob",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure1",
+                OnSuccess = "searchSuccess",
+            }, new { @class = "form-inline" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Tên công việc:</div>
+                    <div class="col-md-10">
+                        <input name="TENCONGVIEC" style="width:100%" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Bắt đầu từ:</div>
+                    <div class="col-md-4 form-group">
+                        <div class="input-group">
+                            <input type="text" name="NGAYBATDAU_FROM" class="form-control" id="NGAYBATDAU_FROM" />
+                            <span class="input-group-addon">Đến</span>
+                            <input type="text" name="NGAYBATDAU_TO" class="form-control" id="NGAYBATDAU_TO" />
+                        </div>
+                    </div>
+                    <div class="col-md-2 txt-label">Kết thúc từ:</div>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" name="NGAYKETTHUC_FROM" class="form-control" id="NGAYKETTHUC_FROM" />
+                            <span class="input-group-addon">Đến</span>
+                            <input type="text" name="NGAYKETTHUC_TO" class="form-control" id="NGAYKETTHUC_TO" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Mức độ quan trọng:</div>
+                    <div class="col-md-4">
+                        <select name="DOKHAN_ID" class="select2">
+                            <option value="">Lựa chọn</option>
+                            @{
+                                foreach (var item in Model.ListDoKhan)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 txt-label">Độ ưu tiên:</div>
+                    <div class="col-md-4">
+                        <select name="DOMAT_ID" class="select2">
+                            <option value="">Lựa chọn</option>
+                            @{
+                                foreach (var item in Model.ListDoUuTien)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+                <input type="hidden" name="DONVI_ID" id="DONVI_ID" />
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $("#NGAYBATDAU_FROM").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYBATDAU_TO").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#NGAYBATDAU_TO").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYBATDAU_FROM").datepicker('option', 'maxDate', date);
+        }
+    });
+    $("#NGAYKETTHUC_FROM").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYKETTHUC_TO").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#NGAYKETTHUC_TO").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYKETTHUC_FROM").datepicker('option', 'maxDate', date);
+        }
+    });
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function failure1(data) {
+    }
+    function searchSuccess(rs) {
+        $("#tbl-vanbanden").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $("#collapseDiv .select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+</script>
+<style>
+    .select2 {
+        width: 100%;
+    }
+</style>

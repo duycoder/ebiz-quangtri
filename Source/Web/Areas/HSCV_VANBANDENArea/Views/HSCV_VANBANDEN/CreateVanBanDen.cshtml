@@ -1,0 +1,657 @@
+﻿@using Web.Areas.HSCV_VANBANDENArea.Models;
+@model EditVanBanDenModel
+@{
+    ViewBag.Title = Model.entityVanBanDen.ID > 0 ? "Cập nhật văn bản đến" : "Tạo mới văn bản đến";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<style type="text/css">
+    .ms-drop {
+        width: 100%;
+    }
+
+    .ms-choice {
+        background: none;
+        border: 1px solid #999;
+        border-radius: 0px;
+        height: 30px;
+        width: 100%;
+    }
+
+    .ms-parent {
+        width: 100%;
+    }
+
+    .ms-choice > span {
+        width: 100%;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .text-danger {
+        color: red;
+    }
+</style>
+
+<div id="ribbon" style=" background-color:#57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+        <a class="btn btn-default pull-right" href="@Url.Action("NavigateBackToList", new { typeOfVanBanDen = Model.typeOfVanBanDen})">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div class="clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fa fa-file-image-o txt-color-darken"></i>
+                </span>
+                <h2 class="hidden-xs hidden-sm">Thêm mới văn bản đến</h2>
+            </header>
+
+            <div role="contentinfo">
+                <div class="widget-body">
+                    <form id="form--create-vanbanden" action="/HSCV_VANBANDENArea/HSCV_VANBANDEN/SaveVanBanDen" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ID" value="@Model.entityVanBanDen.ID" />
+                        <div class="tab-content custom-scroll">
+                            <fieldset>
+                                <div class="row">
+                                    <section class="col col-lg-6">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="SOHIEU">
+                                                        Số hiệu:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control required" name="SOHIEU" value="@Model.entityVanBanDen.SOHIEU"/>
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="MA_DANGKY">
+                                                        Mã đăng ký:&nbsp;
+														<!-- <span class="text-danger">*</span> -->
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" name="MA_DANGKY" value="@Model.entityVanBanDen.MA_DANGKY" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+												<div class="col-sm-3">
+                                                    <label class="lbl control-label" id="DONVI_ID">
+                                                        PL cơ quan:&nbsp;
+														<!-- <span class="text-danger">*</span> -->
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("LOAI_COQUAN_ID", Model.GroupDeptTypes, "--- Chọn loại cơ quan --- ", new { @class = "width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="TRICHYEU">
+                                                        Trích yếu:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <textarea name="TRICHYEU" class="required form-control" style="resize:none" autofocus="autofocus" autocomplete="false">@(Model.entityVanBanDen.ID > 0 ? Model.entityVanBanDen.TRICHYEU : "Về việc:")</textarea>
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="SOTRANG">
+                                                        Số trang:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control checkIsNumeric" name="SOTRANG" value="@Model.entityVanBanDen.SOTRANG" />
+                                                    <div class="note-error">
+                                                        <span class="mes-note-error error"></span>
+                                                    </div>
+                                                </div>
+												<div class="col-sm-3">
+                                                    <label class="lbl control-label" for="SO_BAN">
+                                                        Số bản:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control checkIsNumeric" name="SO_BAN" value="@Model.entityVanBanDen.SO_BAN" />
+                                                    <div class="note-error">
+                                                        <span class="mes-note-error error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="THONGTIN_LOAI_ID">
+                                                        Loại bản:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("THONGTIN_LOAI_ID", Model.GroupDocTypes, "--- Chọn loại bản --- ", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" id="DONVI_ID">
+                                                        Đơn vị gửi:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("DONVI_ID", Model.groupDonViGuis, "--- Chọn đơn vị gửi --- ", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" id="LOAIVANBAN_ID">
+                                                        Loại văn bản:&nbsp;
+                                                        @*<span class="text-danger">*</span>*@
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("LOAIVANBAN_ID", Model.groupLoaiVanBans, "--- Chọn loại văn bản --- ", new { @class = "width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="LINHVUCVANBAN_ID" class="lbl control-label">
+                                                        Lĩnh vực:&nbsp;
+                                                        @*<span class="text-danger">*</span>*@
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("LINHVUCVANBAN_ID", Model.groupLinhVucVanBans, "--- Chọn lĩnh vực văn bản ---", new { @class = "width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="DOKHAN_ID" class="lbl control-label">
+                                                        Độ mật:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("DOKHAN_ID", Model.groupDoKhans, "--- Chọn Độ mật ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="DOMAT_ID" class="lbl control-label">
+                                                        Độ khẩn:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("DOMAT_ID", Model.groupDoUuTiens, "--- Chọn độ khẩn ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="SOVANBANDEN_ID" class="lbl control-label">
+                                                        Sổ văn bản đến:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("SOVANBANDEN_ID", Model.groupSoVanBanDens, "--- Chọn sổ văn bản đến ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="SODITHEOSO" class="lbl control-label">
+                                                        Số đi theo sổ:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="SODITHEOSO" id="SODITHEOSO" value="@Model.entityVanBanDen.SODITHEOSO" class="form-control" readonly />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="CONGVAN_DEN_ID" class="lbl control-label">
+                                                        Công văn đến:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    @Html.DropDownList("CONGVAN_DEN_ID", Model.GroupDispatchTypes, "--- Chọn công văn đến ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="TACGIA" class="lbl control-label">
+                                                        Tác giả:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="TACGIA" value="@Model.entityVanBanDen.TACGIA" maxlength="255" class="form-control required" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGUOIKY" class="lbl control-label">
+                                                        Người ký:&nbsp;<span class="text-danger">*</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="NGUOIKY" value="@Model.entityVanBanDen.NGUOIKY" maxlength="255" class="form-control required" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="CHUCVU" class="lbl control-label">
+                                                        Chức vụ người ký:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="CHUCVU" value="@Model.entityVanBanDen.CHUCVU" maxlength="255" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NOIDUNG" class="lbl control-label">
+                                                        Nội dung:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="hidden" name="NOIDUNG" id="NOIDUNG" />
+                                                    <textarea name="NOIDUNGVANBAN" id="NOIDUNGVANBAN" class="form-control" style="resize:none">@Model.entityVanBanDen.NOIDUNG</textarea>
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error" id="NOIDUNG_ERROR"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </section>
+
+                                    <section class="col col-lg-6">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="NGAY_HIEULUC">
+                                                        Ngày có hiệu lực:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="NGAY_HIEULUC" id="NGAY_HIEULUC" class="form-control datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityVanBanDen.NGAY_HIEULUC.HasValue == true ? Model.entityVanBanDen.NGAY_HIEULUC.Value.ToString("dd/MM/yyyy") : string.Empty)" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="NGAY_VANBAN">
+                                                        Ngày văn bản:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" name="NGAY_VANBAN" id="NGAY_VANBAN" class="form-control datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityVanBanDen.NGAY_VANBAN.HasValue == true ? Model.entityVanBanDen.NGAY_VANBAN.Value.ToString("dd/MM/yyyy") : string.Empty)" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+												<div class="col-sm-3">
+                                                    <label class="lbl control-label" for="NGAY_BANHANH">
+                                                        Ngày ban hành:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" name="NGAY_BANHANH" id="NGAY_BANHANH" class="form-control datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityVanBanDen.NGAY_BANHANH.HasValue == true ? Model.entityVanBanDen.NGAY_BANHANH.Value.ToString("dd/MM/yyyy") : string.Empty)" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                       
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label" for="NGAYHET_HIEULUC">
+                                                        Hạn thu hồi:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" name="NGAYHET_HIEULUC" id="NGAYHET_HIEULUC" class="form-control datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityVanBanDen.NGAYHET_HIEULUC.HasValue == true ? Model.entityVanBanDen.NGAYHET_HIEULUC.Value.ToString("dd/MM/yyyy") : string.Empty)" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+												<div class="col-sm-3">
+                                                    <label class="lbl control-label" for="THOIHAN_GIAIQUYET">
+                                                        Hạn giải quyết:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" name="THOIHAN_GIAIQUYET" id="THOIHAN_GIAIQUYET" class="form-control datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityVanBanDen.THOIHAN_GIAIQUYET.HasValue == true ? Model.entityVanBanDen.THOIHAN_GIAIQUYET.Value.ToString("dd/MM/yyyy") : string.Empty)" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYCONGTAC" class="lbl control-label">
+                                                        Ngày công tác:
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    <input type="text" name="NGAYCONGTAC" id="NGAYCONGTAC" class="form-control datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityVanBanDen.NGAYCONGTAC.HasValue == true ? Model.entityVanBanDen.NGAYCONGTAC.Value.ToString("dd/MM/yyyy") : string.Empty)" />
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIO_CONGTAC", Model.groupHours, "--- Giờ ---", new { @class = " width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("PHUT_CONGTAC", Model.groupMinutes, "--- Phút ---", new { @class = " width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="padding-top: 10px;padding-left: 12px; padding-right: 12px">
+                                            @{Html.RenderPartial("../Common/UploadFile", Model.groupTaiLieuDinhKems);}
+                                        </div>
+                                    </section>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-actions center">
+                            <center>
+                                <input type="submit" value="Lưu văn bản" id="btnSave" class="btn btn-primary btn-sm" />
+                                <input type="button" value="Hủy bỏ" onclick="location.href='@Url.Action("ChuaXuLy")'" class="btn btn-default btn-sm" />
+                            </center>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ajaxStart(function(){
+        WaitingLoad_Start();
+    });
+   
+    $(document).ajaxStop(function(){
+        WaitingLoad_End();
+    });
+
+    $(document).ready(function () {
+        loadScript("/ckeditor/ckeditor.js", function () {
+            loadScript("/Content/select/js/bootstrap-select.js", function () {
+                CKEDITOR.replace('NOIDUNGVANBAN', {  // Define the toolbar groups as it is a more accessible solution.
+                    toolbarGroups: [
+                        { "name": "basicstyles", "groups": ["basicstyles"] },
+                        { "name": "links", "groups": ["links"] },
+                        { "name": "paragraph", "groups": ["list", "blocks"] },
+                        { "name": "document", "groups": ["mode"] },
+                        { "name": "insert", "groups": ["insert"] },
+                        { "name": "styles", "groups": ["styles"] },
+                        { "name": "about", "groups": ["about"] }
+                    ],
+                    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+                });
+
+                $(".selectpicker1").selectpicker();
+
+                $(".datepicker1").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    prevText: '<i class="fa fa-chevron-left"></i>',
+                    nextText: '<i class="fa fa-chevron-right"></i>',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-20:+20"
+                });
+            });
+        });
+
+        $('#btnSave').on('click', function () {
+            var isValidToSubmit = onSubmit();
+            if (isValidToSubmit == true) {
+                $('#form--create-vanbanden').submit();
+            } else {
+                return false;
+            }
+        });
+
+        $('#SOVANBANDEN_ID').on('change', function () {
+            var value = $(this).val();
+
+            if (value !== '' && value !== '0') {
+                $.ajax({
+                    url: '/Common/GetSoDiTheoSo',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify({ 'idSoVanBan': value }),
+                    contentType: 'application/json',
+                    success: function (rs) {
+                        $('#SODITHEOSO').val(rs.numbSoDiTheoSo);
+                    }, error: function (err) {
+                        NotifErr('Có lỗi xảy ra');
+                    }
+                })
+            } else {
+                $('#SODITHEOSO').val('');
+            }
+        })
+
+        $('#btn--choose-recipient').on('click', function(){
+            $('#modal--recipients').modal('show');
+        });
+
+        $('#input--search-recipients').on('keypress', function(e){
+            if(e.which === 13){
+                var value = $(this).val().trim();
+                value = generate_slugable(value);
+                $('#table--recipients-doc td.cell--user-name').each(function(){
+                    var cell = $(this);
+                    var row = $(this).parents('tr');
+                    var name = generate_slugable($(cell).data('user-name'));
+                    
+                    if(name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
+                        row.show();
+                    }else{
+                        row.hide();
+                    }
+                });
+            }
+        });
+
+        $('#button--save-recipient').on('click', function(){
+            //if($('#NGUOINHAN_TRUCTIEP_IDS').length > 0){
+            //    var checked = $('#table--recipients-doc input[type=checkbox]').val();
+            //    $('#NGUOINHAN_TRUCTIEP_IDS').val(checked);
+            //    $('#modal--recipients').modal('hide');
+            //}
+        });
+    })
+
+    function onSubmit() {
+        var errorCount = 0;
+
+        var isValidRequiredField = requiredFieldForFormId('form--create-vanbanden');
+        var isValidSelectField = RequireDropDownlist("form--create-vanbanden");
+        var isValidHTMLInjection = validateHTMLInjectionField('form--create-vanbanden');
+        var isValidDateField = validateDateField('form--create-vanbanden');
+        var isValidNumericField = validateNumberField('form--create-vanbanden');
+
+        if (!isValidRequiredField || !isValidDateField || !isValidSelectField || !isValidHTMLInjection || !isValidNumericField) {
+            errorCount++;
+        }
+
+        <!-- if (CKEDITOR.instances.NOIDUNGVANBAN.getData() !== "") { -->
+            <!-- $("#NOIDUNG_ERROR").hide(); -->
+        <!-- } else { -->
+            <!-- errorCount++; -->
+            <!-- $("#NOIDUNG_ERROR").show(); -->
+            <!-- $("#NOIDUNG_ERROR").html("Bạn phải nhập nội dung văn bản"); -->
+        <!-- } -->
+
+        if (errorCount == 0) {
+            return true;
+        } else {
+            NotiError('Có lỗi! Xin vui lòng kiểm tra lại');
+            return false;
+        }
+    }
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+</script>

@@ -1,0 +1,124 @@
+﻿@using Web.Areas.SVTHEArea.Models;
+@using Business.CommonModel.FEKHIEULAITOCAO;
+@model FE_KHIEULAI_TOCAO_BO
+
+<div class="modal-dialog">
+    @using (Ajax.BeginForm("BaoCaoKhieuNai", "FunctionState", new { @area = "WfStreamArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxFunc",
+    }, new { id = "captheform" }))
+    {
+        @Html.AntiForgeryToken()
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Cập nhật báo cáo thực hiện</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type='hidden' name='ID' value='@Model.ID' />
+                <div class="row well well-sm">
+                    <div style="color:#222f3e; font-weight:bold;">Thông tin kế hoạch</div>
+                    <div>
+                        <table class="width-100 tbl-noborder">
+                            <tr>
+                                <td class="tbl-label">Tiêu đề</td>
+                                <td class="tbl-content">@Model.TIEUDE</td>
+                            </tr>
+                            <tr>
+                                <td class="tbl-label">Nội dung</td>
+                                <td class="tbl-content">@Model.NOIDUNG</td>
+                            </tr>
+                            <tr>
+                                <td class="tbl-label">Thời gian gửi</td>
+                                <td class="tbl-content">@string.Format("{0:dd/MM/yyyy HH:mm}", Model.create_at)</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="row well well-sm">
+                    <div style="color:#222f3e; font-weight:bold;">Nội dung thực hiện</div>
+                    <div class="form-horizontal" style="margin-top:10px;">
+
+                        
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Báo cáo<span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                <textarea rows="5" class="form-control resize-vertical required" name="KETQUA"></textarea>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-horizontal">
+
+
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function successAjaxFunc(rs) {
+        if (rs.Status) {
+            $("#modal_Function").modal("hide");
+            $("#modal_Function").empty();
+            NotiSuccess("Báo cáo đã được cập nhật");
+            setTimeout(function () {
+                location.reload();
+            }, 1000);
+
+        } else {
+
+            NotiError(rs.Message);
+        }
+    }
+
+    function checkSubmid() {
+        var err = checkForm('captheform');
+        if (err) {
+            $("#captheform").submit();
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                $(".dropdown").select2({
+                    minimumResultsForSearch: Infinity
+                });
+                $(".txt-picker").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    changeMonth: true,
+                    changeYear: true, yearRange: "-50:+20",
+                    showWeek: false, weekHeader: "Tuần",
+                    language: 'vi',
+                    prevText: '<i class="fa fa-chevron-left"></i>',
+                    nextText: '<i class="fa fa-chevron-right"></i>',
+                    onSelect: function (date) {
+
+                    }
+                });
+            });
+        });
+    })
+
+</script>
+

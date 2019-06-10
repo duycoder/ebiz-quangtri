@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "Quản lý Đối Tác";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using Model.Entities;
+@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Business.CommonModel.LOGSMS;
+@model PageListResultBO<LOGSMS_BO>
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListItem));
+
+}
+<link href="~/css/print.min.css" rel="stylesheet" />
+<script src="~/js/print.min.js"></script>
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6 icon-thaotac">
+        <button class="btn btn-default pull-right" onclick="printJS({ printable: 'tbl-sms', type: 'html', header: 'In logsms' })" id="btnPrint"><span class="glyphicon glyphicon-print"></span>In trang</button>
+
+        <a href="#collapseDivSMS" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button">
+            <span class=" glyphicon glyphicon-search"> </span>Tìm kiếm
+        </a>
+
+    </div>
+</div>
+<div id="content">
+
+
+    @Html.Partial("SearchPartial", Model)
+
+
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý SMS
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div id="tbl-sms" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped  table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+
+                            <th>Tên người gửi</th>
+                            <th>Đơn vị người gửi</th>
+                            <th>Tên người nhận</th>
+                            <th>Đơn vị người nhận</th>
+                            <th>Ngày tạo</th>
+                            <th>Nội dung</th>
+                            <th>Số điện thoại</th>
+                            <th style="width:200px">Kết quả</th>
+                            <th>Số ký tự</th>
+                            <th>Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+
+    var lstData = eval(@lstData);
+
+    function pagefunction(){
+
+        var conf = [
+            {
+                tdClass: "center",
+                isSort: false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return;
+                }
+            },
+             {
+                 isSort: true,
+                 nameModel: "HOTENNGUOIGUI",
+                 content: function (data) {
+                     return data.HOTENNGUOIGUI
+                 }
+             },
+            {
+                 isSort: true,
+                 nameModel: "TEN_DONVI_GUI",
+                 content: function (data) {
+                     return data.TEN_DONVI_GUI
+                 }
+             },
+              {
+                  isSort: true,
+                  nameModel: "HOTENNGUOINHAN",
+                  content: function (data) {
+                      return data.HOTENNGUOINHAN
+                  }
+              },
+             {
+                 isSort: true,
+                 nameModel: "TEN_DONVI_NHAN",
+                 content: function (data) {
+                     return data.TEN_DONVI_NHAN
+                 }
+             },
+            
+              {
+                  isSort: true,
+                  nameModel: "CREATED_AT",
+                  content: function (data) {
+                      return ToDate(data.CREATED_AT);
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "NOIDUNG",
+                  content: function (data) {
+                      return data.NOIDUNG
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "SODIENTHOAINHAN",
+                  content: function (data) {
+                      return data.SODIENTHOAINHAN
+                  }
+              },
+              
+              {
+                  isSort: true,
+                  nameModel: "KETQUA",
+                  content: function (data) {
+                      return data.KETQUA
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "SOKYTU",
+                  content: function (data) {
+                      return data.SOKYTU
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "CREATED_AT",
+                  content: function (data) {
+                      return ToDate(data.CREATED_AT);
+                  }
+              },
+        ];
+
+
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '/LOGSMSArea/LOGSMS/getData',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-sms").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+
+        }
+
+        var tblData=$("#tbl-sms").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.TotalPage,
+            recordCount: @Model.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+
+    }
+   
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js",pagefunction);
+    })
+
+
+</script>

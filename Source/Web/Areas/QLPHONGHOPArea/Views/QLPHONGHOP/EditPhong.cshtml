@@ -1,0 +1,294 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@model EditVM
+@{
+}
+
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<style type="text/css">
+    .width100 {
+        width: 100% !important;
+    }
+    .ms-drop {
+        width: 100%;
+    }
+
+    .ms-choice {
+        background: none;
+        border: 1px solid #999;
+        border-radius: 0px;
+        height: 30px;
+        width: 100%;
+    }
+
+    .ms-parent {
+        width: 100%;
+    }
+
+    .ms-choice > span {
+        width: 100%;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .text-danger {
+        color: red;
+    }
+
+    #span--important--book {
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        background: red;
+        color: white;
+        position: relative;
+        text-align: center;
+    }
+
+        #span--important--book:before {
+            content: '';
+            border: 15px solid red;
+            border-left-color: white;
+            border-left-width:15px;
+            position:absolute;
+            top:0;
+            left:0;
+        }
+
+        #span--important--book:after {
+            content: '';
+            border: 15px solid red;
+            border-right-color: white;
+            border-right-width: 15px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+    #block--important-tag {
+        padding: 0;
+    }
+
+    #icon--important--book {
+        font-size: 15px;
+    }
+</style>
+
+@using (Ajax.BeginForm("SaveRoomRequest", "QLPHONGHOP", new { @area = "QLPHONGHOPArea" }, new AjaxOptions()
+{
+    HttpMethod = "POST",
+    OnFailure = "failEditRoomRequest",
+    OnSuccess = "successEditRoomRequest",
+}, new { id = "form--edit--room-request" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="width:70%">
+        <input type="hidden" name="ID" value="@Model.roomEntity.ID"/>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    @(Model.roomEntity.ID > 0 ? "CẬP NHẬT LỊCH ĐẶT PHÒNG" : "THÊM MỚI LỊCH ĐẶT PHÒNG")
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="NGAYDAT">
+                                Ngày họp:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="text" placeholder="Ngày họp" name="NGAYDAT" id="NGAYDAT" class="form-control datepicker required datepicker1 checkDateValid checkHTMLInjection" value="@string.Format("{0:dd/MM/yyyy}",Model.roomEntity.NGAYDAT)"/>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="GIOBATDAU">
+                                Giờ bắt đầu:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            @Html.DropDownList("GIOBATDAU", Model.groupStartHours, new { @class = "select2 width100" })
+                            <div class="note-error">
+                                <span class="error mes-note-error time-error" id="GIOBATDAU_ERROR"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label class="control-label" for="PHUTBATDAU">
+                                Phút bắt đầu:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            @Html.DropDownList("PHUTBATDAU", Model.groupStartMinutes, new { @class = "select2 width100" })
+                            <div class="note-error">
+                                <span class="error mes-note-error time-error" id="PHUTBATDAU_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="GIOKETTHUC">
+                                Giờ kết thúc:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            @Html.DropDownList("GIOKETTHUC", Model.groupEndHours, new { @class = "select2 width100" })
+                            <div class="note-error">
+                                <span class="error mes-note-error time-error" id="GIOKETTHUC_ERROR"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label class="control-label" for="PHUTKETTHUC">
+                                Phút kết thúc:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            @Html.DropDownList("PHUTKETTHUC", Model.groupEndMinutes, new { @class = "select2 width100" })
+                            <div class="note-error">
+                                <span class="error mes-note-error time-error" id="PHUTKETTHUC_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="USER_ID">
+                                Lãnh đạo tham dự:
+                            </label>
+                        </div>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("USER_ID", Model.groupLeaders, "--- Chọn lãnh đạo tham dự ---", new { @class = "select2 width100" })
+                        </div>
+                        <div class="col-sm-2" id="block--important-tag" style="display:@(Model.roomEntity.USER_ID == 0 ? "none": "block")">
+                            <div id="span--important--book">
+                                Quan trọng&nbsp;<i class="fa fa-exclamation-circle" id="icon--important--book"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="MUCDICH">
+                                Mục đích:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-8">
+                            <textarea class="form-control required checkHTMLInjection" id="MUCDICH" name="MUCDICH">@Model.roomEntity.MUCDICH</textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="THANHPHANTHAMDU">
+                                Thành phần tham dự:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-8">
+                            <textarea name="THANHPHANTHAMDU" id="THANHPHANTHAMDU" class="form-control required checkHTMLInjection">@Model.roomEntity.THANHPHANTHAMDU</textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="btn--save">Lưu thông tin</a>
+                <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(function(){
+        loadScript("/Content/select/js/bootstrap-select.js", function () {
+            $("select.select2").select2();
+
+            $(".datepicker").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    prevText: '<i class="fa fa-chevron-left"></i>',
+                    nextText: '<i class="fa fa-chevron-right"></i>',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-20:+20"
+            });
+        })
+
+        $('#USER_ID').on('change',function(){
+            var leaderId = $(this).val();
+            if(leaderId == ''){
+                $('#block--important-tag').hide('500');
+            }else{
+                $('#block--important-tag').show('500');
+            }
+        });
+
+        $('#btn--save').on('click',function(){
+            var errorCount = 0;
+            var formName = 'form--edit--room-request';
+
+            var isValidRequiredField = requiredFieldForFormId(formName);
+            if (!isValidRequiredField) {
+                return false;
+            }
+
+            var isValidDateField = validateDateField(formName);
+            if (!isValidDateField) {
+                return false;
+            }
+
+            var isValidHTMLInjection = validateHTMLInjectionField(formName);
+            if (!isValidHTMLInjection) {
+                return false;
+            }
+            
+            var GIOBATDAU = parseInt($('#GIOBATDAU').val());
+            var PHUTBATDAU = parseInt($('#PHUTBATDAU').val());
+            var GIOKETTHUC = parseInt($('#GIOKETTHUC').val());
+            var PHUTKETTHUC = parseInt($('#PHUTKETTHUC').val());
+            
+            if(GIOBATDAU == GIOKETTHUC){
+                if(PHUTBATDAU >= PHUTKETTHUC){
+                    $('.time-error').css('display','none');
+                    $('#PHUTBATDAU_ERROR').text('Phút bắt đầu không hợp lệ');
+                    $('#PHUTBATDAU_ERROR').css('display', 'inline');
+                    return false;
+                }
+            }
+            else if(GIOBATDAU > GIOKETTHUC){
+                $('.time-error').css('display','none');
+                $('#GIOBATDAU_ERROR').text('Giờ bắt đầu không hợp lệ');
+                $('#GIOBATDAU_ERROR').css('display', 'inline');
+                return false;
+            }
+            $('#form--edit--room-request').submit();
+        });
+    })
+</script>

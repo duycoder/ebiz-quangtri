@@ -1,0 +1,97 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@model LichCongTacByDayViewModel
+
+<style type="text/css">
+    #table--calendar-to-register {
+        margin-top: 10px;
+    }
+
+        #table--calendar-to-register thead tr th {
+            border: 1px solid #118ACB;
+            background-color: #118ACB;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        #table--calendar-to-register tbody tr td, #table--calendar-to-register tbody th {
+            border: 1px solid #118ACB;
+        }
+
+            #table--calendar-to-register tbody tr td:first-child {
+                text-align: center;
+            }
+</style>
+
+<div class="row">
+    <div class="col-sm-12 col-md-12">
+        <table class="table table-striped table-bordered" id="table--calendar-to-register">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Thời gian</th>
+                    <th>Nội dung</th>
+                    <th>Địa điểm</th>
+                    <th>Người đi công tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.groupDateEntities.Count == 0)
+                {
+                    <tr>
+                        <td colspan="5">
+                            <center>
+                                <span class="text-info">
+                                    KHÔNG CÓ LỊCH CÔNG TÁC PHÙ HỢP
+                                </span>
+                            </center>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.groupDateEntities)
+                    {
+                        <tr class="time-title">
+                            <th colspan="5">
+                                @item.title
+                            </th>
+                        </tr>
+
+                        foreach (var child in item.groupOfCalendars)
+                        {
+                            <tr>
+                                <td>
+                                    @if (child.IS_REGISTERED_CAR)
+                                    {
+                                        <input name="CALENDAR_ID" value="@child.ID" type="radio" class="radio--calendar-id" disabled />
+                                        <br />
+                                        <i class="text-info">
+                                            (Đã đăng ký xe)
+                                        </i>
+                                    }
+                                    else
+                                    {
+                                        <input name="CALENDAR_ID" value="@child.ID" type="radio" class="radio--calendar-id" />
+                                    }
+                                </td>
+                                <td>
+                                    @(child.GIO_CONGTAC.ToString("D2") + "h" + child.PHUT_CONGTAC.ToString("D2"))
+                                </td>
+                                <td>
+                                    @child.TIEUDE
+                                </td>
+                                <td>
+                                    @child.DIADIEM
+                                </td>
+                                <td>
+                                    @child.TEN_LANHDAO
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

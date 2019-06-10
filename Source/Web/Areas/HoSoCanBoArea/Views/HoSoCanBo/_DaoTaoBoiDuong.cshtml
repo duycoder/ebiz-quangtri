@@ -1,0 +1,374 @@
+﻿@model Web.Areas.HoSoCanBoArea.Models.HoSoCanBoChiTietVM
+<p dir="ltr" class="pt-Normal-000010">
+    <span lang="en-GB" class="pt-DefaultParagraphFont-000001">27) Đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, lý luận chính trị, ngoại ngữ, tin học</span>
+    <a href="javascript:createThongTinDaoTao()">
+        <i class="fa fa-plus"></i>Thêm mới
+    </a>
+</p>
+<style>
+    .modal-dialog {
+        width: 70% !important;
+    }
+    #FormEditDaoTaoBoiDuong td {
+        padding: 5px;
+    }
+    #ThongTinDaoTaoBoiDuong td {
+        padding: 5px;
+    }
+    #detailThongTinDaoTao span {
+        white-space: pre-line !important;
+    }
+</style>
+<div align="left">
+    <table dir="ltr" class="pt-000004" id="detailThongTinDaoTao">
+        <tbody>
+            <tr>
+                <td class="pt-000020">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Tên trường</span>
+                    </p>
+                </td>
+                <td class="pt-000021">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Chuyên ngành đào tạo, bồi dưỡng</span>
+                    </p>
+                </td>
+                <td class="pt-000022">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Từ tháng, năm - đến tháng, năm</span>
+                    </p>
+                </td>
+                <td class="pt-000023">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Hình thức đào tạo</span>
+                    </p>
+                </td>
+                <td class="pt-000024">
+                    <p dir="ltr" class="pt-Normal-000008">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Văn bằng, chứng chỉ, trình độ gì</span>
+                    </p>
+                </td>
+            </tr>
+            @foreach (var item in Model.ThongTinChung.HOSO_CANBO_DAOTAO)
+            {
+                <tr>
+                    <td class="pt-000025">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="TENTRUONG_@item.ID">
+                            @item.TENTRUONG
+                        </span>
+                        </p>
+                    </td>
+                    <td class="pt-000026">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="CHUYENNGANHDAOTAO_@item.ID">
+                            @item.CHUYENNGANHDAOTAO
+                        </span>
+                        </p>
+                    </td>
+                    <td class="pt-000027">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001" id="THOIGIANDAOTAO_@item.ID">
+                                @item.THOIGIANDAOTAO
+                            </span>
+                        </p>
+                    </td>
+                    <td class="pt-000028">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="HINHTHUCDAOTAO_@item.ID">
+                            @item.HINHTHUCDAOTAO
+                        </span>
+                        </p>
+                    </td>
+                    <td class="pt-000029">
+                        <p dir="ltr" class="pt-Normal-000006">
+                            <span xml:space="preserve" class="pt-000007" id="VANBANGCHUNGCHI_@item.ID">
+                                @item.VANBANGCHUNGCHI
+                            </span>
+                            <a href="javascript:editDaotaoRow(@item.ID)">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a href="javascript:removeDaotaoRow(@item.ID)">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                        </p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" role="dialog" id="editThongTinDaoTaoBoiDuong">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, lý luận chính trị, ngoại ngữ, tin học</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="FormEditDaoTaoBoiDuong" action="/HoSoCanBoArea/HoSoCanBo/SaveThongTinDaoTao" method="post">
+                    <input type="hidden" name="HOSOID" value="@Model.ThongTinChung.ID" />
+                    <input type="hidden" name="DAOTAO_ID" id="DAOTAO_ID" />
+                    <table class="hinet-table table-bordered">
+                        <tr>
+                            <td>
+                                Tên trường
+                            </td>
+                            <td>
+                                Chuyên ngành đào tạo, bồi dưỡng
+                            </td>
+                            <td>
+                                Từ tháng, năm - đến tháng, năm
+                            </td>
+                            <td>
+                                Hình thức đào tạo
+                            </td>
+                            <td>
+                                Văn bằng, chứng chỉ, trình độ gì
+                            </td>
+                            <td>
+                                <a href="javascript:addNewRow()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="TENTRUONG" class="required" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="CHUYENNGANHDAOTAO" class="required" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="THOIGIANDAOTAO" class="required" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="HINHTHUCDAOTAO" class="required" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="VANBANGCHUNGCHI" class="required" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveThongTinDaoTaoBoiDuong('FormEditDaoTaoBoiDuong')">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" role="dialog" id="ThongTinDaoTaoBoiDuong">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><strong>Đào tạo, bồi dưỡng về chuyên môn, nghiệp vụ, lý luận chính trị, ngoại ngữ, tin học</strong></h4>
+            </div>
+            <div class="modal-body">
+                <form id="FormDaoTaoBoiDuong" action="/HoSoCanBoArea/HoSoCanBo/SaveThongTinDaoTao" method="post">
+                    <input type="hidden" name="HOSOID" value="@Model.ThongTinChung.ID"/>
+                    <table class="hinet-table table-bordered" id="table-daotao-boiduong">
+                        <tr>
+                            <td>
+                                Tên trường
+                            </td>
+                            <td>
+                                Chuyên ngành đào tạo, bồi dưỡng
+                            </td>
+                            <td>
+                                Từ tháng, năm - đến tháng, năm
+                            </td>
+                            <td>
+                                Hình thức đào tạo
+                            </td>
+                            <td>
+                                Văn bằng, chứng chỉ, trình độ gì
+                            </td>
+                            <td>
+                                <a href="javascript:addNewRow()">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" name="TENTRUONG" class="required"/>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="CHUYENNGANHDAOTAO" class="required"/>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="THOIGIANDAOTAO" class="required"/>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="HINHTHUCDAOTAO" class="required"/>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="VANBANGCHUNGCHI" class="required"/>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" class="removeRow">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="saveThongTinDaoTaoBoiDuong('FormDaoTaoBoiDuong')">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<table style="display: none" id="HIDDENDAOTAOBOIDUONG">
+    <tr>
+        <td>
+            <input type="text" name="TENTRUONG"  class="required"/>
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="CHUYENNGANHDAOTAO" class="required"/>
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="THOIGIANDAOTAO" class="required"/>
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="HINHTHUCDAOTAO" class="required"/>
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <input type="text" name="VANBANGCHUNGCHI" class="required"/>
+            <div class="note-error">
+                <span class="error mes-note-error"></span>
+            </div>
+        </td>
+        <td>
+            <a href="javascript:void(0)" class="removeRow">
+                <i class="fa fa-remove"></i>
+            </a>
+        </td>
+    </tr>
+</table>
+<script>
+    function createThongTinDaoTao() {
+        $("#ThongTinDaoTaoBoiDuong").modal();
+    }
+    function addNewRow() {
+        $("#table-daotao-boiduong").append($("#HIDDENDAOTAOBOIDUONG").html());
+    }
+    function editDaotaoRow(id) {
+        $("#editThongTinDaoTaoBoiDuong").modal();
+        $("#editThongTinDaoTaoBoiDuong #DAOTAO_ID").val(id);
+        $("#editThongTinDaoTaoBoiDuong input[name=TENTRUONG]").val($("#TENTRUONG_" + id).html().trim());
+        $("#editThongTinDaoTaoBoiDuong input[name=CHUYENNGANHDAOTAO]").val($("#CHUYENNGANHDAOTAO_" + id).html().trim());
+        $("#editThongTinDaoTaoBoiDuong input[name=THOIGIANDAOTAO]").val($("#THOIGIANDAOTAO_" + id).html().trim());
+        $("#editThongTinDaoTaoBoiDuong input[name=HINHTHUCDAOTAO]").val($("#HINHTHUCDAOTAO_" + id).html().trim());
+        $("#editThongTinDaoTaoBoiDuong input[name=VANBANGCHUNGCHI]").val($("#VANBANGCHUNGCHI_" + id).html().trim());
+    }
+    function removeDaotaoRow(id) {
+        $.confirm({
+            'title': 'Xác nhận xử lý',
+            'message': 'Bạn có chắc chắn muốn xóa thông tin đào tạo, bồi dưỡng này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '/HoSoCanBoArea/HoSoCanBo/XoaThongTinDaoTao',
+                            type: 'post',
+                            cache: false,
+                            data: { id: id},
+                            success: function (data) {
+                                if (data.Type == "SUCCESS") {
+                                    NotiSuccess("Xóa thành công");
+                                    setTimeout(location.reload(), 2000);
+                                } else {
+                                    NotiError(data.Message);
+                                }
+                                
+                            },
+                            error: function (err) {
+                                NotiError(err.responseText);
+                            }
+                        });
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-danger',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    function saveThongTinDaoTaoBoiDuong(formid) {
+        var is_submit = onSubmit(formid);
+        if (is_submit) {
+            $("#" + formid).submit();
+        } else {
+            return false;
+        }
+    }
+    function onSubmit(formid) {
+        var err = 0;
+        var require = requiredFieldForFormId(formid);
+        if (!require) {
+            err++;
+        }
+        
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Bạn vui lòng điền đầy đủ thông tin");
+            return false;
+        }
+    }
+    $(document).on('click',
+        '.removeRow',
+        function () {
+            $(this).parent().parent().remove();
+        });
+</script>

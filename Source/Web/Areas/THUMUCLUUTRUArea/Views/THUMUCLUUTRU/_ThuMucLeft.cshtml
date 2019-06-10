@@ -1,0 +1,65 @@
+﻿@using Business.CommonModel.THUMUCLUUTRU
+@using Web.FwCore
+@{
+    List<THUMUC_LUUTRU_BO> lstThuMuc = (List<THUMUC_LUUTRU_BO>)SessionManager.GetValue("ListThuMuc");
+    if (lstThuMuc != null && lstThuMuc.Count > 0)
+    {
+        <ul id="browser" class="filetree treeview-famfamfam" style="float:left;height:100%;width:100%">
+            @foreach (var i in lstThuMuc)
+            {
+                <li data-fid="@("F_"+i.ID)" class="collapsed" id="@("F_"+i.ID)">
+                    <a href="javascript:void(0)" data-pid="@i.ID" class="folder_arrow"></a>
+                    @{
+                        if (!string.IsNullOrEmpty(i.CLASS))
+                        {
+                            <span id="folder_@i.ID" class="folder-left-padding @i.CLASS folder-left" title="@i.TENTHUMUC" data-pid="@i.ID" data-loaded="false">@i.TENTHUMUC</span>
+                        }
+                        else
+                        {
+                            <span id="folder_@i.ID" class="allsystem1 folder-left" title="@i.TENTHUMUC" data-pid="@i.ID" data-loaded="false">@i.TENTHUMUC</span>
+                        }
+                    }
+
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <span style="color:red">Không có thư mục nào</span>
+    }
+}
+<style>
+    .folder_arrow {
+        border: none;
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        position: absolute;
+        display: block;
+        height: 12px;
+        width: 12px;
+        padding: 0;
+        left: 2px;
+        border: none;
+        opacity: .4;
+        overflow: hidden;
+        -webkit-transition: all .5s ease;
+        -moz-transition: all .5s ease;
+        -o-transition: all .5s ease;
+        transition: all .5s ease;
+    }
+
+    .selected {
+        font-weight: bold;
+    }
+
+    .collapsed > .folder_arrow {
+        background: url(/Content/Images/smArrow.png) -36px 0px no-repeat;
+    }
+
+    .expanded > .folder_arrow {
+        background: url(/Content/Images/smArrow.png) 0 0 no-repeat;
+        opacity: 1;
+    }
+</style>

@@ -1,0 +1,232 @@
+﻿@using Web.Areas.QL_PHONGHOPArea.Models;
+@using Web.Custom;
+@model CreateVM
+<style>
+    #modal_createPhongH .center h4.modal-title {
+        text-transform: uppercase;
+    }
+
+    #modal_createPhongH .modal-footer {
+        position: relative;
+    }
+
+        #modal_createPhongH .modal-footer:before {
+            content: ' ';
+            top: 0;
+            left: 0;
+            bottom: 0;
+            position: absolute;
+            border-left: 35px solid #f7b512;
+            border-bottom: 35px solid #f7b512;
+            border-top: 35px solid transparent;
+            border-right: 35px solid transparent;
+        }
+
+        #modal_createPhongH .modal-footer:after {
+            content: ' ';
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            border-left: 33px solid #d99b00;
+            border-bottom: 33px solid #d99b00;
+            border-top: 33px solid transparent;
+            border-right: 33px solid transparent;
+        }
+
+        #modal_createPhongH .modal-footer #ButtonSave {
+            padding: 8px 20px;
+            background: #009c03;
+            text-transform: uppercase;
+            border: none;
+            color: #fff;
+        }
+
+            #modal_createPhongH .modal-footer #ButtonSave:hover {
+                background: #0ab70e;
+            }
+
+        #modal_createPhongH .modal-footer .btn-default {
+            padding: 8px 20px;
+            background: #a90329;
+            text-transform: uppercase;
+            border: none;
+            color: #fff;
+        }
+
+            #modal_createPhongH .modal-footer .btn-default:hover {
+                background: #be0932;
+            }
+
+    .LoiMaPhong {
+        box-shadow: 0px 0px 6px red !important;
+    }
+</style>
+<div class="modal-dialog">
+    <form action="/QL_PHONGHOPArea/QL_PHONGHOP/Create" method="post" id="FormCreatePhongH" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Thêm mới phòng họp</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    @{
+                        foreach (var item in Model.Object)
+                        {
+                            <input type="hidden" name="name" value="@item.TENPHONG" class="TenPhongId" />
+                            <input type="hidden" name="name" value="@item.MAPHONG" class="MaPhongId" />
+                        }
+                    }
+                    <div class="form-group">
+                        <label class="control-label col-sm-3"><strong>Tên phòng</strong><span class="red">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control required" autocomplete="off" name="TENPHONG" id="tenphongid">
+                            <div class="note-error mes-note-error0">
+                                <span class="error mes-note-error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-3"><strong>Mã phòng</strong><span class="red">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control required" autocomplete="off" name="MAPHONG" id="maphongid">
+                            <div class="note-error mes-note-error1">
+                                <span class="error mes-note-error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3"><strong>Số chỗ ngồi</strong><span class="red">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control required" autocomplete="off" name="SOCHONGOI" id="sochongoiid">
+                            <div class="note-error mes-note-error1">
+                                <span class="error mes-note-error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-3"><strong>Mô tả</strong><span class="red">*</span></label>
+                        <div class="col-sm-9">
+                            <textarea type="text" class="form-control required" rows="6" autocomplete="off" name="MOTA" id="motaid"></textarea>
+                            <div class="note-error mes-note-error1">
+                                <span class="error mes-note-error"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" id="ButtonSave" class="btn btn-primary">Hoàn thành</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+
+    $("#ButtonSave").click(function () {
+        var is_Phong = CheckPhong();
+        var is_submit = SubmitCreate();
+        if (is_submit) {
+            if (is_Phong) {
+                $.ajax({
+                    url: '/QL_PHONGHOPArea/QL_PHONGHOP/CreatePhong',
+                    type: 'post',
+                    cache: false,
+                    data: {
+                        "tenphongid": $("#tenphongid").val(),
+                        "maphongid": $("#maphongid").val(),
+                        "sochongoiid": $("#sochongoiid").val(),
+                        "motaid": $("#motaid").val()
+                    },
+                    success: function (data) {
+                        if (data.Status == true) {
+                            $("#modal_editPhongH").hide();
+                            NotiSuccess("Tạo Phòng Thành công!");
+                            setTimeout(location.reload(), 2000);
+                        } else {
+                            NotiError(data.Message);
+                        }
+                    },
+                    error: function (err) {
+                        CommonJS.alert(xhr.responseText);
+                    }
+                });
+            } else {
+                return false;
+            }
+        }
+    });
+
+    function SubmitCreate() {
+        var err = 0;
+
+        var require = requiredFieldForFormId("FormCreatePhongH");
+        if (!require) {
+            err++;
+        }
+        var requireDropdownlist = RequireDropDownlist("FormCreatePhongH");
+        if (!requireDropdownlist) {
+            err++;
+        }
+
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Có lỗi. Vui lòng kiểm tra lại");
+            return false;
+        }
+
+    }
+    function CheckPhong() {
+        var idTenphong = $("#tenphongid").val();
+        var TenPhongId = $(".TenPhongId").val();
+        var err = 0;
+
+        $(".form-horizontal .TenPhongId").each(function (index) {
+            var string = new String($(this).val()).valueOf();
+            var string2 = new String(idTenphong).valueOf();
+            if (string == string2) {
+                $("#tenphongid").addClass("LoiMaPhong");
+                NotiError("Tên phòng đã tồn tại!");
+                $("#tenphongid").focus(function () {
+                    $(this).removeClass("LoiMaPhong");
+                });
+                err++;
+            }
+        });
+
+        var maphongid = $("#maphongid").val();
+        var MaPhongId = $(".MaPhongId").val();
+
+        $(".form-horizontal .MaPhongId").each(function (index) {
+            var string = new String($(this).val()).valueOf();
+            var string2 = new String(maphongid).valueOf();
+            if (string == string2) {
+                $("#maphongid").addClass("LoiMaPhong");
+                NotiError("Mã phòng đã tồn tại!");
+                $("#maphongid").focus(function () {
+                    $(this).removeClass("LoiMaPhong");
+                });
+                err++;
+            }
+        });
+
+        if (err == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>

@@ -1,0 +1,226 @@
+﻿@model Web.Areas.HSCV_VANBANDENArea.Models.ListVanBanDenViewModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("SearchData", "HSCV_VANBANDEN",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure1",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label" for="SOHIEU">
+                        <label class="control-label" for="SOHIEU">
+                            Mã hiệu:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <input name="SOHIEU" class="form-control" />
+                    </div>
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="TRICHYEU">
+                            Trích yếu:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <input name="TRICHYEU" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="DOKHAN_ID">
+                           Độ mật:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("DOKHAN_ID", Model.groupOfDoKhans, "-- Chọn độ mật ---", new { @class = "select2" })
+                    </div>
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="DOKHAN_ID">
+                            Độ khẩn:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("DOMAT_ID", Model.groupOfDoUuTiens, "-- Chọn độ khẩn ---", new { @class = "select2" })
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="LINHVUCVANBAN_ID">
+                            Lĩnh vực văn bản:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("LINHVUCVANBAN_ID", Model.groupOfLinhVucVanBans, "-- Chọn lĩnh vực văn bản ---", new { @class = "select2" })
+                    </div>
+
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="LOAIVANBAN_ID">
+                            Loại văn bản:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("LOAIVANBAN_ID", Model.groupOfLoaiVanBans, "-- Chọn loại văn bản ---", new { @class = "select2" })
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="NGUOIKY">
+                            Người ký:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <input name="NGUOIKY" class="form-control" />
+                    </div>
+
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="SOVANBANDEN_ID">
+                            Sổ văn bản:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("SOVANBANDEN_ID", Model.groupSoVanBanDens, "-- Chọn sổ văn bản ---", new { @class = "select2" })
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="LINHVUCVANBAN_ID">
+                            Ngày ban hành:
+                        </label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="BANHANHTUNGAY" id="TUNGAY" class="form-control datepicker1" placeholder="Từ ngày" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="text" name="BANHANHDENNGAY" id="DENNGAY" class="form-control datepicker1" placeholder="Đến ngày" />
+                    </div>
+                
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="LINHVUCVANBAN_ID">
+                            Ngày hiệu lực:
+                        </label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="HIEULUCTUNGAY" id="HIEULUCTUNGAY" class="form-control datepicker1" placeholder="Từ ngày" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="text" name="HIEULUCDENNGAY" id="HIEULUCDENNGAY" class="form-control datepicker1" placeholder="Đến ngày" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="LINHVUCVANBAN_ID">
+                            Ngày hết hiệu lực:
+                        </label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="HETHIEULUCTUNGAY" id="HETHIEULUCTUNGAY" class="form-control datepicker1" placeholder="Từ ngày" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="text" name="HETHIEULUCDENNGAY" id="HETHIEULUCDENNGAY" class="form-control datepicker1" placeholder="Đến ngày" />
+                    </div>
+
+                    <div class="col-md-2 txt-label">
+                        <label class="control-label" for="LINHVUCVANBAN_ID">
+                            Ngày văn bản:
+                        </label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="NGAYVBTUNGAY" id="NGAYVBTUNGAY" class="form-control datepicker1" placeholder="Từ ngày" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="text" name="NGAYVBDENNGAY" id="NGAYVBDENNGAY" class="form-control datepicker1" placeholder="Đến ngày" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+                <input type="hidden" name="TYPE" id="TYPE" value="@Model.typeOfLoaiVanBan" />
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function failure1(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-vanbanden").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $("#collapseDiv .select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+
+    $(".datepicker1").datepicker({
+        dateFormat: 'dd/mm/yy',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-20:+20"
+    });
+</script>
+<style>
+    .select2 {
+        width: 100%;
+    }
+</style>

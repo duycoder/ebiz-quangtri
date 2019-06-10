@@ -1,0 +1,152 @@
+﻿@using Business.CommonBusiness
+@model Web.Models.DanhSachCongViec
+<style>
+    .classquahan {
+        color: red !important;
+    }
+    #tbl-vanbanden table tr {
+        font-weight: bolder;
+    }
+</style>
+@{
+    if (Model.ListResult.Count > 0)
+    {
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable left" style="margin-bottom:10px">
+            <div class="jarviswidget " role="widget">
+                <header role="heading">
+                    <span class="widget-icon"> <i class="fas fa-book txt-color-darken"></i> </span>
+                    <h2 class="group-tittle mt10">
+                        @{
+                            if (Model.Type == 1)
+                            {
+                                <a href="/QuanLyCongViec/CongViecDuocGiao/Index">
+                                    Công việc chưa hoàn thành(@Model.ListResult.Count)
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="/QuanLyCongViec/QuanLyCongViec/Index">
+                                    Công việc của tôi(@Model.ListResult.Count)
+                                </a>
+                            }
+                        }
+
+                    </h2>
+                </header>
+                <div role="content" style="padding:0px; border: 0px;">
+                    <div class="widget-body">
+                        <div id="tbl-vanbanden">
+                            <table class="hinet-table table table-bordered table-hover congviec" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên công việc</th>
+                                        <th>Người giao việc</th>
+                                        <th>Người xử lý chính</th>
+                                        <th>Độ khẩn</th>
+                                        <th>Độ ưu tiên</th>
+                                        <th>Ngày nhận việc</th>
+                                        <th>Ngày hoàn thành</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int count = 0;
+                                        foreach (var item in Model.ListResult.ListItem)
+                                        {
+                                            var classed = "";
+                                            count++;
+                                            var checkquahan = "";
+
+                                            if (true == item.IS_HASPLAN)
+                                            {
+                                                if (item.NGAYKETTHUC_KEHOACH.HasValue && item.NGAYKETTHUC_KEHOACH.Value < DateTime.Now && (item.PHANTRAMHOANTHANH == null || item.PHANTRAMHOANTHANH < 100))
+                                                {
+                                                    checkquahan = "classquahan";
+                                                }
+                                                else if (item.NGAYHOANTHANH_THEOMONGMUON.HasValue && item.NGAYHOANTHANH_THEOMONGMUON.Value < DateTime.Now && (item.PHANTRAMHOANTHANH == null || item.PHANTRAMHOANTHANH < 100))
+                                                {
+                                                    checkquahan = "classquahan";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.NGAYHOANTHANH_THEOMONGMUON.HasValue && item.NGAYHOANTHANH_THEOMONGMUON.Value < DateTime.Now && (item.PHANTRAMHOANTHANH == null || item.PHANTRAMHOANTHANH < 100))
+                                                {
+                                                    checkquahan = "classquahan";
+                                                }
+                                            }
+                                            <tr class="@checkquahan" style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important; font-weight:bold") : "")">
+                                                <td>@count</td>
+                                                <td>
+                                                    <a style="color:@(!string.IsNullOrEmpty(item.COLOR) && !string.IsNullOrEmpty(item.ICON_DOKHAN) ? (item.COLOR + " !important") : "")" class='text-ellipsis' href="/QuanLyCongViec/QuanLyCongViec/Detail/@item.ID">@item.TENCONGVIEC</a>
+                                                </td>
+                                                <td>
+                                                    @item.TEN_NGUOIGIAOVIEC
+                                                </td>
+                                                <td>
+                                                    @item.TEN_NGUOIXULYCHINH
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.ICON_DOKHAN))
+                                                    {
+                                                        <img class="division-icon" src="@item.ICON_DOKHAN" title="@item.TEN_DOKHAN" />
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!string.IsNullOrEmpty(classed))
+                                                        {
+                                                            <img src="~/img/congviec/gap.png" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@item.TEN_DOKHAN</span>
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.ICON_DOUUTIEN))
+                                                    {
+                                                        <img class="division-icon" src="@item.ICON_DOUUTIEN" title="@item.TEN_DOUUTIEN" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@item.TEN_DOUUTIEN</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @(item.NGAY_NHANVIEC.HasValue ? item.NGAY_NHANVIEC.Value.ToString("dd/MM/yyyy") : "")
+                                                </td>
+                                                <td>
+                                                    @if (true == item.IS_HASPLAN && item.NGAYBATDAU_KEHOACH.HasValue)
+                                                    {
+                                                        <span>@(item.NGAYKETTHUC_KEHOACH.HasValue ? item.NGAYKETTHUC_KEHOACH.Value.ToString("dd/MM/yyyy") : "")</span>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@(item.NGAYHOANTHANH_THEOMONGMUON.HasValue ? item.NGAYHOANTHANH_THEOMONGMUON.Value.ToString("dd/MM/yyyy") : "")</span>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(checkquahan))
+                                                    {
+                                                        <br /><i>(Quá hạn)</i>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    }
+}
+
+<style>
+    .congviec td:nth-child(2) {
+        width: 31% !important;
+    }
+</style>

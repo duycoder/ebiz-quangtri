@@ -1,0 +1,90 @@
+﻿@using Web.Areas.Report.Models;
+@using Business.CommonModel.CONSTANT;
+@using Newtonsoft.Json
+@model ReportVanBanDenResultViewModel
+@{
+    var data = Model.groupOfReportResultItems;
+    int count = 1;
+
+    var jsonData = Html.Raw(JsonConvert.SerializeObject(Model.groupOfReportResultItems));
+    var printTitle = Model.title.Remove(1).ToUpper() + Model.title.Substring(1);
+}
+<h2 class="block--report-title">
+    @Model.title
+</h2>
+<section class="col col-sm-12 form-group">
+    <a href="javascript:void(0)" class="btn btn-default" onclick="exportExcel(@Model.reportType)">
+        <i class="fa  fa-file-excel-o"></i>&nbsp;Kết xuất báo cáo
+    </a>
+
+     <a href="javascript:void(0)" class="btn btn-default" onclick="printJS({ 
+       printable: 'table--report-data-@Model.reportType', 
+       type: 'html',
+       header: '@printTitle',
+       targetStyles: ['*']
+       })">
+        <i class="fa fa-print"></i>&nbsp;In báo cáo
+    </a>
+</section>
+
+<section class="col col-sm-12">
+    <div id="table--report-data-@Model.reportType" style="width:100% !important;">
+        <table class="table table--report-data">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        Lĩnh vực văn bản
+                    </th>
+                    <th>
+                        Số lượng
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in data)
+                {
+
+                    <tr>
+                        <td>
+                            @count
+                        </td>
+                        <td>
+                            @item.Text
+                        </td>
+                        <td>
+                            @item.Value
+                        </td>
+                    </tr>
+                    count++;
+                }
+                <tr>
+                    <td colspan="2">TỔNG</td>
+                    <td>
+                        @(data.Select(x => int.Parse(x.Value)).Sum())
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<section class="col col-sm-12">
+    <canvas id="block--chart--@Model.reportType" height="400" style="width:100%"></canvas>
+</section>
+<script>
+    var jsonData = eval(@jsonData);
+    var labels = [];
+    var data = [];
+    var colors = [];
+
+    jsonData.forEach(function(item){
+        labels.push(item.Text);
+        data.push(parseInt(item.Value));
+        colors.push(randomRGBA())
+    });
+
+    buildChart('block--chart--@Model.reportType','Thống kê số lượng văn bản',labels, data, colors);
+</script>
+
+

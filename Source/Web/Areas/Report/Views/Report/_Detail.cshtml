@@ -1,0 +1,298 @@
+﻿@model Web.Areas.Report.Models.DanhGiaCongViecModel
+<div class="modal-dialog" style="width:750px">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">PHIẾU ĐÁNH GIÁ CHẤT LƯỢNG HOÀN THÀNH CÔNG VIỆC ĐƯỢC GIAO</h4>
+            </div>
+        </div>
+        <div class="modal-body" style="padding-right:0px">
+            <div class="form-horizontal">
+                <div class="col-sm-12 no-padding">
+                    <img src="~/Content/Images/Doji.png" />
+                </div>
+                <div class="col-sm-12 no-padding row center">
+                    <h3 class="Bold" style="margin-top:0px;margin-bottom:0px">PHIẾU ĐÁNH GIÁ CHẤT LƯỢNG HOÀN THÀNH CÔNG VIỆC ĐƯỢC GIAO</h3>
+                </div>
+                <div class="col-sm-12 no-padding row" style="text-align:center">
+                    <i style="font-size:12px;">(Đánh giá này dựa vào tiêu chí 6T)</i>
+                </div>
+                <div class="col-sm-12">&nbsp;</div>
+                <div class="col-sm-12 no-padding row">
+                    <div class="col-sm-5 no-padding">
+                        <label class="Bold">BỘ PHẬN ĐƯỢC ĐÁNH GIÁ:</label>
+                    </div>
+                    <div class="col-sm-7 no-padding">
+                        @Model.CongViec.TEN_NGUOIXULYCHINH
+                    </div>
+                </div>
+                <div class="col-sm-12 no-padding row">
+                    <div class="col-sm-5 no-padding">
+                        <label class="Bold">Tên sản phẩm được đánh giá:</label>
+                    </div>
+                    <div class="col-sm-7 no-padding">
+                        @Model.CongViec.TENCONGVIEC
+                    </div>
+                </div>
+                <div class="col-sm-12 no-padding row">
+                    <div class="col-sm-5 no-padding">
+                        <label class="Bold">Ngày đánh giá:</label>
+                    </div>
+                    <div class="col-sm-7 no-padding">
+                        @(DateTime.Now.ToString("dd/MM/yyyy"))
+                    </div>
+                </div>
+                @if (Model.PhieuDanhGia != null)
+                {
+                    <div class="col-sm-12 no-padding row">
+                        @if (Model.PhieuDanhGia.TDG_XEPLOAI_ID == null)
+                        {
+                            <table class="hinet-table table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>TT</th>
+                                        <th>
+                                            HẠNG MỤC ĐÁNH GIÁ
+                                        </th>
+                                        <th>
+                                            Điểm tự ĐG
+                                        </th>
+                                        <th>
+                                            Điểm soát xét
+                                        </th>
+                                        <th>
+                                            Điểm duyệt
+                                        </th>
+                                        <th>
+                                            Trọng số
+                                        </th>
+                                        <th>
+                                            Tổng điểm
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="center">1</td>
+                                        <td>Tự chủ cao</td>
+                                        <td class="center">@Model.PhieuDanhGia.TDG_TUCHUCAO</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TUCHUCAO</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TUCHUCAO</td>
+                                        <td class="center">2</td>
+                                        <td class="center">@(Model.PhieuDanhGia.DD_TUCHUCAO.HasValue ? (Model.PhieuDanhGia.DD_TUCHUCAO.Value * 2) : 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="center">2</td>
+                                        <td>
+                                            Trách nhiệm lớn
+                                        </td>
+                                        <td class="center">@Model.PhieuDanhGia.TDG_TRACHNHIEMLON</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TRACHNHIEMLON</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TRACHNHIEMLON</td>
+                                        <td class="center">2</td>
+                                        <td class="center">@(Model.PhieuDanhGia.DD_TRACHNHIEMLON.HasValue ? (Model.PhieuDanhGia.DD_TRACHNHIEMLON.Value * 2) : 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="center">3</td>
+                                        <td>
+                                            Tương tác tốt
+                                        </td>
+                                        <td class="center">@Model.PhieuDanhGia.TDG_TUONGTACTOT</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TUONGTACTOT</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TUONGTACTOT</td>
+                                        <td class="center">1</td>
+                                        <td class="center">@(Model.PhieuDanhGia.DD_TUONGTACTOT.HasValue ? (Model.PhieuDanhGia.DD_TUONGTACTOT.Value * 1) : 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="center">4</td>
+                                        <td>
+                                            Tốc độ nhanh
+                                        </td>
+                                        <td class="center">@Model.PhieuDanhGia.TDG_TOCDONHANH</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TOCDONHANH</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TOCDONHANH</td>
+                                        <td class="center">1</td>
+                                        <td class="center">@(Model.PhieuDanhGia.DD_TOCDONHANH.HasValue ? (Model.PhieuDanhGia.DD_TOCDONHANH.Value * 1) : 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="center">5</td>
+                                        <td>
+                                            Tiến bộ nhiều
+                                        </td>
+                                        <td class="center">@Model.PhieuDanhGia.TDG_TIENBONHIEU</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TIENBONHIEU</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_TIENBONHIEU</td>
+                                        <td class="center">1</td>
+                                        <td class="center">@(Model.PhieuDanhGia.DD_TIENBONHIEU.HasValue ? (Model.PhieuDanhGia.DD_TIENBONHIEU.Value * 1) : 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="center">6</td>
+                                        <td>
+                                            Thành tích vượt
+                                        </td>
+                                        <td class="center">@Model.PhieuDanhGia.TDG_THANHTICHVUOT</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_THANHTICHVUOT</td>
+                                        <td class="center">@Model.PhieuDanhGia.DD_THANHTICHVUOT</td>
+                                        <td class="center">3</td>
+                                        <td class="center">@(Model.PhieuDanhGia.DD_THANHTICHVUOT.HasValue ? (Model.PhieuDanhGia.DD_THANHTICHVUOT.Value * 3) : 0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: center">
+                                            <label class="Bold">Tổng điểm</label>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@Model.PhieuDanhGia.TONGDIEM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <table class="hinet-table table table-striped table-hover">
+                                <thead>
+                                    <tr>                                                                                
+                                        <th>
+                                            Điểm tự ĐG
+                                        </th>
+                                        <th>
+                                            Xếp loại tự đánh giá
+                                        </th>
+                                        <th>
+                                            Điểm duyệt
+                                        </th>
+                                        <th>
+                                            Xếp loại duyệt
+                                        </th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @Model.PhieuDanhGia.TDG_TONGDIEM
+                                        </td>
+                                        <td>
+                                            @Model.PhieuDanhGia.TDG_XEPLOAI
+                                        </td>
+                                        <td>
+                                            @Model.PhieuDanhGia.TONGDIEM
+                                        </td>
+                                        <td>
+                                            @Model.PhieuDanhGia.XEPLOAI
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                    <div class="col-sm-12 no-padding row">
+                        <div class="col-sm-3 no-padding">
+                            <label>Kết luận:</label>
+                        </div>
+                        <div class="col-sm-9 no-padding">@Model.PhieuDanhGia.KETLUAN</div>
+                    </div>
+                    <div class="col-sm-12 no-padding row">
+                        <div class="col-sm-6 no-padding">
+                            <table class="hinet-table table table-striped table-hover">
+                                <tr>
+                                    <th></th>
+                                    <th>Xếp loại</th>
+                                    <th>Điểm số</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @if (40 < Model.PhieuDanhGia.TONGDIEM)
+                                        {
+                                            <img width="32" height="32" src="~/Content/Images/checked.png" />
+                                        }
+                                    </td>
+                                    <td>
+                                        Tốt
+                                    </td>
+                                    <td>
+                                        41-50
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @if (35 < Model.PhieuDanhGia.TONGDIEM && 40 >= Model.PhieuDanhGia.TONGDIEM)
+                                        {
+                                            <img width="32" height="32" src="~/Content/Images/checked.png" />
+                                        }
+                                    </td>
+                                    <td>
+                                        Khá
+                                    </td>
+                                    <td>
+                                        36-40
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @if (26 <= Model.PhieuDanhGia.TONGDIEM && 35 >= Model.PhieuDanhGia.TONGDIEM)
+                                        {
+                                            <img width="32" height="32" src="~/Content/Images/checked.png" />
+                                        }
+                                    </td>
+                                    <td>Đạt</td>
+                                    <td>
+                                        26-35
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @if (25 >= Model.PhieuDanhGia.TONGDIEM)
+                                        {
+                                            <img width="32" height="32" src="~/Content/Images/checked.png" />
+                                        }
+                                    <td>
+                                        Không đạt
+                                    </td>
+                                    <td>
+                                        25 trở xuống
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <h2 style="color: red">Chưa làm đánh giá công việc</h2>
+                }
+
+            </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="submit" class="btn btn-primary" onclick="location.href='@Url.Action("ExportData/" + Model.CongViec.ID)'">Kết xuất</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                    $("#createattributeForm .txt-select2").select2();
+                });
+            });
+        });
+    });
+    function failureAjax(err) {
+    }
+</script>
+<style>
+    .Bold {
+        font-weight: bold;
+    }
+
+    .center {
+        text-align: center;
+    }
+</style>

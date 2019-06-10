@@ -1,0 +1,125 @@
+﻿@using Model.Entities
+@using System.Web.Configuration;
+@model TAILIEUDINHKEM
+@{
+    string UrlNavigation = WebConfigurationManager.AppSettings["UrlNavigation"];
+    bool isMedia = (Model.DINHDANG_FILE == "video/mp4" || Model.DINHDANG_FILE == ".mp4"
+    || Model.DINHDANG_FILE == "audio/mpeg" || Model.DINHDANG_FILE == ".mp3" || Model.DINHDANG_FILE == "audio/mp3"
+    || Model.DINHDANG_FILE == ".png" || Model.DINHDANG_FILE == ".jpg" || Model.DINHDANG_FILE == "image/jpeg" || Model.DINHDANG_FILE == "image/png");
+}
+<div class="modal-dialog" style="width:950px;">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Chi tiết tài liệu</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-horizontal" style="padding:0px">
+                <div class="form-group">
+                    <div class="col-sm-5">
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <label>Tên tài liệu:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                @Model.TENTAILIEU
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <label>Tải xuống:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <a href="javascript:void(0)" title="Tải xuống tài liệu" onclick="DowloadFile('@Model.TAILIEU_ID','null')">Tải xuống</a>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <label>Mô tả tài liệu:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                @Model.MOTA
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-3">
+                                <label>Phiên bản:</label>
+                            </div>
+                            <div class="col-sm-9">
+                                @Model.VERSION
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        @if (isMedia)
+                        {
+                            if (Model.DINHDANG_FILE == "video/mp4" || Model.DINHDANG_FILE == ".mp4")
+                            {
+                                <video style="max-height:100%;max-width:100%" controls autoplay loop="loop">
+                                    <source type="video/mp4" src="@(UrlNavigation +"/Uploads" +Model.DUONGDAN_FILE.Replace("\\","/") )" />
+                                </video>
+                            }
+                            else if (Model.DINHDANG_FILE == "audio/mpeg" || Model.DINHDANG_FILE == ".mp3" || Model.DINHDANG_FILE == "audio/mp3")
+                            {
+                                <audio id="PLAY_MUSIC" controls autoplay loop="loop">
+                                    <source type="audio/mp3" src="@(UrlNavigation +"/Uploads" +Model.DUONGDAN_FILE.Replace("\\","/") )" />
+                                </audio>
+                            }
+                            else if (Model.DINHDANG_FILE == ".png" || Model.DINHDANG_FILE == ".jpg" || Model.DINHDANG_FILE == "image/jpeg" || Model.DINHDANG_FILE == "image/png")
+                            {
+                                <img class="imgDetail" src="@(UrlNavigation +"/Uploads" +Model.DUONGDAN_FILE.Replace("\\","/") )" />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="file-detail-body" style="overflow-y:auto;overflow-x:hidden">
+                @if (!isMedia)
+                {
+                    <h3 class="group-tittle mt10" style="margin-bottom:10px">Chi tiết tài liệu</h3>
+                    <table style="width:100%">
+                        <tr>
+                            <td>
+                                @if (Model.DINHDANG_FILE == "application/pdf" || Model.DINHDANG_FILE == ".pdf" || Model.DINHDANG_FILE == "application/download" || !string.IsNullOrEmpty(Model.PDF_VERSION))
+                                {
+                                    if (!string.IsNullOrEmpty(Model.PDF_VERSION))
+                                    {
+                                        <object data="@(UrlNavigation +"/Uploads" +Model.PDF_VERSION.Replace("\\","/") )" type="application/pdf" style="height:400px;width:100%"></object>
+                                    }
+                                    else
+                                    {
+                                        <object data="@(UrlNavigation +"/Uploads" +Model.DUONGDAN_FILE.Replace("\\","/") )" type="application/pdf" style="height:400px;width:100%"></object>
+                                    }
+                                }
+                                else if (Model.DINHDANG_FILE == "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || Model.DINHDANG_FILE == "application/vnd.ms-word.document.12" || Model.DINHDANG_FILE == "application/msword" || Model.DINHDANG_FILE == ".docx" || Model.DINHDANG_FILE == ".doc")
+                                {
+                                    <iframe style="width:100%;height:400px" src="http://docs.google.com/gview?url=@(UrlNavigation + "/Uploads" + Model.DUONGDAN_FILE.Replace("\\", "/"))&embedded=true"></iframe>
+                                }
+                                else if (Model.DINHDANG_FILE == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || Model.DINHDANG_FILE == "application/vnd.ms-word.document.12" || Model.DINHDANG_FILE == "application/vnd.ms-excel" || Model.DINHDANG_FILE == ".xls" || Model.DINHDANG_FILE == ".xlsx")
+                                {
+                                    <iframe style="width:100%;height:400px" src="http://docs.google.com/gview?url=@(UrlNavigation + "/Uploads" + Model.DUONGDAN_FILE.Replace("\\", "/"))&embedded=true"></iframe>
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>
+<style>
+    img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .form-horizontal .form-group .col-sm-3 label{
+        font-weight:bold
+    }
+    .form-horizontal .form-group .col-sm-3 {
+       padding:0px !important
+    }
+</style>

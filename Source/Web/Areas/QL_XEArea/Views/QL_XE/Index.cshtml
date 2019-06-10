@@ -1,0 +1,272 @@
+﻿@using Web.Areas.QL_XEArea.Models;
+@using Business.CommonModel.CONSTANT;
+@using Newtonsoft.Json
+@model XeBenhVienIndexViewModel
+@{
+    ViewBag.Title = "Quản lý xe";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var data = Html.Raw(JsonConvert.SerializeObject(Model.listXeBenhViens.ListItem));
+}
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style type="text/css">
+    #btn--car-group-function a {
+        margin: 0 5px;
+    }
+
+    #tbl-xebenhvien {
+        padding: 0;
+    }
+
+    .cell--car-image {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #3276b1;
+    }
+</style>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6" id="btn--car-group-function">
+        <a class="btn btn-default pull-right" href="javascript:void(0)" id="btn--create-xe-benhvien">
+            <i class="fa fa-plus"></i>&nbsp;<span>Thêm mới</span>
+        </a>
+
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button">
+            <i class="fa fa-search"></i>&nbsp;<span>Tìm kiếm</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="widget-t-body no-padding">
+        <div class="jarviswidget">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fas fa-car txt-color-darken"></i>
+                </span>
+
+                <h2 class="group-title mt10">
+                    Quản lý xe tỉnh ủy
+                </h2>
+            </header>
+
+            <div class="widget-t-body no-padding">
+                <div id="tbl-xebenhvien" class="hntbl-cover">
+                    <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Ảnh</th>
+                                <th>Tên xe</th>
+                                <th>Biển số</th>
+                                <th>Số chỗ</th>
+                                @*<th>Loại xe</th>*@
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal--edit-xe-benhvien" class="modal fade" tabindex="-1" role="dialog"></div>
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    var data = eval(@data);
+    function pageFunction(){
+        var config = [
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort: false,
+                nameModel: 'IMAGE_PATH',
+                content: function (data) {
+                    var html = "<image class='cell--car-image' src='\\Uploads\\" + data.IMAGE_PATH + "' alt=" + data.TENXE + "/>";
+                    return html;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'TENXE',
+                content: function (data) {
+                    return data.TENXE;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'BIENSO',
+                content: function (data) {
+                    return data.BIENSO;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'SOCHO',
+                content: function (data) {
+                    return data.SOCHO;
+                }
+            },
+            //{
+              //  isSort:true,
+              //  nameModel:'TEN_LOAIXE',
+               // content: function (data) {
+                //    return data.TEN_LOAIXE;
+               // }
+            //}
+    //,
+    {
+                isSort:true,
+                nameModel:'TRANGTHAI',
+                content: function (data) {
+                    var html = '';
+                    if(data.TRANGTHAI == @TRANGTHAI_CHUYEN_CONSTANT.MOITAO_ID){
+                        html += '<b style="color:orange">Đang đợi chuyến</b>';
+                    }
+                    else if(data.TRANGTHAI == @TRANGTHAI_CHUYEN_CONSTANT.DANGCHAY_ID){
+                        html += '<b style="color:green">Đang chạy</b>';
+                    }
+                    else {
+                        html += '<b style="color:red">Đang rảnh</b>';
+                    }
+                    return html;
+                }
+            },{
+                isSort:true,
+                nameModel:'ID',
+                content: function (data) {
+                    var html = '<div class="btn-group">';
+                    html += '<a href="javascript:void(0)" onclick="edit('+data.ID+')" title="Chỉnh sửa"><i class="glyphicon glyphicon-edit"> </i></a>';
+                    html += '<a href="javascript:void(0)" onclick="deleteCar('+data.ID+')" title="Xóa"><i class=" glyphicon glyphicon-remove" style="color:red"> </i></a>';
+                    html += '</div>';
+                    return html;
+                }
+            }
+        ]
+
+        var getDataFunction = function (page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("GetData")',
+                type: 'post',
+                cache: false,
+                data: {"pageIndex":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-xebenhvien").hinetTable("data",{
+                        pageSize: pageSize!= -1 ? pageSize:data.Count,
+                        pageIndex: page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem
+                    });
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+
+        var tblData=$("#tbl-xebenhvien").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.listXeBenhViens.TotalPage,
+            recordCount: @Model.listXeBenhViens.Count,
+            getData:getDataFunction,
+            listItem:data,
+            config: config
+        });
+    }
+
+    function reloadData() {
+        $("#tbl-xebenhvien").hinetTable("reload");
+    }
+
+    $(function(){
+        loadScript("/Scripts/jquery-hinet-table.js", function(){
+            pageFunction();
+
+            $('#btn--create-xe-benhvien').on('click',function(){
+                $.get('/QL_XEArea/QL_XE/Create', function(rs){
+                    $('#modal--edit-xe-benhvien').html(rs);
+                    $('#modal--edit-xe-benhvien').modal('show');
+                });
+            })
+
+            if ("@TempData["EditMessage"]" != "") {
+                if ("@TempData["Status"]" != "True") {
+                    setTimeout(function () {
+                        NotiError("@TempData["EditMessage"]");
+                    }, 1000)
+                } else {
+                    setTimeout(function () {
+                        NotiSuccess("@TempData["EditMessage"]");
+                    }, 1000)
+                }
+            }
+        });
+    });
+
+    function edit(id){
+        $.get('/QL_XEArea/QL_XE/Edit/'+id, function(rs){
+            $('#modal--edit-xe-benhvien').html(rs);
+            $('#modal--edit-xe-benhvien').modal('show');
+       });
+    }
+    
+    function deleteCar(id){
+        $.confirm({
+                'title': 'Xác nhận xóa',
+                'message': 'Bạn có chắc chắn muốn xóa xe này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("Delete")',
+                                data: { 'id': id },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess('Xóa xe thành công');
+                                        reloadData();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+</script>

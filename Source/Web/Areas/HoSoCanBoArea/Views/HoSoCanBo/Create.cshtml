@@ -1,0 +1,874 @@
+﻿@model Web.Areas.HoSoCanBoArea.Models.HoSoCanBoVM
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<style>
+    .ms-drop {
+        width: 100%;
+    }
+
+    .ms-choice {
+        background: none;
+        border: 1px solid #999;
+        border-radius: 0px;
+        height: 30px;
+        width: 100%;
+    }
+
+    .ms-parent {
+        width: 100%;
+    }
+
+    .ms-choice > span {
+        width: 100%;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .text-danger {
+        color: red;
+    }
+
+    .width-30 {
+        width: 32% !important;
+        margin-right: 3px;
+    }
+
+    .xaclass {
+        margin-left: 3px;
+    }
+</style>
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+        <a class="btn btn-default pull-right" href="@Url.Action("Index")">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+<div id="content">
+    <div class="SearchCriterial clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon"><i class="fa fa-file-image-o txt-color-darken"></i></span>
+                <h2 class="hidden-xs hidden-sm">Thêm mới hồ sơ cán bộ </h2>
+            </header>
+            <div role="content">
+                <div class="widget-body">
+                    <form action="/HoSoCanBoArea/HoSoCanBo/SaveHoSoCanBo" method="post" enctype="multipart/form-data" id="frmCreateHoSoCanBo">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ID" value="@Model.HoSo.ID" />
+                        <div class="tab-content custom-scroll">
+                            <fieldset>
+                                <div class="row">
+                                    <section class="col col-lg-6">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="HOTEN" class="lbl control-label">
+                                                        Họ và tên khai sinh
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("HOTEN", Model.HoSo.HOTEN, new { @class = "form-control required", @id = "HOTEN", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="TENGOIKHAC" class="lbl control-label">
+                                                        Tên gọi khác
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("TENGOIKHAC", Model.HoSo.TENGOIKHAC, new { @class = "form-control", @id = "TENGOIKHAC", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYSINH" class="lbl control-label">
+                                                        Ngày sinh
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYSINH", Model.HoSo.NGAYSINH, new { @class = "form-control datepicker1", @id = "NGAYSINH", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="GIOITINH" class="lbl control-label">
+                                                        Giới tính
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Chọn giới tính-", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label">
+                                                        Nơi sinh
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Tỉnh-", new { @class = "requiredDropDownList selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Huyện-", new { @class = "requiredDropDownList selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Xã-", new { @class = "requiredDropDownList selectpicker1 ", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label class="lbl control-label">
+                                                        Quê quán
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Tỉnh-", new { @class = "requiredDropDownList selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Huyện-", new { @class = "requiredDropDownList selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIOITINH", Model.LstGioiTinh, "-Xã-", new { @class = "requiredDropDownList selectpicker1 ", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="DANTOC" class="lbl control-label">
+                                                        Dân tộc
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("DANTOC", Model.LstDanToc, "-Dân tộc-", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="TONGIAO" class="lbl control-label">
+                                                        Tôn giáo
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("TONGIAO", Model.LstTonGiao, "-Tôn giáo-", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NOIDANGKYHOKHAUTHUONGTRU" class="lbl control-label">
+                                                        Nơi đăng ký bộ khẩu thường trú
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("NOIDANGKYHOKHAUTHUONGTRU", Model.HoSo.NOIDANGKYHOKHAUTHUONGTRU, new { @class = "form-control", @id = "NOIDANGKYHOKHAUTHUONGTRU", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NOIOHIENNAY" class="lbl control-label">
+                                                        Nơi ở hiện nay
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("NOIOHIENNAY", Model.HoSo.NOIOHIENNAY, new { @class = "form-control", @id = "NOIOHIENNAY", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGHENGHIEPKHIDUOCTUYENDUNG" class="lbl control-label">
+                                                        Nghề nghiệp khi được tuyển dụng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("NGHENGHIEPKHIDUOCTUYENDUNG", Model.HoSo.NGHENGHIEPKHIDUOCTUYENDUNG, new { @class = "form-control", @id = "NGHENGHIEPKHIDUOCTUYENDUNG", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYTRUNGTUYEN" class="lbl control-label">
+                                                        Ngày tuyển dụng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYTRUNGTUYEN", Model.HoSo.NGAYTRUNGTUYEN, new { @class = "form-control datepicker1", @id = "NGAYTRUNGTUYEN", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="COQUANTUYENDUNG" class="lbl control-label">
+                                                        Cơ quan tuyển dụng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("COQUANTUYENDUNG", Model.HoSo.COQUANTUYENDUNG, new { @class = "form-control", @id = "COQUANTUYENDUNG", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="DONVI_ID" class="lbl control-label">
+                                                        Đơn vị/ phòng ban công tác
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("DONVI_ID", Model.LstDonViHienTai, new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="CHUCVUHIENTAI" class="lbl control-label">
+                                                        Chức vụ (chức danh) hiện tại
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("CHUCVUHIENTAI", Model.LstChucVu, new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="CONGVIECCHINHDUOCGIAO" class="lbl control-label">
+                                                        Công việc
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("CONGVIECCHINHDUOCGIAO", Model.HoSo.CONGVIECCHINHDUOCGIAO, new { @class = "form-control", @id = "CONGVIECCHINHDUOCGIAO", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGACHCONGCHUCVIENCHUC" class="lbl control-label">
+                                                        Ngạch công chức (viên chức):
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("NGACHCONGCHUCVIENCHUC", Model.LstNgach, new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="MANGACH" class="lbl control-label">
+                                                        Mã ngạch
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("MANGACH", Model.HoSo.MANGACH, new { @class = "form-control", @id = "MANGACH", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="BACLUONG" class="lbl control-label">
+                                                        Bậc lương
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("BACLUONG", Model.HoSo.BACLUONG, new { @class = "form-control", @id = "BACLUONG", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="HESO" class="lbl control-label">
+                                                        Hệ số
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("HESO", Model.HoSo.HESO, new { @class = "form-control", @id = "HESO", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYHUONG" class="lbl control-label">
+                                                        Ngày hưởng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("NGAYHUONG", Model.HoSo.NGAYHUONG, new { @class = "form-control datepicker1", @id = "NGAYHUONG", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="PHUCAPCHUCVU" class="lbl control-label">
+                                                        Phụ cấp chức vụ
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("PHUCAPCHUCVU", Model.HoSo.PHUCAPCHUCVU, new { @class = "form-control", @id = "PHUCAPCHUCVU", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="PHUCAPKHAC" class="lbl control-label">
+                                                        Phụ cấp khác
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("PHUCAPKHAC", Model.HoSo.PHUCAPKHAC, new { @class = "form-control", @id = "PHUCAPKHAC", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="TRINHDOGIAODUC" class="lbl control-label">
+                                                        Trình độ giáo dục phổ thông
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("TRINHDOGIAODUC", Model.LstTrinhDoGiaoDuc, "- Chọn thông tin -", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="TRINHDOCHUYENMONCAONHAT" class="lbl control-label">
+                                                        Trình độ chuyên môn cao nhất
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("TRINHDOCHUYENMONCAONHAT", Model.LstTrinhDoChuyenMon, "- Chọn thông tin -", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="LYLUANCHINHTRI" class="lbl control-label">
+                                                        Lý luận chính trị
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("LYLUANCHINHTRI", Model.LstLyLuanChinhTri, "- Chọn thông tin -", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="QUANLYNHANUOC" class="lbl control-label">
+                                                        Quản lý nhà nước
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("QUANLYNHANUOC", Model.LstQuanLyNhaNuoc, "- Chọn thông tin -", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGOAINGU" class="lbl control-label">
+                                                        Ngoại ngữ
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("NGOAINGU", Model.LstNgoaiNgu, "- Chọn thông tin -", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="TINHOC" class="lbl control-label">
+                                                        Tin học
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("TINHOC", Model.LstTinHoc, "- Chọn thông tin -", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYVAODANG" class="lbl control-label">
+                                                        Ngày vào Đảng Cộng sản Việt Nam
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYVAODANG", Model.HoSo.NGAYVAODANG, new { @class = "form-control datepicker1", @id = "NGAYVAODANG", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYCHINHTHUC" class="lbl control-label">
+                                                        Ngày chính thức
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYCHINHTHUC", Model.HoSo.NGAYCHINHTHUC, new { @class = "form-control datepicker1", @id = "NGAYCHINHTHUC", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYTHAMGIATCCTXH" class="lbl control-label">
+                                                        Ngày tham gia tổ chức chính trị - xã hội
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("NGAYTHAMGIATCCTXH", Model.HoSo.NGAYTHAMGIATCCTXH, new { @class = "form-control datepicker1", @id = "NGAYTHAMGIATCCTXH", @maxlength = "500" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYNHAPNGU" class="lbl control-label">
+                                                        Ngày nhập ngũ
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYNHAPNGU", Model.HoSo.NGAYNHAPNGU, new { @class = "form-control datepicker1", @id = "NGAYNHAPNGU", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYXUATNGU" class="lbl control-label">
+                                                        Ngày xuất ngũ
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYXUATNGU", Model.HoSo.NGAYXUATNGU, new { @class = "form-control datepicker1", @id = "NGAYXUATNGU", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="QUANHAMCAONHAT" class="lbl control-label">
+                                                        Quân hàm cao nhất
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("QUANHAMCAONHAT", Model.HoSo.QUANHAMCAONHAT, new { @class = "form-control", @id = "QUANHAMCAONHAT", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="DANHHIEUDUOCPHONG" class="lbl control-label">
+                                                        Danh hiệu được phong tặng cao nhất
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("DANHHIEUDUOCPHONG", Model.LstQuanLyNhaNuoc, new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </section>
+                                    <section class="col col-lg-6">
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="SOTRUONGCONGTAC" class="lbl control-label">
+                                                        Sở trường công tác
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextArea("SOTRUONGCONGTAC", Model.HoSo.SOTRUONGCONGTAC, new { @class = "form-control", @id = "SOTRUONGCONGTAC", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="KHENTHUONG" class="lbl control-label">
+                                                        Khen thưởng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextArea("KHENTHUONG", Model.HoSo.KHENTHUONG, new { @class = "form-control", @id = "KHENTHUONG", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="KYLUAT" class="lbl control-label">
+                                                        Kỷ luật
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextArea("KYLUAT", Model.HoSo.KYLUAT, new { @class = "form-control", @id = "KYLUAT", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="SUCKHOE" class="lbl control-label">
+                                                        Tình trạng sức khoẻ
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("SUCKHOE", Model.LstTinhTrangSucKhoe, new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="CHIEUCAO" class="lbl control-label">
+                                                        Chiều cao
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("CHIEUCAO", Model.HoSo.CHIEUCAO, new { @class = "form-control", @id = "CHIEUCAO", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="CANNANG" class="lbl control-label">
+                                                        Cân nặng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("CANNANG", Model.HoSo.CANNANG, new { @class = "form-control", @id = "CANNANG", @maxlength = "250" })
+
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="NHOMMAU" class="lbl control-label">
+                                                        Nhóm máu
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("NHOMMAU", Model.LstNhomMau, new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="GIADINHCHINHSACH" class="lbl control-label">
+                                                        Là con gia đình chính sách
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.DropDownList("GIADINHCHINHSACH", Model.LstGiaDinhChinhSach, "- Chọn thông tin -", new { @class = "width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="THUONGBINHHANG" class="lbl control-label">
+                                                        Là thương binh hạng
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("THUONGBINHHANG", Model.HoSo.THUONGBINHHANG, new { @class = "form-control", @id = "THUONGBINHHANG", @maxlength = "250" })
+
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="CMTND" class="lbl control-label">
+                                                        Số chứng minh nhân dân
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("CMTND", Model.HoSo.CMTND, new { @class = "form-control", @id = "CMTND", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="NGAYCAP" class="lbl control-label">
+                                                        Ngày cấp
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    @Html.TextBox("NGAYCAP", Model.HoSo.NGAYCAP, new { @class = "form-control datepicker1", @id = "NGAYCAP", @maxlength = "250" })
+
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-3">
+                                                    <label for="SOSOBHXH" class="lbl control-label">
+                                                        Số sổ BHXH
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    @Html.TextBox("SOSOBHXH", Model.HoSo.SOSOBHXH, new { @class = "form-control", @id = "SOSOBHXH", @maxlength = "250" })
+                                                    <div class="note-error">
+                                                        <span class="error mes-note-error"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <label class="lbl control-label">
+                                                        Đặc điểm lịch sử bản thân:
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <p>- Khai rõ: bị bắt, bị tù (từ ngày tháng năm nào đến ngày tháng năm nào, ở đâu), đã khai báo cho ai, những vấn đề gì? Bản thân có làm việc trong chế độ cũ (cơ quan, đơn vị nào, địa điểm, chức danh, chức vụ, thời gian làm việc ....)</p>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    @Html.TextArea("DACDIEMLICHSU_BIBAT", Model.HoSo.DACDIEMLICHSU_BIBAT, new { @class = "form-control", @id = "DACDIEMLICHSU_BIBAT", @maxlength = "500" })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <p>- Tham gia hoặc có quan hệ với các tổ chức chính trị, kinh tế, xã hội nào ở nước ngoài (làm gì, tổ chức nào, đặt trụ sở ở đâu .........?): </p>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    @Html.TextArea("DACDIEMLICHSU_THAMGIA", Model.HoSo.DACDIEMLICHSU_THAMGIA, new { @class = "form-control", @id = "DACDIEMLICHSU_THAMGIA", @maxlength = "500" })
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <p>- Có thân nhân (Cha, Mẹ, Vợ, Chồng, con, anh chị em ruột) ở nước ngoài (làm gì, địa chỉ ........)?</p>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    @Html.TextArea("DACDIEMLICHSU_THANNHAN", Model.HoSo.DACDIEMLICHSU_THANNHAN, new { @class = "form-control", @id = "DACDIEMLICHSU_THANNHAN", @maxlength = "500" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <label class="lbl control-label">
+                                                        Nhận xét, đánh giá của cơ quan, đơn vị quản lý và sử dụng cán bộ, công chức
+                                                    </label>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    @Html.TextArea("NHANXET", Model.HoSo.NHANXET, new { @class = "form-control", @id = "NHANXET", @maxlength = "250" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-actions center">
+                            <center>
+                                <input type="button" value="Lưu thông tin" id="btnSave" class="btn btn-primary btn-sm" />
+                                <input type="button" value="Hủy bỏ" onclick="location.href='@Url.Action("Index")'" class="btn btn-default btn-sm" />
+                            </center>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#btnSave").click(function () {
+        var is_submit = onSubmit();
+        if (is_submit) {
+            $("#frmCreateHoSoCanBo").submit();
+        } else {
+            return false;
+        }
+    });
+    function onSubmit() {
+        var err = 0;
+        var require = requiredFieldForFormId("frmCreateHoSoCanBo");
+        if (!require) {
+            err++;
+        }
+        var IsDate = ValidateFieldDate("frmCreateHoSoCanBo");
+        if (!IsDate) {
+            err++;
+        }
+        var requireDropdownlist = RequireDropDownlist("frmCreateHoSoCanBo");
+        if (!requireDropdownlist) {
+            err++;
+        }
+
+        var IsDateExist = ValidateFieldDateExist("frmCreateHoSoCanBo");
+        if (!IsDateExist) {
+            err++;
+        }
+
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Có lỗi. Vui lòng kiểm tra lại");
+            return false;
+        }
+    }
+    var pageFunction = function () {
+        $(".selectpicker1").selectpicker();
+        $(".datepicker1").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-20:+20"
+        });
+    }
+    $(document).ready(function () {
+        loadScript("/Content/select/js/bootstrap-select.js", pageFunction);
+    })
+
+</script>

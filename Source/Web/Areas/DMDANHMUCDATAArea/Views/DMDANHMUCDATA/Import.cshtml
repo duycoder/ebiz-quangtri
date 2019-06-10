@@ -1,0 +1,462 @@
+﻿@{
+    ViewBag.Title = "Import dữ liệu danh mục";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Model.Entities;
+@using Web.Areas.DMDANHMUCDATAArea.Models;
+@model ImportVM
+<style>
+    .no-padding .dataTables_wrapper table, .no-padding > table {
+        border: 1px solid #ddd !important;
+    }
+</style>
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6 nopadding">
+        <a class="btn btn-default pull-right" href="/DMDANHMUCDATAArea/DMDANHMUCDATA/index/@Model.DanhMuc.ID">
+            <i class="fa fa-reply"></i> <span>Quay lại</span>
+        </a>
+
+    </div>
+</div>
+<div id="content">
+    <div class="well well-sm block">
+        <div class="header">Biểu mẫu import</div>
+        <div class="body">
+            <span>Bạn vui lòng tải biểu mẫu tại đây để cập nhật  </span><a href="@Model.PathTemplate" download><i class="fa fa-download" aria-hidden="true"></i> Tải xuống</a>
+        </div>
+       
+    </div>
+    <div class="well well-sm block">
+        <div class="header">Import Dữ liệu</div>
+        @using (Ajax.BeginForm("CheckImport", "DMDANHMUCDATA", new { @area = "DMDANHMUCDATAArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxEdit",
+    }, new { id = "formupload", @enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-inline">
+                <input type="hidden" name="idNhomDanhMuc" value="@Model.DanhMuc.ID">
+                <div class="form-group">
+                    <input type="file" name="fileImport" class="form-control required" />
+                    <button type="button" class="btn btn-primary" onclick="uploadFile()">Nhập dữ liệu</button>
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <div class="jarviswidget" id="block-dung" style="display:none">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Dữ liệu đúng
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div class="hntbl-cover" style="padding:10px;">
+                <table id="tbl-DMDANHMUCDATA-truedata" class="hinet-table table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="width-30"><input class="checkBoxControl" type="checkbox" /></th>
+                            <th>Tên loại/trạng thái</th>
+                            <th>Giá trị</th>
+                            <th>Đơn vị ID</th>
+                            <th>Code</th>
+                            <th>Ghi chú</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="center">
+                    <a href="javascript:void(0)" onclick="saveImport()" class="btn btn-info btn-md">Cập nhật</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="jarviswidget" id="block-sai" style="display:none;">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Dữ liệu sai
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div class="hntbl-cover" style="padding:10px;">
+                <table id="tbl-false" class="hinet-table table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="width-30"><input class="checkBoxControl" type="checkbox" /></th>
+                            <th>Tên loại/trạng thái</th>
+                            <th>Giá trị</th>
+                            <th>Đơn vị ID</th>
+                            <th>Code</th>
+                            <th>Ghi chú</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+
+                </table>
+                <div class="center">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-md" onclick="ExportError()">Tải file lỗi</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(".checkBoxControl").click(function () {
+        var tbl = $(this).parents("table").first();
+        if ($(this).prop("checked")) {
+            tbl.find("input:checkbox.global_checkbox:unchecked").each(function () {
+                $(this).prop("checked", true);
+            })
+        } else {
+            tbl.find("input:checkbox.global_checkbox:checked").each(function () {
+                $(this).prop("checked", false);
+            })
+        }
+
+
+    })
+
+    function saveImport() {
+        var listObj = [];
+        $("#tbl-DMDANHMUCDATA-truedata tbody input:checkbox.global_checkbox:checked").each(function () {
+            var row = $(this).parents("tr").first();
+            var obj = [];
+            row.find("td input[type=hidden]").each(function () {
+                obj.push($(this).val());
+            })
+            listObj.push(obj);
+        });
+        if (listObj.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '/DMDANHMUCDATAarea/DMDANHMUCDATA/SaveImportData',
+                data: JSON.stringify({ "idNhomDanhMuc":@Model.DanhMuc.ID,"Data": listObj }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (rs) {
+                    if (rs.Status) {
+                        NotiSuccess("Import dữ liệu thành công");
+                       
+                        $("#block-sai").css("display", "none");
+                        $("#block-sai input:checkbox.global_checkbox").prop("checked", false);
+                    } else {
+                        NotiError(rs.Message);
+                    }
+                },
+                error: failureAjax,
+            });
+        } else {
+            NotiError("Không có dữ liệu nào được chọn.");
+        }
+    }
+
+    function ExportError() {
+        var listObj = [];
+        $("#block-sai tbody input:checkbox.global_checkbox:checked").each(function () {
+            var row = $(this).parents("tr").first();
+            var obj = [];
+            row.find("td input[type=hidden]").each(function () {
+                obj.push($(this).val());
+            })
+            listObj.push(obj);
+        });
+        if (listObj.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: '/DMDANHMUCDATAarea/DMDANHMUCDATA/GetExportError',
+                data: JSON.stringify({ "lstData": listObj }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (rs) {
+                    if (rs.Status) {
+                        NotiSuccess("Export dữ liệu thành công");
+                        var win1= window.open(rs.PathStore, '_blank');
+                        if (win1) {
+                            //win.focus();
+                        } else {
+                            alert('Hãy cho phép website mở popup');
+                        }
+                        //$("#block-dung").css("display", "none");
+                        //$("#block-dung input:checkbox.global_checkbox").prop("checked", false);
+
+                        $("#block-sai").css("display", "none");
+                        $("#block-sai input:checkbox.global_checkbox").prop("checked", false);
+                    } else {
+                        NotiError(rs.Message);
+
+                    }
+                },
+                error: failureAjax,
+            });
+        } else {
+            NotiError("Không có dữ liệu nào để kết xuất.");
+        }
+
+    }
+
+
+    $("form#formupload").submit(function () {
+
+        var dataString;
+        event.preventDefault();
+        var contentType1 = false;
+        var action = $("#formupload").attr("action");
+        if ($("#formupload").attr("enctype") == "multipart/form-data") {
+            //this only works in some browsers.
+            //purpose? to submit files over ajax. because screw iframes.
+            //also, we need to call .get(0) on the jQuery element to turn it into a regular DOM element so that FormData can use it.
+            dataString = new FormData($("#formupload").get(0));
+            contentType1 = false;
+            processData = false;
+        } else {
+            // regular form, do your own thing if you need it
+        }
+        $.ajax({
+            type: "POST",
+            url: action,
+            data: dataString,
+            dataType: "json", //change to your own, else read my note above on enabling the JsonValueProviderFactory in MVC
+            contentType: false,
+            processData: false,
+            success: successAjaxUpload,
+            error: failureAjax,
+        });
+
+        return false;
+
+
+    });
+    function successAjaxUpload(rs) {
+        console.log(rs);
+        if (rs.Status) {
+            LoadData(rs.ListData);
+            if (rs.ListData.length > 0) {
+                $("#block-dung").css("display", "block");
+            }
+            LoadDatalistFalse(rs.ListFalse);
+            if (rs.ListFalse.length > 0) {
+                $("#block-sai").css("display", "block");
+            }
+        } else {
+            NotiError(rs.Message);
+        }
+    }
+    function uploadFile() {
+        $("#block-dung").css("display", "none");
+        $("#block-sai").css("display", "none");
+        var valid = checkForm("formupload");
+        if (valid) {
+            $("#formupload").submit();
+        } else {
+            NotiError("Vui lòng tải lên file import");
+        }
+        return false;
+
+    }
+    var LoadDatalistFalse = function (item) {
+        var config = [];
+        //var checvkboxobj = {
+        //    "mData": function (data, type, dataToSet) {
+        //        return '<input type="checkbox" name="ids" />'
+        //    },
+        //    "orderable": false,
+        //};
+        //config.push(checvkboxobj);
+        //for (var fa = 1; fa < 8; fa++) {
+        //    var ak = fa;
+        //    var obj = {
+        //        "mData": function (data, type, dataToSet) {
+
+        //            return data[ak];
+        //        },
+
+        //    };
+        //    config.push(obj);
+        //}
+        config.push({
+            "sClass": "center",
+            "mData": function (data, type, dataToSet) {
+                return '<input class="global_checkbox" type="checkbox" name="ids" />'
+            },
+            "orderable": false
+        });
+        config.push({
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[1]) + '">' + getValueDisplay(data[1]);
+                return str;
+            },
+            "orderable": false,
+        });
+        config.push({
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[2]) + '">' + getValueDisplay(data[2]);
+                return str;
+            },
+            "orderable": false,
+        });
+        config.push({
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[3]) + '">' + getValueDisplay(data[3]);
+                return str;
+
+            },
+            "orderable": false,
+        });
+
+        config.push({
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[4]) + '">' + getValueDisplay(data[4]);
+                return str;
+
+            },
+            "orderable": false,
+        });
+        config.push({
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[5]) + '">' + getValueDisplay(data[4]);
+                return str;
+
+            },
+            "orderable": false,
+        });
+        config.push({
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[6]) + '">' + getValueDisplay(data[4]);
+                return str;
+
+            },
+            "orderable": false,
+        });
+       
+        var table = $("#tbl-false").DataTable({
+
+            "data": item,
+            "bDestroy": true,
+            "iDisplayLength": 20,
+            paging: true,
+            "aoColumns": config,
+            "order": [[1, 'asc']],
+            "fnDrawCallback": function (oSettings) {
+                runAllCharts()
+            }
+        });
+    }
+    var LoadData = function (item) {
+        var table = $("#tbl-DMDANHMUCDATA-truedata").DataTable({
+          
+            "data": item,
+            "bDestroy": true,
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "Tất cả"]],
+            "iDisplayLength": 20,
+            paging: true,
+            "order": [[0, 'none'], [1, 'asc']],
+            "aoColumns": [
+                 {
+                     "sClass": "center",
+                     "mData": function (data, type, dataToSet) {
+                         return '<input class="global_checkbox" ' + ' type="checkbox" name="ids" value="' + data.ID + '" />';
+                     },
+                     "orderable": false
+                 },
+
+                  {
+                      "mData": function (data, type, dataToSet) {
+                          var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data.TEXT) + '">' + getValueDisplay(data.TEXT);
+                          return str;
+                      },
+
+                  },
+
+
+                    {
+                        "mData": function (data, type, dataToSet) {
+                            var str = '<input class="data-column" type="hidden" value="' + data.DATA + '">' + data.DATA;
+                            return str;
+                        },
+
+                    },
+                {
+                    "mData": function (data, type, dataToSet) {
+                        var str = '<input class="data-column" type="hidden" value="' + data.DEPTID + '">' + data.DEPTID;
+                        return str;
+                    },
+
+                },
+                {
+                    "mData": function (data, type, dataToSet) {
+                        var str = '<input class="data-column" type="hidden" value="' + data.CODE + '">' + data.CODE;
+                        return str;
+                    },
+
+                },
+                    {
+
+                        "mData": function (data, type, dataToSet) {
+                            var str = '<input class="data-column" type="hidden" value="' + data.GHICHU + '">' + data.GHICHU;
+                            return str;
+                        },
+                    },
+
+                  
+                    {
+                        "sClass": "center",
+                        "mData": function (data, type, dataToSet) {
+                            var result = "<div class='btn-group'>";
+                            result += "<a href='javascript:void(0)' onclick='RemoveRow(this)'  title = 'Xóa'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>";
+                            result += "</div>";
+                            return result;
+                        },
+
+                    },
+            ],
+            //"order": [[1, 'asc']],
+            "fnDrawCallback": function (oSettings) {
+                runAllCharts()
+            }
+        });
+    }
+    function RemoveRow(e) {
+        var element = $(e);
+        var row = element.parents("tr").first();
+        row.remove();
+    }
+    function pagefunction() {
+        LoadData(null);
+    }
+    //config table list dữ liệu đúng
+    $(document).ready(function () {
+        loadScript("/js/plugin/datatables/jquery.dataTables.min.js", function () {
+            loadScript("/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                loadScript("/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                    loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                        loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                    });
+                });
+            });
+        });
+    })
+
+</script>

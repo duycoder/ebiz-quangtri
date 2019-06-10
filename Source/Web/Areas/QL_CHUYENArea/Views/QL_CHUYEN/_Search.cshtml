@@ -1,0 +1,133 @@
+﻿
+@using Web.Areas.QL_CHUYENArea.Models;
+@model ChuyenIndexViewModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+
+    .select2 {
+        width: 100%;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("SearchData", "QL_CHUYEN", new { @area = "QL_CHUYENArea" },
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "searchFailure",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+        <div class="row row-block">
+            <div class="col-md-12">
+                <div class="col-md-2 txt-label">
+                    <label for="TEN_CHUYEN" class="lbl control-label">
+                        Tên chuyến:
+                    </label>
+                </div>
+                <div class="col-md-4">
+                    <input name="TEN_CHUYEN" class="form-control" id="TEN_CHUYEN" />
+                </div>
+            </div>
+            <div class="col-md-12">&nbsp;</div>
+
+            <div class="col-md-12">
+                <div class="col-md-2 txt-label">
+                    <label for="queryTimeStart" class="lbl control-label">
+                        Ngày xuất phát
+                    </label>
+                </div>
+                <div class="col-md-4">
+                    <input name="queryTimeStart" class="form-control datepicker1" id="queryTimeStart" />
+                </div>
+                <div class="col-md-2 txt-label"></div>
+                <div class="col-md-4">
+                    <input name="queryTimeEnd" class="form-control datepicker1" id="queryTimeEnd" />
+                </div>
+            </div>
+            <div class="col-md-12">&nbsp;</div>
+
+            <div class="col-md-12">
+                <div class="col-md-2 txt-label">
+                    <label for="XE_ID" class="lbl control-label"> Xe:</label>
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownList("XE_ID", Model.groupCars, "--- Chọn xe ---", new { @class = "select2" })
+                </div>
+
+                <div class="col-md-2 txt-label">
+                    <label for="LAIXE_ID" class="lbl control-label"> Lái xe:</label>
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownList("LAIXE_ID", Model.groupDrivers, "--- Chọn lái xe ---", new { @class = "select2" })
+                </div>
+            </div>
+            <div class="col-md-12">&nbsp;</div>
+
+            <div class="col-md-12 center" style=" margin-top:20px;">
+                <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                    <span class="btn-label">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </span>
+                    Tìm kiếm
+                </button>
+                <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                    <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                    Đóng
+                </a>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+<script>
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function searchFailure(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-chuyen").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pageFunctionSearch() {
+        $("#collapseDiv .select2").select2();
+
+        $(".datepicker1").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-20:+20"
+        });
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pageFunctionSearch)
+            });
+        });
+    })
+</script>
+
+

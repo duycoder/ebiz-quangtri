@@ -1,0 +1,282 @@
+﻿@using Web.Areas.QuanLyHoSoArea.Models
+@model VanBanDetailViewModel
+<style>
+    .red {
+        color: red;
+    }
+
+    .width100 {
+        width: 100%;
+        float: left;
+    }
+
+    .form-group {
+        padding: 0 20px;
+    }
+
+    .modal-dialog {
+        width: 600px;
+        margin: 10px 15%;
+    }
+
+    .modal-header {
+        background-color: white;
+        color: black;
+        padding: 10px;
+    }
+
+    .modal-footer {
+        padding: 10px;
+    }
+
+    .modal-body label span {
+        font-weight: bold;
+    }
+
+    .iatalic {
+        font-weight: normal !important;
+        font-style: italic;
+    }
+</style>
+
+
+<div class="modal-dialog">
+    <div class="modal-content" style="width:1000px; float:left">
+        <div class="modal-header width100">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">
+                Chi tiết văn bản
+            </h4>
+        </div>
+        <div class="modal-body width100">
+            <div id="loading" style="display:none">
+                <img src="~/Images/ajax-loader.gif" style="margin-top:250px" />
+            </div>
+            <section class="col-sm-12" id="VanBanContent">
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-2" style="width:16%">Tiêu đề:</label>
+                    <div class="col-sm-10" style="width:84%">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.TIEUDE))
+                            {
+                                <span>@Model.VanBan.TIEUDE</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-2" style="width:16%">Thuộc hồ sơ:</label>
+                    <div class="col-sm-10" style="width:84%">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.HOSO_NAME))
+                            {
+                                <span>@Model.VanBan.HOSO_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Số ký hiệu:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.SO_KYHIEU))
+                            {
+                                <span>@Model.VanBan.SO_KYHIEU</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Tờ số:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (Model.VanBan.TOSO.HasValue)
+                            {
+                                <span>@Model.VanBan.TOSO</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Ngôn ngữ:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.NGONNGU_NAME))
+                            {
+                                <span>@Model.VanBan.NGONNGU_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Ngày ban hành:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (Model.VanBan.NGAYBANHANH.HasValue)
+                            {
+                                <span>@string.Format("{0:dd/MM/yyyy}", Model.VanBan.NGAYBANHANH)</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Cơ quan ban hành:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.COQUAN_BANHANH_NAME))
+                            {
+                                <span>@Model.VanBan.COQUAN_BANHANH_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Lĩnh vực:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.LINHVUC_NAME))
+                            {
+                                <span>@Model.VanBan.LINHVUC_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Loại văn bản:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.LOAI_VANBAN_NAME))
+                            {
+                                <span>@Model.VanBan.LOAI_VANBAN_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Độ mật:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.DOMAT_NAME))
+                            {
+                                <span>@Model.VanBan.DOMAT_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Mức độ truy cập:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.MUCDO_TRUYCAP_NAME))
+                            {
+                                <span>@Model.VanBan.MUCDO_TRUYCAP_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label class="col-sm-4">Tình trạng vật lý:</label>
+                    <div class="col-sm-8">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.TINHTRANG_VATLY_NAME))
+                            {
+                                <span>@Model.VanBan.TINHTRANG_VATLY_NAME</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-2" style="width:16%">Trích yếu văn bản:</label>
+                    <div class="col-sm-10" style="width:84%">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.TRICHYEU_VANBAN))
+                            {
+                                <span>@Model.VanBan.TRICHYEU_VANBAN</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+                @if (Model.ListTaiLieu.Any())
+                {
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2" style="width:16%">File đính kèm: </label>
+                        <div class="col-sm-10" style="width:84%">
+                            @Html.Partial("../Common/UploadFile", Model.ListTaiLieu, new ViewDataDictionary { { "detail", "1" } })
+                        </div>
+                    </div>
+                }
+                <div class="col-sm-12 form-group">
+                    <label class="col-sm-2" style="width:16%">Ghi chú</label>
+                    <div class="col-sm-10" style="width:84%">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.VanBan.GHICHU))
+                            {
+                                <span>@Model.VanBan.GHICHU</span>
+                            }
+                            else
+                            {
+                                <span class="iatalic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="modal-footer width100">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "Quản lý thông báo";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Newtonsoft.Json;
+@using Business.CommonModel.SYSTINNHAN;
+@using Business.CommonBusiness;
+@model PageListResultBO<SYS_TINNHAN_BO>
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListItem));
+}
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <a href="#collapseDiv" class="btn btn-flat btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý thông báo
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div id="tbl-attribute" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tiêu đề</th>
+                            <th>Nội dung</th>
+                            <th>Người gửi</th>
+                            <th>Ngày gửi</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script type="text/javascript">
+    var typeId = 0;
+    function Remove(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa thông báo này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("Delete")',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Type == "SUCCESS") {
+                                    NotiSuccess(rs.Message);
+                                    reloadData();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+                            }
+                        });
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    var lstData = eval(@lstData);
+    function pagefunction(){
+        var conf=[
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'TIEUDE',
+                content: function (data) {
+                    if (data.TIEUDE != null) {
+                        if (data.URL == null) {
+                            return "<a href='javascript:void(0)' title='" + data.TIEUDE + "' onclick='Detail(" + data.ID + ")'>" + data.TIEUDE + "</a>";
+                        } else {
+                            return "<a href='"+data.URL+"' title='" + data.TIEUDE + "'>" + data.TIEUDE + "</a>";
+                        }
+
+                    } else {
+                        return "";
+                    }
+                    }
+            },
+            {
+                isSort:false,
+                nameModel:'NOIDUNG',
+                content: function (data) {
+                    if (data.NOIDUNG != null) {
+                        if (data.URL == null) {
+                            return "<a href='javascript:void(0)' title='" + data.NOIDUNG + "' onclick='Detail(" + data.ID + ")'>" + data.NOIDUNG + "</a>";
+                        } else {
+                            return "<a href='" + data.URL + "' title='" + data.NOIDUNG + "'>" + data.NOIDUNG + "</a>";
+                        }
+                    } else {
+                        return "";
+                    }
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'TEN_NGUOIGUI',
+                content: function (data) {
+                    return data.TEN_NGUOIGUI
+                }
+            },
+            {
+                isSort: true,
+                nameModel: 'NGAYTAO',
+                content: function (data) {
+                    return ToDate(data.NGAYTAO)
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'IS_READ',
+                content: function (data) {
+                    return data.IS_READ ? "<span class='text-success'>Đã đọc</span>" : "<span class='red'>Chưa đọc</span>"
+                }
+            },
+               {
+                   isSort:false,
+                   tdClass:"center",
+                   content: function (data) {
+                       var result = "<div class='btn-group'>";
+                       result += "<a href='javascript:void(0)' onclick='Remove(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-trash cl-primary'> </i></a>";
+                       result += "</div>";
+                       return result;
+                   }
+               },
+
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    console.log(data);
+                    $("#tbl-attribute").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData=$("#tbl-attribute").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.TotalPage,
+            recordCount: @Model.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+
+    }
+    function reloadData() {
+        $("#tbl-attribute").hinetTable("reload");
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+    function Detail(id) {
+        AjaxCall("/SYSTINNHANArea/SYSTINNHAN/Detail/" + id, 'get', null, function (rs) {
+            $("#modal_create").html(rs);
+            $("#modal_create").modal("show");
+        })
+    }
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+</style>

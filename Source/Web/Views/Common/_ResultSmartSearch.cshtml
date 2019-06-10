@@ -1,0 +1,56 @@
+﻿@using Web.Models
+@using Business.CommonModel.CONSTANT
+@model SmartSearch
+<div id="collapseOne" class="panel-collapse" aria-expanded="true" role="tabpanel" 
+     style="width: 100%;border: 1px solid #ddd; position: absolute; left: 70px; top: 42px; background:#fff; ">
+    <div>
+        <table class="table">
+            <tbody>
+                @{
+                    string search = Model.search;
+                }
+                @foreach (var item in Model.ListSearchResult)
+                {
+                    <tr>
+                        <td class="smart-search-content">
+                            <a href="@item.Url">@item.TrichYeu</a>
+                            <div>
+                                <span>
+                                    <b>
+                                        @(item.Type == 1 ? "Văn bản đến" : "Văn bản đi")
+                                    </b>
+                                </span>
+                                <span>
+                                    <b>
+                                        @item.SoHieu
+                                        @if (item.Type == 1)
+                                        {
+                                            <i>- Người ký: @item.NguoiKy</i>
+                                        }
+                                        else
+                                        {
+                                            <i>- Người ký: @item.NguoiKy</i>
+                                        }
+                                    </b>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(".smart-search-content").mark('@Model.search', {
+        "caseSensitive": false,
+        "ignoreJoiners": false,
+        "accuracy": "partially",
+        "acrossElements": true
+    });
+</script>
+<style>
+    #quick-smart-search-result .table tr td {
+        text-align: left !important;
+    }
+</style>

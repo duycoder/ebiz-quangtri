@@ -1,0 +1,134 @@
+﻿@using Web.Models
+@using System.Configuration
+@model LoginViewModel
+@{
+    ViewBag.Title = "Log in";
+    Layout = null;
+    var SITENAME = ConfigurationManager.AppSettings["SITENAME"];
+    var SITESOFT = ConfigurationManager.AppSettings["SITESOFT"];
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Hệ thống quản lý văn bản</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="~/Content/Custom/css/login.css">
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div id="main-page">
+        <div id="header-login">
+            <div class="container">
+                <div class="col-sm-12">
+                    <h1 class="sitename">
+                        @SITENAME
+                    </h1>
+                    <h2 class="sitesoft">
+                        @SITESOFT
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12" id="form-login">
+            <div class="container">
+                <div class="col-sm-12">
+                    <div class="col-sm-6 col-xs-12 left-form" style="text-align: center">
+                        <a href="http://tinhuyquangtri.vn" target="_blank"><img src="~/Uploads/logo_qtri.png" /></a>
+                       
+                    </div>
+                    <div class="col-sm-6 col-xs-12 right-form">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2>
+                                    Đăng nhập hệ thống
+                                </h2>
+                            </div>
+                            <div class="modal-body">
+                                <section id="loginForm">
+                                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group">
+                                            @Html.Label("Email", "Địa chỉ email", new { @class = "col-sm-12 control-label" })
+                                            <div class="col-sm-12">
+                                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.Label("Password", "Mật khẩu", new { @class = "col-sm-12 control-label" })
+                                            <div class="col-sm-12">
+                                                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="hidden-md hidden-xs saveMk">
+                                                @*<div class="checkbox">
+                    @Html.CheckBoxFor(m => m.RememberMe)
+                    Nhớ mật khẩu
+                </div>
+            <a href="#">Quên mật khẩu?</a>*@
+                                            </div>
+                                            <div class="col-sm-12 col-xs-12 button-login">
+                                                <input type="submit" value="Đăng nhập" class="btn btn-default" />
+                                            </div>
+                                        </div>
+                                        @*<p>
+                                                @Html.ActionLink("Register as a new user", "Register")
+                                            </p>*@
+                                        @* Enable this once you have account confirmation enabled for password reset functionality
+                                            <p>
+                                                @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                                            </p>*@
+                                    }
+                                </section>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div id="footer-page">
+            <div class="container">
+                <div class="col-sm-12">
+                    @*<div class="col-sm-3 footer-left">
+                        <a href="https://benhvienninhbinh.vn/" target="_blank" class="logosite">
+                            <img src="/Uploads/logonb.png">
+                        </a>
+                    </div>*@
+                    <div class="col-sm-12 footer-right">
+                        <div class="col-sm-12 pd-0 footer-right-top">
+                            <div class="col-sm-12 pd-0">
+                                <h3>TỈNH ỦY QUẢNG TRỊ - 30 Hùng Vương, Đông Hà, Quảng Trị</h3>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 pd-0 footer-right-bottom">
+                            <div class="col-sm-12 pd-0">
+                                <span>Điện thoại: 02333852520</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span>Fax: 023335252114</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span>Email: banbientap@tinhuyquangtri.vn</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+
+</body>
+</html>

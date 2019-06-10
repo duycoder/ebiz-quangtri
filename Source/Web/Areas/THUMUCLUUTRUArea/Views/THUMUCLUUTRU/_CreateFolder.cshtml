@@ -1,0 +1,257 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models;
+@model ThuMucLuuTruModel
+@using (Ajax.BeginForm("SaveThuMuc", "ThuMucLuuTru", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "createSuccess"
+}, new { id = "frmCreateThuMuc" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="width:480px">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@(Model.ThuMuc.ID > 0 ? "Cập nhật thư mục" : "Thêm mới thư mục")</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <input type="hidden" name="ID" value="@Model.ThuMuc.ID" />
+                        <input type="hidden" id="PARENT_ID" name="PARENT_ID" value="@Model.ThuMuc.PARENT_ID" />
+                        <label class="col-sm-4">Tên thư mục<span class="red">(*)</span></label>
+                        <div class="col-sm-8">
+                            <input type="text" value="@Model.ThuMuc.TENTHUMUC" class="form-control required" name="TENTHUMUC" id="TENTHUMUC">
+                            <div class="note-error">
+                                <span class="error" id="TENTHUMUC_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                            <label>Phạm vi truy cập:</label>
+                        </div>
+                        <div class="col-sm-8">
+                            @{
+//if ((Model.ThuMuc.USER_ID.HasValue && Model.ThuMuc.USER_ID == Model.userInfoBo.ID && Model.Ids.Contains(Model.ThuMuc.ID)) || (!Model.ThuMuc.USER_ID.HasValue))
+//{
+                                    <select name="ACCESS_MODIFIER" id="ACCESS_MODIFIER" class="select2" style="width:100%">
+                                        @foreach (var item in Model.ListAccessModifier)
+                                        {
+                                            <option value="@item.Value" @(item.Selected ? "selected='selected'" : "")>@item.Text</option>
+                                        }
+                                    </select>
+                                    <div class="note-error">
+                                        <span class="error" id="TENTHUMUC_ERROR"></span>
+                                    </div>
+                                    //}
+                                @*else
+                                {
+                                    switch (Model.ThuMuc.ACCESS_MODIFIER)
+                                    {
+                                        case AccessModifier.ALL_DEPARTMENT:
+                                            <span>Toàn bộ phòng ban</span>
+                                            break;
+                                        case AccessModifier.ALL_SYSTEM:
+                                            <span>Toàn bộ hệ thống</span>
+                                            break;
+                                        case AccessModifier.ALL_UNIT:
+                                            <span>Toàn bộ đơn vị</span>
+                                            break;
+                                        case AccessModifier.PRIVATE:
+                                            <span>Cá nhân</span>
+                                            break;
+                                    }
+                                    <input type="hidden" name="ACCESS_MODIFIER" value="@Model.ThuMuc.ACCESS_MODIFIER" />
+                                }*@
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group folder-pemission">
+                        <div class="col-sm-4">
+                            <label>Thao tác:</label>
+                        </div>
+                        <div class="col-sm-8">
+                            @if ((Model.ThuMuc.USER_ID.HasValue && Model.ThuMuc.USER_ID == Model.userInfoBo.ID) || (!Model.ThuMuc.USER_ID.HasValue))
+                            {
+                                <select name="PERMISSION" id="PERMISSION" class="select2" style="width:100%">
+                                    @foreach (var item in Model.ListFolderPermission)
+                                    {
+                                        <option value="@item.Value" @(item.Selected ? "selected='selected'" : "")>@item.Text</option>
+                                    }
+                                </select>
+                                <div class="note-error">
+                                    <span class="error" id="PERMISSION_ERROR"></span>
+                                </div>
+                            }
+                            else
+                            {
+                                switch (Model.ThuMuc.PERMISSION)
+                                {
+                                    case FolderPermission.CAN_READ:
+                                        <span>Chỉ có thể đọc</span>
+                                        break;
+                                    case FolderPermission.CAN_WRITE:
+                                        <span>Chỉ có thể ghi</span>
+                                        break;
+                                    case FolderPermission.BOTH:
+                                        <span>Cả đọc và ghi</span>
+                                        break;
+                                }
+                                <input type="hidden" name="ACCESS_MODIFIER" value="@Model.ThuMuc.PERMISSION" />
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-4">
+                            <label>Hình thư mục</label>
+                        </div>
+                        <div class="col-sm-8 row">
+                            <div class="col-sm-12 no-padding" id="cssforfontaweasome">
+                                <div class="fa-hover col-sm-6 allsystem1 folder-left-padding @(string.IsNullOrEmpty(Model.ThuMuc.CLASS) || Model.ThuMuc.CLASS == "allsystem1" ? "bold" : "")" data-class="allsystem1">Mặc định</div>
+                                @{
+                                    foreach (var item in Model.ListClass)
+                                    {
+                                        <div class=" no-padding fa-hover col-sm-6 @item folder-left-padding @(Model.ThuMuc.CLASS == item ? "bold" : "")" data-class="@item">@item</div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" value="Lưu lại" id="btnCreateThuMuc" class="btn btn-success" />
+                <button class="close-modal btn btn-default" type="button" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="CLASS" id="CLASS" />
+}
+<script>
+    @*if (parseInt($("#ACCESS_MODIFIER").val()) == parseInt('@AccessModifier.PRIVATE')) {
+        $(".folder-pemission").hide();
+    }
+    $("#ACCESS_MODIFIER").change(function () {
+        if (parseInt($("#ACCESS_MODIFIER").val()) == parseInt('@AccessModifier.PRIVATE')) {
+            $(".folder-pemission").hide();
+        } else {
+            $(".folder-pemission").show();
+        }
+    });*@
+    var parent = parseInt($("#PARENT_ID").val());
+    function createSuccess(data) {
+        if (parent > 0) {
+            LoadDataByID(parent);
+            $("#THEMTHUMUC").attr("data-pid", parent);
+            $("#THEMTAILIEU").attr("data-pid", parent);
+            $("#UPLOAD_FILE").show();
+            $("#THEMTHUMUC").show();
+        } else {
+            reloadGrid();
+            reloadTable();
+        }
+        NotiSuccess(data.Message);
+        $("#CreateThuMuc").modal('hide');
+        $("#CreateThuMuc").html("");
+    }
+    function failure(err) {
+        NotiError("Không thể thêm mới");
+    }
+    $("#btnCreateThuMuc").click(function () {
+        if (($("#TENTHUMUC").val().trim() == null || $("#TENTHUMUC").val().trim() == "")) {
+            $("#TENTHUMUC").focus();
+            $("#TENTHUMUC_ERROR").html("Bạn chưa nhập tên thư mục");
+            return false;
+        } else {
+            $("#TENTHUMUC_ERROR").html("");
+        }
+        if (/<[a-z][\s\S]*>/i.test($("#TENTHUMUC").val())) {
+            $("#TENTHUMUC").focus();
+            $("#TENTHUMUC_ERROR").html("Tên thư mục không được chứa các ký tự dạng HTML");
+            return false;
+        } else {
+            $("#TENTHUMUC_ERROR").html();
+        }
+        if (/[\\/:?*"<>|]/i.test($("#TENTHUMUC").val().trim())) {
+            $("#TENTHUMUC").focus();
+            $("#TENTHUMUC_ERROR").html('Tên thư mục không được chứa các ký tự nào sau đây:  \ / : ? * " <> |');
+            return false;
+        } else {
+            $("#TENTHUMUC_ERROR").html();
+        }
+        var thumuc = $("#TENTHUMUC").val();
+        if (thumuc.trim() != "") {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("FolderChecking")',
+                    data: {
+                        name: thumuc,
+                        parentID: '@Model.ThuMuc.PARENT_ID',
+                        id: '@Model.ThuMuc.ID'
+                    },
+                    cache: false,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.Type == "ERROR") {
+                            $("#TENTHUMUC_ERROR").html(data.Message);
+                            $("#TENTHUMUC").focus();
+                            return false;
+                        } else {
+                            $("#TENTHUMUC_ERROR").html("");
+                            $("#frmCreateThuMuc").submit();
+                            return true;
+                        }
+                    }, error: function (xrt) {
+                    }
+                });
+            }
+    });
+    $(document).ready(function () {
+        //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                    $(".select2").select2();
+                });
+            //});
+        });
+    });
+    function SelectIcon(str) {
+        $("#CLASS").val(str);
+    }
+    $(document).on("click", ".fa-hover", function () {
+        $("#cssforfontaweasome .bold").removeClass("bold");
+        var str= $(this).attr("data-class");
+        $("#CLASS").val(str);
+        $(this).addClass("bold");
+    });
+</script>
+<style>
+    .lbl {
+        display: inline-block;
+        width: 120px;
+        margin-left: 10px;
+    }
+
+    .modal-body #THOIHAN {
+        float: left;
+    }
+
+    #PARENT_ID {
+        display: none;
+    }
+
+    #Path:hover {
+        cursor: not-allowed !important;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    .fa-hover {
+        cursor: pointer
+    }
+</style>

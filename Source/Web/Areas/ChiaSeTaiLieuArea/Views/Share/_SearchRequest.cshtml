@@ -1,0 +1,87 @@
+﻿
+@using Business.CommonBusiness
+@using Web.FwCore;
+@using Web.Areas.ChiaSeTaiLieuArea.Models
+@model ChiaSeTaiLieuViewModel
+
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+
+        @using (Ajax.BeginForm("SearchRequest", "Share",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failureAjax",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+                <div class="form-group col-sm-12">
+                    <div class="col-md-2 txt-label">Người chia sẻ</div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("USER_CHIA_SE", Model.ListUserShare, "---Người chia sẻ---", new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-2 txt-label">Trạng thái</div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("STATUS", Model.ListStatus, "--Trạng thái---", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">
+                    <div class="col-md-2 txt-label">Từ khóa</div>
+                    <div class="col-md-10">
+                        <input type="text" id="KEYWORD" name="KEYWORD" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<script>
+    function searchSuccess(rs) {
+        $("#tbl_share").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", null)
+            });
+        });
+    })
+
+
+</script>

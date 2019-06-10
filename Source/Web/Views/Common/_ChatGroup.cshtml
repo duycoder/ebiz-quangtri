@@ -1,0 +1,194 @@
+﻿@using Web.Models
+@model ChatViewModel
+@{
+    var groupChat_id = !string.IsNullOrEmpty(Model.groupChat_id) ? Model.groupChat_id : string.Format("g_{0}_{1}", Model.cosoId.ToString(), Model.groupChat_id);
+    var right = 200;
+    var bottom = 0;
+    if (Model.soCuaSoChat >= 1) /*&& Model.soCuaSoChat <= 3*/
+    {
+        right += (250 * Model.soCuaSoChat) + (10 * Model.soCuaSoChat);
+    }
+    //else if(Model.soCuaSoChat > 3)
+    //{
+    //    right += (250 * (Model.soCuaSoChat - 2)) + (10 * (Model.soCuaSoChat - 2));
+    //    bottom = 310;
+    //}
+    var c_active = Model.reload == 0 ? "active" : "";
+}
+<div class="chat @c_active" id="@groupChat_id" style="right:@(right + "px"); @(bottom > 0 ? "bottom:" + bottom : "") margin-right:10px">
+    <div class="c-header">
+        <div class="c-title">
+            <span class="c-groupname" style="float:left;margin-left: 10px;" title="@Model.listFullName">@(Model.groupName.Length > 21 ? (Model.groupName.Substring(0, 21).ToString() + " ...") : Model.groupName)</span>
+        </div>
+        <a style="right:50px" title="Thêm thành viên vào nhóm chat" href="javascript:ShowAddUserToNewGroupChatToMember('@groupChat_id')">
+            <img src="~/Content/Custom/css/img/add_user.png" />
+        </a>
+        <a style="right:30px;" title="Cấu hình" href="javascript:ShowConfigGroupChat('@groupChat_id')">
+            <img src="~/Content/Custom/css/img/c-config.png" />
+        </a>
+        <a style="right:10px;" title="Đóng cửa sổ chat nhóm này" href="javascript:CloseGroupChatBox('@groupChat_id', '@Model.group_id')">
+            <img src="~/Content/Custom/css/img/c-close.png" />
+        </a>
+    </div>
+    <div class="c-config">
+        <ul>
+            <li><a href="javascript:ShowEditNameGroupChat('@groupChat_id')">Đổi tên nhóm</a></li>
+            <li><a href="javascript:LeftJoinGroupChat('@groupChat_id', '@Model.group_id')">Rời khỏi nhóm</a></li>
+        </ul>
+    </div>
+    <div class="c-body">
+        <div class="c-group">
+            <input style="width: 190px;" type="text" placeholder="Thêm thành viên vào nhóm" class="txtAddUser" />
+            <a class="btnAddUser" href="javascript:AddUserToNewGroupChatToMember('@groupChat_id', '@Model.group_id')" style="background-color: #336699; padding: 4px 5px 5px 5px; color: white;">Xong</a>
+            <p style="margin-bottom:0px;" class="list-FullName"></p>
+            <input type="hidden" class="list-UserName" value="" />
+        </div>
+        <div class="c-group-editname">
+            <input style="width: 190px;" type="text" placeholder="Tên nhóm trao đổi" class="txtGroupName" />
+            <a class="btnSaveGroupName" href="javascript:SaveGroupName('@groupChat_id', '@Model.group_id')" style="background-color: #336699; padding: 4px 5px 5px 5px; color: white;">Xong</a>
+        </div>
+        <div class="c-content">
+            <div class="conversation">
+                @if (Model.listChat != null && Model.listChat.Count > 0)
+                {
+                    foreach (var chat in Model.listChat)
+                    {
+                        if (Model.currentUserName != chat.FROMUSER)
+                        {
+                            <div class="fbChatConvItem">
+                                <div class="messages">
+                                    <div class="direction_ltr">
+                                        <b class="st">@chat.FROMFULLNAME</b>
+                                        @if (chat.NGAYGUI.Value.Year == DateTime.Now.Year && chat.NGAYGUI.Value.Month == DateTime.Now.Month && chat.NGAYGUI.Value.Day == DateTime.Now.Day)
+                                        {
+                                            <span class="s-date">@string.Format("{0:hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="s-date">@string.Format("{0:dd/MM/yyyy | hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        <p>@Html.Raw(chat.NOIDUNG)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="fbChatConvItem">
+                                <div class="messages">
+                                    <div class="direction_ltr">
+                                        <b class="cl">Bạn</b>
+                                        @if (chat.NGAYGUI.Value.Year == DateTime.Now.Year && chat.NGAYGUI.Value.Month == DateTime.Now.Month && chat.NGAYGUI.Value.Day == DateTime.Now.Day)
+                                        {
+                                            <span class="s-date">@string.Format("{0:hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="s-date">@string.Format("{0:dd/MM/yyyy | hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        <p>@Html.Raw(chat.NOIDUNG)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+                <div class="fbChatConvItem">
+                    <div class="show_time">@string.Format("{0:dd/MM/yyyy}", DateTime.Now)</div>
+                </div>
+            </div>
+        </div>
+        <div class="c-action">
+            <input type="text" class="c-input" placeholder="Nhập tin nhắn ..." />
+            <div style="float:left; width:52px; margin-right:2px;margin-left:2px; padding-top:10px">
+                <a style="padding: 0px;width: 16px;margin: 0px 2px 0px 0px;float:left;" title="Biểu tượng" href="javascript:showBieuTuongToGroup('@groupChat_id', '@Model.group_id')" class="btnemoticon"></a>
+                <a style="padding: 0px;width: 16px;margin: 0px 2px 0px 0px;float:left;" title="Đính kèm tệp" href="javascript:sendFileAttachToGroup('@groupChat_id')" class="btnAttFile"></a>
+                <a style="padding: 0px;width: 16px;margin: 0px;float:left;" title="Gửi hình ảnh" href="javascript:sendFileAttachImageToGroup('@groupChat_id')" class="btnSendPicture"></a>
+            </div>
+            <div class="overview"></div>
+        </div>
+        <div style="display:none;" class="_sendFileAttach">
+            @using (Html.BeginForm("UploadFileAttachmentGroupChat", "Common", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="file" name="attachment" multiple="" accept="*" title="Thêm tệp" class="fileAttach">
+                <input type="submit" name="btnSaveUploadFileAttachment" class="btnSaveUploadFileAttachment" />
+            }
+        </div>
+        <div style="display:none;" class="_sendFileAttachImage">
+            @using (Html.BeginForm("UploadFileAttachmentGroupChat", "Common", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="file" name="attachment" multiple="" accept="image/*" title="Thêm ảnh" class="fileAttachImage">
+                <input type="submit" name="btnSaveUploadFileAttachmentImage" class="btnSaveUploadFileAttachmentImage" />
+            }
+        </div>
+    </div>
+    <script>
+        $("#@groupChat_id .c-content").animate({ scrollTop: $("#@groupChat_id .c-content").prop("scrollHeight") }, 'slow');
+        $("#@groupChat_id .c-title").click(function () {
+            if ($("#@groupChat_id").hasClass("active")) {
+                $("#@groupChat_id").removeClass("active");
+                $("#@groupChat_id .overview").hide();
+                $("#@groupChat_id .c-config").hide();
+            }
+            else {
+                $("#@groupChat_id").addClass("active");
+                $("#@groupChat_id").find("input[type='text']").focus();
+            }
+        });
+        $("#@groupChat_id .c-input").focus(function () {
+            $("#@groupChat_id").addClass("active");
+            $("#@groupChat_id .overview").hide();
+        });
+        $("#@groupChat_id .c-input").bind('keypress', function (e) {
+            if (e.keyCode == 13) {
+                SendChatToGroup('@Model.groupChat_id', '@Model.group_id');
+            }
+        });
+        $("#@groupChat_id .fileAttach").change(function () {
+            //alert("change");
+            $("#@groupChat_id .btnSaveUploadFileAttachment").click();
+        });
+        $("#@groupChat_id .txtAddUser").keypress(function () {
+            CallAutoCompleteUserToGroup('@Model.groupChat_id');
+        });
+        $("#@groupChat_id ._sendFileAttach form").ajaxForm({
+            beforeSend: function () {
+
+            },
+            uploadProgress: function () {
+
+            },
+            success: function (data) {
+                SendChatFileToGroup(data, '@Model.groupChat_id', '@Model.group_id');
+            },
+            complete: function () {
+            },
+            error: function (data) {
+
+            }
+        });
+
+        $("#@groupChat_id .fileAttachImage").change(function () {
+            //alert("change");
+            $("#@groupChat_id .btnSaveUploadFileAttachmentImage").click();
+        });
+        $("#@groupChat_id ._sendFileAttachImage form").ajaxForm({
+            beforeSend: function () {
+
+            },
+            uploadProgress: function () {
+
+            },
+            success: function (data) {
+                SendChatFileToGroup(data, '@Model.groupChat_id', '@Model.group_id');
+            },
+            complete: function () {
+            },
+            error: function (data) {
+
+            }
+        });
+    </script>
+</div>

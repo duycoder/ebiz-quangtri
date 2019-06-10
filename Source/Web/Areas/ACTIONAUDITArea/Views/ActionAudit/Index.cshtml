@@ -1,0 +1,193 @@
+﻿@{
+    ViewBag.Title = "Quản lý log hệ thống";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Newtonsoft.Json
+@model Web.Areas.ACTIONAUDITArea.Models.ActionAuditLogVM
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListResult.ListItem));
+}
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+    </div>
+</div>
+<style>
+    #tbl-vanbanden table tr {
+        font-weight: bolder;
+    }
+    .description {
+        word-break: break-all;
+        width: 40% !important;
+    }
+    .td10 {
+        width: 10%
+    }
+</style>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý log hệ thống
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div id="tbl-vanbanden" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Tài khoản người dùng</th>
+                            <th>Module</th>
+                            <th>Hành động</th>
+                            <th style="width: 15%">Thời gian</th>
+                            <th style="width: 10%">Địa chỉ IP</th>
+                            <th>Trình duyệt</th>
+                            <th>Thông tin thêm</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    
+    var lstData = eval(@lstData);
+    function pagefunction() {
+        var conf=[
+            
+            {
+                isSort:true,
+                nameModel:'USER_NAME',
+                content: function (data) {
+                    return data.USER_NAME;
+
+                }
+            },
+            {
+                tdClass: "text-justify",
+                isSort:false,
+                nameModel:'CONTROLLER',
+                content: function (data) {
+                    return data.CONTROLLER
+                }
+            },
+            {
+                tdClass: "center td10",
+                isSort: true,
+                nameModel: 'ACTION',
+                content: function (data) {
+                    return data.ACTION;
+                }
+            },
+
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'BEGIN_AUDIT_TIME',
+                content: function (data) {
+                    return ToDateTime(data.BEGIN_AUDIT_TIME);
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'IP',
+                content: function (data) {
+                    return data.IP
+                }
+            },           
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'USER_AGENT',
+                content: function (data) {
+                    return data.USER_AGENT;
+                }
+            },
+            {
+                tdClass: "center description",
+                isSort: true,
+                nameModel: 'DESCRIPTION',
+                content: function (data) {
+                    return data.DESCRIPTION;
+                }
+            }           
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.ListResult.TotalPage,
+            recordCount: @Model.ListResult.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+    }
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+
+    /*.hinet-table td:nth-child(3) {
+        width: 28% !important;
+    }*/
+
+    .text-justify, .text-justify a {
+        text-align: justify !important;
+    }
+</style>

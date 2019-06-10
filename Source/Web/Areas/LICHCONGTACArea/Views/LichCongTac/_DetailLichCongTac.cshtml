@@ -1,0 +1,93 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@model LichCongTacDetailViewModel
+
+<div class="modal-dialog" role="document" style="width:70%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 class="modal-title">THÔNG TIN LỊCH CÔNG TÁC</h3>
+        </div>
+        <div class="modal-body">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <td>
+                            <b class="text-info">Tiêu đề</b>
+                        </td>
+                        <td>
+                            <b>@Model.calendarEntity.TIEUDE</b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b class="text-info">Ngày công tác</b>
+                        </td>
+                        <td>
+                            <b>
+                                @Model.calendarEntity.NGAY_CONGTAC_TEXT
+                            </b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b class="text-info">Người đi công tác</b>
+                        </td>
+                        <td>
+                            <b>@Model.calendarEntity.TEN_LANHDAO</b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b class="text-info">
+                                Địa điểm
+                            </b>
+                        </td>
+                        <td>
+                            <p>
+                                <b>@Model.calendarEntity.DIADIEM</b>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <b class="text-info">
+                                Ghi chú
+                            </b>
+                        </td>
+                        <td>
+                            <p>
+                                <b>@Model.calendarEntity.GHICHU</b>
+                            </p>
+                        </td>
+                    </tr>
+
+                    @if (Model.isShowCarRegistration && Model.carRegistrationEntity != null)
+                    {
+                        <tr>
+                            <td>
+                                <b class="text-info">
+                                    Thông tin đăng ký sử dụng xe
+                                </b>
+                            </td>
+
+                            <td>
+                                <a href="/QL_DANGKY_XEArea/QL_DANGKY_XE/Details/@Model.carRegistrationEntity.ID" target="_blank" title="Thông tin đăng ký xe">
+                                    @Model.carRegistrationEntity.MUCDICH
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn">Đóng</button>
+        </div>
+    </div>
+</div>
+

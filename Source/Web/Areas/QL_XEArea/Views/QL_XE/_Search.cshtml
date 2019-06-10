@@ -1,0 +1,102 @@
+﻿@using Web.Areas.QL_XEArea.Models;
+@model XeBenhVienIndexViewModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+
+    .select2 {
+        width: 100%;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("SearchData", "QL_XE", new { @area = "QL_XEArea" },
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "searchFailure",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label" for="TENXE">Tên xe:</div>
+                    <div class="col-md-4">
+                        <input name="TENXE" class="form-control" id="TENXE"/>
+                    </div>
+                    <div class="col-md-2 txt-label" for="BIENSO">Biển số xe:</div>
+                    <div class="col-md-4">
+                        <input name="BIENSO" class="form-control" id="BIENSO"/>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label" for="querySoChoStart">Số chỗ:</div>
+                    <div class="col-md-4">
+                        <input name="querySoChoStart" class="form-control" id="querySoChoStart"/>
+                    </div>
+
+                    <div class="col-md-2 txt-label"></div>
+                    <div class="col-md-4">
+                        <input name="querySoChoEnd" class="form-control" id="querySoChoEnd" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function searchFailure(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-xebenhvien").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pageFunctionSearch() {
+        $("#collapseDiv .select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pageFunctionSearch)
+            });
+        });
+    })
+</script>

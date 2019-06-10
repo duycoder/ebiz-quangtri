@@ -1,0 +1,1949 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <title>eBizOffice</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/bootstrap.min.css">
+    <link type="text/css" href="~/Content/fontawesomev506/css/fontawesome-all.min.css" rel="stylesheet" media="screen" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/smartadmin-production-plugins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/smartadmin-production.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/smartadmin-skins.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/smartadmin-rtl.min.css">
+    <link href="~/Content/Custom/emoticons/support/skype/emoticons.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/your_style.css">
+    <link href="~/Content/Custom/css/jquery.confirm.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="/img/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/img/favicon/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/googlefont.css">
+    <link rel="apple-touch-icon" href="/img/splash/sptouch-icon-iphone.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/img/splash/touch-icon-ipad.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/img/splash/touch-icon-iphone-retina.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/img/splash/touch-icon-ipad-retina.png">
+
+    <!-- iOS web-app metas : hides Safari UI Components and Changes Status Bar Appearance -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Startup image for web apps -->
+    <link rel="apple-touch-startup-image" href="/img/splash/ipad-landscape.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)">
+    <link rel="apple-touch-startup-image" href="/img/splash/ipad-portrait.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)">
+    <link rel="apple-touch-startup-image" href="/img/splash/iphone.png" media="screen and (max-device-width: 320px)">
+
+    <!--JQUERY CHOSEN CSS-->
+    <link href="~/Scripts/jquerychosen/chosen.min.css" rel="stylesheet" />
+    <link href="~/Content/chat.css" rel="stylesheet" />
+    <link href="~/Content/Common.css" rel="stylesheet" />
+    <link href="/Content/themes/base/jquery.ui.datepicker.css" rel="stylesheet" />
+    <style type="text/css">
+        .overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background-color: rgba(0,0,0,0.3);
+            text-align: center,;
+        }
+
+        .overlay-text {
+            top: 50%;
+            left: 50%;
+            color: #fff;
+            position: absolute;
+        }
+
+        mark {
+            background-color: yellow;
+            color: black;
+        }
+
+        #myChart-license-text {
+            display: none;
+        }
+
+        #chartCongViec-license-text {
+            display: none;
+        }
+
+        #brecum-phongban {
+            margin: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #fff;
+            position: absolute;
+            z-index: 1;
+            padding: 12px 0 0 15px;
+            font-weight: bold;
+            font-family: Arial;
+        }
+
+        .emphasize-number {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+
+    <script src="~/Content/code/highcharts.js"></script>
+    <script src="~/Content/code/highcharts-3d.js"></script>
+    <script src="~/Content/code/modules/exporting.js"></script>
+    <script src="~/Content/code/modules/export-data.js"></script>
+
+
+    <script src="/js/libs/jquery-2.1.1.min.js"></script>
+    <script src="/js/libs/jquery-ui-1.10.3.min.js"></script>
+
+    <script src="/Scripts/jquery.ui.datepicker.js"></script>
+    <script src="/Scripts/Jquery-datepicker-VI.js"></script>
+    <script src="~/Scripts/markjs/jquery.mark.min.js"></script>
+
+    <script>
+        $(window).resize(function () {
+            if ($(window).width() <= 1024) {
+                $("body").addClass("minified");
+            }
+        });
+
+    </script>
+</head>
+@using Business.CommonBusiness;
+@using Web.FwCore;
+@using Model.Entities;
+@using System.Linq;
+@using System.Web.Script.Serialization
+@using Business.CommonModel.DMCHUCNANG;
+@{
+    UserInfoBO user = ((UserInfoBO)SessionManager.GetUserInfo());
+    int processingVanBanDenNumber = (int)SessionManager.GetValue("ProcessingVanBanDenNumber");
+    int processingVanBanDiNumber = (int)SessionManager.GetValue("ProcessingVanBanDiNumber");
+
+    string PROCESSING_VANBANDEN_CODE = "VANBANDI_CHUAXULY";
+    string PROCESSING_VANBANDI_CODE = "HSCV_VANBANDEN_CHUAXULY";
+
+
+    var leftPanel = "49px";
+    var mainStyle = "0px";
+    var lstChucNangMenu = new List<DM_CHUCNANG_BO>();
+    if (user != null)
+    {
+        lstChucNangMenu = user.ListChucNangMenu;
+    }
+    else
+    {
+        Response.Redirect("/account/login");
+    }
+}
+<body class="smart-style-0">
+    <!-- #HEADER -->
+    <header id="header">
+        
+        @if (user != null)
+        {
+            <input type="hidden" id="globalCoSoID" value="@user.DeptParentID">
+            <input type="hidden" id="globalUserName" value="@user.TENDANGNHAP" />
+            <input type="hidden" id="globalFullName" value="@user.HOTEN" />
+        }
+        <div id="logo-group">
+
+            <!-- PLACE YOUR LOGO HERE -->
+            @*<span id="logo">
+
+                </span>*@
+            <span class="title-site">
+                <a href="@Url.Action("Index","DashBoard", new {area=""})">
+                    <img src="~/Uploads/logo_qtrii.png" />
+                </a>
+            </span>
+            <!-- END LOGO PLACEHOLDER -->
+        </div>
+
+        <div id="search-block" class="col-sm-7 col-xs-6">
+            <div class="smart-form">
+                <section id="quick-search">
+                    <label class="input">
+                        <i class="icon-append glyphicon glyphicon-search"></i>
+                        <input type="text" name="timkiemnhanh" placeholder="Tìm kiếm nhanh" id="timkiemnhanh">
+                        <b class="tooltip tooltip-bottom-right">Tìm kiếm nhanh</b>
+                    </label>
+                </section>
+            </div>
+            <div id="quick-smart-search-result" style="float: left;width: 100%">
+            </div>
+        </div>
+        <div id="area-search-advance"></div>
+        <div class="pull-right">
+            <ul id="quick-report" style="display: inline-block; list-style: none">
+                <li class="" style="position: initial;">
+                    <a class="activity data-toggle-activity" style="position:relative" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </a>
+                    <ul class="dropdown-menu pull-right" id="data-quick-report" style="width: 60.5%">
+                        <li style="width:100%;height:auto">
+                            @Html.Action("Statistical", "Common", new { area = "" })
+                        </li>
+                    </ul>
+                </li>
+                @*<li class="" style="position: initial;text-align:center">
+                        <a href="/ChatArea/chat" style="left:unset">
+                            <i class="fa fa-comments-o"></i>
+                        </a>
+                    </li>*@
+                <li>
+                    @Html.Action("ListNotif", "Common", new { area = "" })
+                </li>
+            </ul>
+
+            <!-- END AJAX-DROPDOWN -->
+            <ul id="mobile-profile-img" class="header-dropdown-list hidden-xs padding-5">
+                <li class="">
+                    @if (user != null)
+                    {
+                        <a href="#" class="dropdown-toggle no-margin userdropdown" data-toggle="dropdown" aria-expanded="false">
+                            <img src="/Content/Images/Avatar/users_woman-512.png" alt="@user.HOTEN" class="online" />
+                        </a>
+                    }
+
+                    <ul class="dropdown-menu pull-right">
+                        <li>
+                            <a href="javascript:ChangePassword(0);" class="padding-10 padding-top-0 padding-bottom-0"><i class="fas fa-address-book fa-lg"></i> Cập nhật thông tin</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="/Account/Logout" class="padding-10 padding-top-5 padding-bottom-5" data-action="userLogout"><i class="fa fa-sign-out fa-lg"></i> <strong>Đăng xuất</strong></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- end pulled right: nav area -->
+
+    </header>
+
+    <aside id="left-panel">
+        <!-- User info -->
+        <div class="login-info">
+            <span class="menu-name">
+                @(!string.IsNullOrEmpty(user.HOTEN) ? user.HOTEN : "Menu chức năng")
+            </span>
+            <span class="minifyme" data-action="minifyMenu"><i class="fa fa-backward hit"></i></span>
+
+        </div>
+
+        <nav>
+            <ul class="admin-menu-left">
+                @foreach (var chucnang in lstChucNangMenu)
+                {
+                    if (chucnang.ListThaoTac.Any(x => x.IS_HIENTHI == true))
+                    {
+                        string class_active = string.Empty;
+                        string set_display = string.Empty;
+                        List<DM_THAOTAC> ListThaoTac = chucnang.ListThaoTac.Where(o => o.MENU_LINK.ToLower().Contains(Request.Url.PathAndQuery.ToString().ToLower())).ToList();
+                        if (ListThaoTac != null && ListThaoTac.Count > 0)
+                        {
+                            class_active = "open";
+                            set_display = "display: block;";
+                        }
+                        <li class="@class_active" id="@chucnang.MA_CHUCNANG">
+                            <a href="#" title="@chucnang.TEN_CHUCNANG"><i class="@chucnang.CSSCLASS"></i><span class="menu-item-parent">@chucnang.TEN_CHUCNANG</span></a>
+                            <ul style="@set_display">
+                                @foreach (var thaotac in chucnang.ListThaoTac)
+                                {
+                                    if (thaotac.IS_HIENTHI == true)
+                                    {
+                                        <li class="@(Request.Url.PathAndQuery.ToString().ToLower() == thaotac.MENU_LINK.ToLower() ? "active_trail" : "")">
+                                            <a href="@thaotac.MENU_LINK" title="@thaotac.TEN_THAOTAC">
+                                                <span class="menu-item-parent">
+                                                    @if (thaotac.MA_THAOTAC == PROCESSING_VANBANDI_CODE)
+                                                    {
+                                                        @(thaotac.TEN_THAOTAC)<em class="emphasize-number">&nbsp;(@processingVanBanDenNumber)</em>
+                                                    }
+                                                    else if (thaotac.MA_THAOTAC == PROCESSING_VANBANDEN_CODE)
+                                                    {
+                                                        @(thaotac.TEN_THAOTAC)<em class="emphasize-number">&nbsp;(@processingVanBanDiNumber)</em>
+                                                    }
+                                                    else
+                                                    {
+                                                        @(thaotac.TEN_THAOTAC)
+                                                    }
+                                                </span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                }
+
+            </ul>
+        </nav>
+
+    </aside>
+    <!-- END NAVIGATION -->
+    <!-- #MAIN PANEL -->
+
+
+    <div id="main" role="main">
+        <h3 id="brecum-phongban">@user.TenPhongBan</h3>
+
+        <div class="modal" tabindex="-1" role="dialog" id="viewContentFile">
+            <div class="modal-dialog" role="document" style="width: 80%">
+                <div class="modal-content">
+                    <div class="modal-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="change-and-show-history" title="Tải lên biểu mẫu khai báo" role="dialog" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 style="font-weight: bold; text-transform: uppercase;" class="modal-title" id="myModalLabel">
+                            Biểu mẫu khai báo thông tin<span id="detail" style="color: yellow; text-transform: none"></span>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="lbl1">Tài liệu thay thế<span class="color-red">*</span></label>
+                            </div>
+                            <div class=" col-sm-8">
+                                <div class="form-group">
+                                    <input type="file" name="FileDinhKemThayThe" id="FileDinhKemThayThe" class="form-control required">
+                                    <div><span>Định dạng file cho phép: <strong>.docx, .doc, .jpg, .pdf, .png, .jpeg, .rar, .zip, .xls, .xlsx</strong></span></div>
+                                    <div><span>Kích thước file được tải lên: <strong>20 MB</strong></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="block--edit-file" title="Cập nhật tài liệu" role="dialog" class="modal fade">
+        </div>
+
+        @RenderBody()
+        <!-- RIBBON -->
+        <!-- END #MAIN CONTENT -->
+        <div id="modal_changeprofile" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <div class="center">
+                            <h4 class="modal-title">Thay đổi thông tin cá nhân</h4>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer center">
+                        <button type="button" class="btn btn-primary" onclick="">Lưu thông tin</button>
+
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END #MAIN PANEL -->
+    <!-- #PAGE FOOTER -->
+    @*Chat*@
+    <div class="page-footer" style="background: #b78c1f !important; height: 36px;">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                @*<span class="txt-color-white">SmartDMS <span class="hidden-xs">- HiNet JSC - I&D Department</span> © 2017</span>*@
+                <span class="txt-color-white">TỈNH ỦY QUẢNG TRỊ<span class="hidden-xs"></span> © 2018</span>
+            </div>
+
+            <div class="col-xs-6 col-sm-6 text-right">
+                <div id="pnl-chat"></div>
+                <div id="pnl-notification"></div>
+                <div class="user-online">
+                    <div id="pnl-useronline" class="pnl-useronline">
+                        <div class="header-box-chat">
+                            <h3 class="group-tittle vbdi_search" onclick="boxchatshow();">
+                                Thành viên trực tuyến
+                            </h3>
+                            <div class="options">
+                                <div class="add-new-message">
+                                </div>
+                                <div class="settings-box-chat">
+                                    <div class="btn-group" role="group">
+                                        <div class="dropdown-toggle settings-box" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; padding: 0px;">
+                                            <a href="javascript:void(0)"></a>
+                                        </div>
+                                        <div id="dropdown-menu-chat-settings" class="dropdown-menu">
+                                            <ul>
+                                                <li><a href="javascript:void(0)">Âm thanh trò chuyển</a></li>
+                                                <li><a href="javascript:void(0)">Biểu tượng cảm xúc</a></li>
+                                                <li><a href="javascript:void(0)">Cài đặt nâng cao</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="content-box" style="display: none;">
+                            <div class="content-box-chat" id="content-box-chat">
+                                <ul class="list-user"></ul>
+                            </div>
+                            <div class="search-box-chat">
+                                @*<input type="submit" name="" value="" />*@
+                                <input type="text" name="" placeholder="Tìm kiếm" id="search-box" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end col -->
+        </div>
+        <!-- end row -->
+    </div>
+    @*End*@
+
+
+    <div class="overlay">
+        <div class="overlay-text">
+            <h1 class="page-title" style="color: #fff !important">
+                <i class="fa-fw fa fa-spin fa-cog"></i> Đang xử lý
+            </h1>
+        </div>
+    </div>
+    <div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+
+    <div id="shortcut">
+
+    </div>
+
+    <script src="/js/app.config.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/Scripts/bootstrap-waitingfor.min.js"></script>
+    <script src="/js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script>
+    <!-- CUSTOM NOTIFICATION -->
+    <script src="/js/notification/SmartNotification.min.js"></script>
+    <!-- JARVIS WIDGETS -->
+    <script src="/js/smartwidgets/jarvis.widget.min.js"></script>
+    <!-- EASY PIE CHARTS -->
+    @*<script src="/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>*@
+    <!-- SPARKLINES -->
+    <script src="/js/plugin/sparkline/jquery.sparkline.min.js"></script>
+    <!-- JQUERY VALIDATE -->
+    <script src="/js/plugin/jquery-validate/jquery.validate.min.js"></script>
+    <!-- JQUERY MASKED INPUT -->
+    <script src="/js/plugin/masked-input/jquery.maskedinput.min.js"></script>
+    <!-- JQUERY SELECT2 INPUT -->
+    <script src="/js/plugin/select2/select2.min.js"></script>
+    <!-- browser msie issue fix -->
+    <script src="/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+    <!-- FastClick: For mobile devices: you can disable this in app.js -->
+    <script src="/js/plugin/fastclick/fastclick.min.js"></script>
+    <!--[if IE 8]>
+        <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+    <![endif]-->
+    <!-- MAIN APP JS FILE -->
+    <script src="/js/app.min.js"></script>
+    <script src="/Content/Custom/js/jquery.confirm.js"></script>
+    <script src="/Scripts/validateProvider.js"></script>
+    <!--JQUERY CHOSEN-->
+    <script src="/Scripts/jquerychosen/chosen.jquery.min.js"></script>
+    <!--COMMON JS-->
+    <script src="/Content/Custom/Common.js"></script>
+    <script src="/Content/Custom/js/form.js"></script>
+    <script src="/Scripts/jquery.form.js"></script>
+    <script src="/Content/Custom/emoticons/lib/emoticons.js"></script>
+    <script src="/Content/Custom/emoticons/lib/definition.js"></script>
+
+    <script>
+
+        function locdau(str) {
+            str = str.toLowerCase();
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/^\-+|\-+$/g, "");
+            return str.toLowerCase();
+        }
+
+        $("#search-box").keyup(function () {
+            var strQuery = $("#search-box").val().toLowerCase();
+            $.each($(".list-user .text"),
+                function (index, item) {
+                    var org_data = $(this).find('span').html().toLowerCase();
+                    if (org_data.indexOf(strQuery) === -1) {
+                        $(this).parent().parent().hide();
+                    } else {
+                        $(this).parent().parent().show();
+                    }
+                });
+        });
+        $("#timkiemnhanh").keyup(function () {
+            var strQuery = locdau($("#timkiemnhanh").val());
+            if (strQuery.length >= 5) {
+                $.ajax({
+                    url: '/Common/SmartSearch',
+                    type: 'post',
+                    data: {
+                        search: strQuery
+                    },
+                    success: function (data) {
+                        $("#quick-smart-search-result").html(data);
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        //alert(xhr.responseText);
+                    }
+                });
+            } else {
+                $("#quick-smart-search-result").html("");
+            }
+        });
+
+        $("#search-block").mouseenter(function () {
+            $("#quick-smart-search-result").show();
+        }).mouseleave(function () {
+            $("#quick-smart-search-result").hide();
+        });
+    </script>
+    <script src="~/Nodejs/socket.io-client/socket.io.js"></script>
+    <script src="~/Nodejs/main.js"></script>
+    <script>
+        // chat box
+        var socket = io.connect("http://192.168.1.23:3000");
+        socket.on("pushNotificationToUser", function (data) {
+            var currentUId = parseInt('@user.ID');
+            var LstUId = data.LstUId;
+            console.log(LstUId);
+            console.log(currentUId);
+            if (LstUId != undefined) {
+                //var UIdArr = LstUId.split(',');
+                console.log(LstUId.indexOf(currentUId));
+                console.log(data.message);
+                if (LstUId.indexOf(currentUId) > -1) {
+                    NotiSuccess(data.message);
+                    var total = parseInt($("#totalNotificationForUser").html()) + 1;
+                    $("#totalNotificationForUser").html(total);
+                    var tmp_html = "<li id='notification_" + data.id + "'>" +
+                        "<span class='padding-10'><em class='badge padding-5 no-border-radius bg-color-blueLight txt-color-white pull-left margin-right-5'>" +
+                        "<i class='fa fa-user fa-fw fa-2x'></i></em>" +
+                        "<span style='cursor:pointer;color:#3276b1' onclick='UpdateStatus1(" + data.id + ",\"" + data.url + "\")'>" +
+                        data.message +
+                        "</span></span></li>";
+                    $("#notification-body").prepend(tmp_html);
+                }
+            }
+
+        });
+        function boxchatshow() {
+            $("#content-box").slideToggle(1);
+        }
+        var _userarray = '@Html.Raw(new JavaScriptSerializer().Serialize(user.ListUserBO))';
+        var userarray = JSON.parse(_userarray);
+        var _usernamearray = '@Html.Raw(user.ListUserName)';
+        if (_usernamearray == '') {
+            _usernamearray = 'null';
+        }
+        var usernamearray = JSON.parse(_usernamearray);
+        var soCuaSoChat = 0;
+        var cosoId = $("#globalCoSoID").val();
+        var cur_username = $("#globalUserName").val();
+        var cur_fullname = $("#globalFullName").val();
+        var isChatPanel = false;
+        var itemInListChatPanel = 0;
+        var chatPanel = $("#isChatPanel").val();
+        if (chatPanel != undefined && chatPanel == 1) {
+            isChatPanel = true;
+            LoadChatBox('0', $("#userfirst").attr("data-fu"), $("#userfirst").attr("data-tu"), $("#userfirst").attr("data-ffu"), $("#userfirst").attr("data-ftu"));
+        }
+        function showBieuTuong(chat_id, fromUser, toUser, fromFullName, toFullName) {
+            //alert(chat_id);
+            if (chat_id.indexOf("\\") == -1) {
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            }
+            if ($("#" + chat_id).hasClass("active") == false) {
+                $("#" + chat_id).addClass("active");
+            }
+            $("#" + chat_id + " .overview").html($.emoticons.toString());
+            $("#" + chat_id + " .overview").toggle();
+            $("#" + chat_id + " .overview .emoticon").click(function () {
+                $("#" + chat_id + " .c-input").val($.emoticons.replace($(this).html()));
+                SendChat(fromUser, toUser, fromFullName, toFullName, chat_id);
+                $("#" + chat_id + " .overview").hide();
+            });
+        }
+        //sendFileAttach
+        function sendFileAttach(chat_id) {
+            if (chat_id.indexOf("\\") == -1) {
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            }
+            $("#" + chat_id + " .fileAttach").click();
+        }
+        function sendFileAttachImage(chat_id) {
+            if (chat_id.indexOf("\\") == -1) {
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            }
+            $("#" + chat_id + " .fileAttachImage").click();
+        }
+        function chatToUser(username) {
+            var fullname = $("span[data-id='" + username + "']").html();
+            var fromUser = '@user.TENDANGNHAP';
+            var fullName = '@user.HOTEN';
+            //Tạo 1 cửa sổ chat, lưu trên node server
+            socket.emit('create chat to user', {
+                cosoId: cosoId, from_user: fromUser,
+                to_user: username, from_fullname: fullName, to_fullname: fullname,
+                current_UserName: cur_username
+            });
+        }
+        function chatToUserFromJob(username, fullname) {
+            var fromUser = '@user.TENDANGNHAP';
+            var fullName = '@user.HOTEN';
+            //Tạo 1 cửa sổ chat, lưu trên node server
+            socket.emit('create chat to user', {
+                cosoId: cosoId, from_user: fromUser,
+                to_user: username, from_fullname: fullName, to_fullname: fullname,
+                current_UserName: cur_username
+            });
+        }
+        function CloseChatBox(fromUser, toUser) {
+            //Emit lên server để xóa chat box này trong mảng Chats đi
+            if (cur_username == fromUser) {
+                socket.emit('delete chat by fromUser', { cosoId: cosoId, from_user: fromUser, to_user: toUser, from_UserJoin: 0 });
+            }
+            else if (cur_username == toUser) {
+                socket.emit('delete chat by toUser', { cosoId: cosoId, from_user: fromUser, to_user: toUser, to_UserJoin: 0 });
+            }
+            //Xóa box chat tại client
+            var chat_id = cosoId + "_" + fromUser + "_" + toUser;
+            chat_id = chat_id.replace(/[.]/g, '\\.');
+            chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            $("#" + chat_id).remove();
+            soCuaSoChat = 0;
+            $("#pnl-chat .chat").each(function () {
+                var right = 200;
+                if (soCuaSoChat >= 1) {
+                    right += (250 * soCuaSoChat) + (10 * soCuaSoChat);
+                }
+                $(this).css("right", right);
+                soCuaSoChat++;
+            });
+        }
+        socket.on('send-notification', function (data) {
+            NotiSuccess(data.message);
+            var total = parseInt($("#totalNotificationForUser").html()) + 1;
+            $("#totalNotificationForUser").html(total);
+        });
+        socket.on('open window chat for User', function (data) {
+            if (isChatPanel == true) {
+                $.ajax({
+                    type: "POST",
+                    url: '/ChatArea/Chat/ChatContent',
+                    cache: false,
+                    data: {
+                        fromUser: data.fromUser,
+                        toUser: data.toUser,
+                        fromFullName: data.fromFullName,
+                        toFullName: data.toFullName,
+                        chatId: data.chatId
+                    },
+                    success: function (datachat) {
+                        $("#pnlChatContent").html(datachat);
+                        //$("#pnlChatContent").find("input[class='c-input']").focus();
+                        $(".friend-list li").each(function () {
+                            $(this).removeClass("active");
+                        });
+                        $(".friend-list li[data-id='" + itemInListChatPanel + "']").addClass("active");
+                        $(".chat-alert[data-id='" + itemInListChatPanel + "']").addClass("text-null");
+                        $(".chat-alert[data-id='" + itemInListChatPanel + "']").html("");
+                    }
+                });
+            } else {
+                $("#" + data.chatId).addClass("active");
+                $("#" + data.chatId).find("input[class='c-input']").focus();
+            }
+        });
+        //open window chat for fromUser
+        socket.on('open window chat for fromUser', function (data) {
+            console.log(data);
+            if (cur_username === data.fromUser) {
+                var chat_id = data.chatId;
+                //Nếu đang ở Chat Panel
+                if (isChatPanel == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/ChatArea/Chat/ChatContent',
+                        cache: false,
+                        data: {
+                            fromUser: data.fromUser,
+                            toUser: data.toUser,
+                            fromFullName: data.fromFullName,
+                            toFullName: data.toFullName,
+                            chatId: data.chatId
+                        },
+                        success: function (datachat) {
+                            console.log(datachat);
+                            $("#pnlChatContent").html(datachat);
+                            //$("#pnlChatContent").find("input[class='c-input']").focus();
+                            $(".friend-list li").each(function () {
+                                $(this).removeClass("active");
+                            });
+                            $(".friend-list li[data-id='" + itemInListChatPanel + "']").addClass("active");
+                            $(".chat-alert[data-id='" + itemInListChatPanel + "']").addClass("text-null");
+                            $(".chat-alert[data-id='" + itemInListChatPanel + "']").html("");
+                        }
+                    });
+                }
+                else {
+                    //Nếu không ở Chat Panel
+                    //Thêm 1 cửa sổ chat dạng box chat
+                    if (data.chat_position == -1 || data.fromUserJoin == 0) {
+                        $.ajax({
+                            type: "POST",
+                            url: '/Common/Chat',
+                            cache: false,
+                            data: {
+                                cosoId: cosoId,
+                                fromUser: data.fromUser,
+                                toUser: data.toUser,
+                                fromFullName: data.fromFullName,
+                                toFullName: data.toFullName,
+                                soCuaSoChat: soCuaSoChat,
+                                reload: 0,
+                                chat_id: data.chatId,
+                                index: data.index
+                            },
+                            success: function (dataAppend) {
+                                soCuaSoChat += 1;
+                                console.log(dataAppend);
+                                chat_id = chat_id.replace(/[.]/g, '\\.');
+                                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                                $("#pnl-chat").append(dataAppend);
+                                if (data.fromUserJoin == 0 && data.msg != undefined) {
+                                    var currentdate = new Date();
+                                    var datetime = currentdate.getHours() + ":"
+                                        + currentdate.getMinutes() + ":"
+                                        + currentdate.getSeconds();
+                                    var appendHtml = '<div class="fbChatConvItem">';
+                                    appendHtml += '<div class="messages">';
+                                    appendHtml += '<div class="direction_ltr">';
+                                    appendHtml += '<b class="st">' + data.toFullName + '</b> <span class="s-date">' + datetime + '</span>';
+                                    appendHtml += '<p>' + $.emoticons.replace(data.msg) + '</p>';
+                                    appendHtml += '</div></div></div>';
+                                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                                }
+                                $("#" + chat_id).find("input[class='c-input']").focus();
+                            }
+                        });
+                    }
+                    else {
+                        //Hiển thị cửa sổ chat đã tồn tại
+                        chat_id = chat_id.replace(/[.]/g, '\\.');
+                        chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                        $("#" + chat_id).addClass("active");
+                        $("#" + chat_id).find("input[class='c-input']").focus();
+                    }
+                }
+            }
+        });
+        //appen chat msg for fromUser
+        socket.on('appen chat msg for fromUser', function (data) {
+            if ($("#globalUserName").val() === data.fromUser) {
+                var appendable = true;
+                if (isChatPanel) {
+                    var elem_li = $(".friend-list li[data-user='" + data.toUser + "']");
+                    if (elem_li.hasClass("active") == false) {
+                        appendable = false;
+                        var inboundMsg = elem_li.find("small").html();
+                        elem_li.find("small").removeClass("text-null");
+                        if (inboundMsg.length > 0) {
+                            elem_li.find("small").html(parseInt(elem_li.find("small").html()) + 1);
+                        }
+                        else {
+                            elem_li.find("small").html("1");
+                        }
+                    }
+                }
+                if (!isChatPanel || appendable) {
+                    var chat_id = data.chatId;
+                    chat_id = chat_id.replace(/[.]/g, '\\.');
+                    chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                    //Hiển thị cửa sổ chat đã tồn tại
+                    if ($("#" + chat_id).hasClass("active") == false) {
+                        $("#" + chat_id).addClass("active");
+                    }
+                    $("#" + chat_id).find("input[class='c-input']").focus();
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    var appendHtml = '<div class="fbChatConvItem" data-id="'+data.noidungid+'">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="st">' + decodeEntities(data.toFullName) + '</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += '<p>' + $.emoticons.replace(data.msg) + '</p>';
+                    appendHtml += '</div></div></div>';
+                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                }
+            }
+        });
+        //open window chat for toUser
+        socket.on('open window chat for toUser', function (data) {
+            if (cur_username == data.toUser) {
+                var chat_id = data.chatId;
+                //Nếu đang ở Chat Panel
+                if (isChatPanel == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/ChatArea/Chat/ChatContent',
+                        cache: false,
+                        data: {
+                            fromUser: data.fromUser,
+                            toUser: data.toUser,
+                            fromFullName: data.fromFullName,
+                            toFullName: data.toFullName,
+                            chatId: data.chatId
+                        },
+                        success: function (datachat) {
+                            $("#pnlChatContent").html(datachat);
+                            //$("#pnlChatContent").find("input[class='c-input']").focus();
+                            $(".friend-list li").each(function () {
+                                $(this).removeClass("active");
+                            });
+                            $(".friend-list li[data-id='" + itemInListChatPanel + "']").addClass("active");
+                            $(".chat-alert[data-id='" + itemInListChatPanel + "']").addClass("text-null");
+                            $(".chat-alert[data-id='" + itemInListChatPanel + "']").html("");
+                        }
+                    });
+                }
+                else {
+                    //Thêm 1 cửa sổ chat
+                    $.ajax({
+                        type: "POST",
+                        url: '/Common/Chat',
+                        cache: false,
+                        data: {
+                            cosoId: data.cosoId,
+                            fromUser: data.fromUser,
+                            toUser: data.toUser,
+                            fromFullName: data.fromFullName,
+                            toFullName: data.toFullName,
+                            soCuaSoChat: soCuaSoChat,
+                            reload: 0,
+                            chat_id: chat_id,
+                            index: data.index
+                        },
+                        success: function (datachat) {
+                            soCuaSoChat += 1;
+                            console.log(datachat);
+                            $("#pnl-chat").append(datachat);
+                            chat_id = chat_id.replace(/[.]/g, '\\.');
+                            chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                            $("#" + chat_id).find("input[class='c-input']").focus();
+                        }
+                    });
+                }
+            }
+        });
+        //appen chat msg for toUser
+        socket.on('appen chat msg for toUser', function (data) {
+            if (cur_username === data.toUser) {
+                var appendable = true;
+                if (isChatPanel) {
+                    var elem_li = $(".friend-list li[data-user='" + data.fromUser + "']");
+                    if (elem_li.hasClass("active") == false) {
+                        appendable = false;
+                        var inboundMsg = elem_li.find("small").html();
+                        elem_li.find("small").removeClass("text-null");
+                        if (inboundMsg.length > 0) {
+                            elem_li.find("small").html(parseInt(elem_li.find("small").html()) + 1);
+                        }
+                        else {
+                            elem_li.find("small").html("1");
+                        }
+                    }
+                }
+                if (!isChatPanel || appendable) {
+                    var chat_id = data.chatId;
+                    chat_id = chat_id.replace(/[.]/g, '\\.');
+                    chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                    //Hiển thị cửa sổ chat đã tồn tại
+                    if ($("#" + chat_id).hasClass("active") == false) {
+                        $("#" + chat_id).addClass("active");
+                    }
+                    $("#" + chat_id).find("input[class='c-input']").focus();
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+
+                    var appendHtml = '<div class="fbChatConvItem" data-id="'+data.noidungid+'">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="st">' + decodeEntities(data.fromFullName) + '</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += '<p>' + $.emoticons.replace(data.msg) + '</p>';
+                    appendHtml += '</div></div></div>';
+                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                }
+            }
+        });
+        //DisplayTyping
+        function DisplayTyping(fromUser, toUser, fromFullName, toFullName) {
+            var chat_id = cosoId + "_" + fromUser + "_" + toUser;
+            if (cur_username == fromUser) {
+                socket.emit('display fromuser typing', {
+                    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    from_fullname: fromFullName, to_fullname: toFullName
+                });
+            }
+            else {
+                socket.emit('display touser typing', {
+                    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    from_fullname: fromFullName, to_fullname: toFullName
+                });
+            }
+        }
+        //HideTyping khi focusout
+        function HideTyping(fromUser, toUser, fromFullName, toFullName) {
+            var chat_id = cosoId + "_" + fromUser + "_" + toUser;
+            if (cur_username == fromUser) {
+                socket.emit('hide fromuser typing', {
+                    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    from_fullname: fromFullName, to_fullname: toFullName
+                });
+            }
+            else {
+                socket.emit('hide touser typing', {
+                    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    from_fullname: fromFullName, to_fullname: toFullName
+                });
+            }
+        }
+        //display typing for toUser
+        socket.on('display typing for toUser', function (data) {
+            if (cur_username == data.toUser) {
+                var chat_id = data.chatId;
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                //fromUser typing
+                $("#" + chat_id + " .c-tip").html(decodeEntities(data.fromFullName) + " đang trả lời ...");
+            }
+        });
+        //display typing for toUser
+        socket.on('display typing for fromUser', function (data) {
+            if (cur_username == data.fromUser) {
+                var chat_id = data.chatId;
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                //fromUser typing
+                $("#" + chat_id + " .c-tip").html(decodeEntities(data.toFullName) + " đang trả lời ...");
+            }
+        });
+        //hide typing for toUser
+        socket.on('hide typing for toUser', function (data) {
+            if (cur_username == data.toUser) {
+                var chat_id = data.chatId;
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                //fromUser typing
+                $("#" + chat_id + " .c-tip").html("");
+            }
+        });
+        //hide typing for toUser
+        socket.on('hide typing for fromUser', function (data) {
+            if (cur_username == data.fromUser) {
+                var chat_id = data.chatId;
+                //fromUser typing
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                $("#" + chat_id + " .c-tip").html("");
+            }
+        });
+        //SendChatPanel
+        function SendChatPanel(fromUser, toUser, fromFullName, toFullName, chat_id) {
+            var content = $("#" + chat_id).find("input[class='c-input']").val();
+            var appendHtml = "";
+            if (content.length > 0) {
+                //Emit lên server để gửi thông tin chat cho người nhận
+                if (cur_username == fromUser) {
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    appendHtml = '<div class="fbChatConvItem">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += '<p class="cl">' + $.emoticons.replace(content) + '</p>';
+                    appendHtml += '</div></div></div>';
+                    if (chat_id.indexOf("\\") == -1) {
+                        chat_id = chat_id.replace(/[.]/g, '\\.');
+                        chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                    }
+                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                    var userdata = {
+                        cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                        from_fullname: fromFullName, to_fullname: toFullName,
+                        msg: content
+                    };
+                    InsertChatContent($.emoticons.replace(content), fromUser, toUser, 0, cosoId, chat_id, "fromUser", userdata);
+                    //alert("goi ham: send chat by fromUser");
+                    //socket.emit('send chat by fromUser', {
+                    //    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    //    from_fullname: fromFullName, to_fullname: toFullName,
+                    //    msg: content
+                    //});
+                }
+                else if (cur_username == toUser) {
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    appendHtml = '<div class="fbChatConvItem">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += '<p class="cl">' + $.emoticons.replace(content) + '</p>';
+                    appendHtml += '</div></div></div>';
+                    if (chat_id.indexOf("\\") == -1) {
+                        chat_id = chat_id.replace(/[.]/g, '\\.');
+                        chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                    }
+                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                    var userdata = {
+                        cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                        from_fullname: fromFullName, to_fullname: toFullName,
+                        msg: content
+                    };
+                    InsertChatContent($.emoticons.replace(content), toUser, fromUser, 0, cosoId, chat_id, "toUser", userdata);
+                    //socket.emit('send chat by toUser', {
+                    //    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    //    from_fullname: fromFullName, to_fullname: toFullName,
+                    //    msg: content
+                    //});
+                }
+            }
+            $("#" + chat_id).find("input[class='c-input']").val("").focus();
+        }
+        //SendChat
+        function SendChat(fromUser, toUser, fromFullName, toFullName, chat_id) {
+            var content = $("#" + chat_id).find("input[class='c-input']").val();
+            var appendHtml = "";
+            if (content.length > 0) {
+                //alert(content);
+                //Emit lên server để gửi thông tin chat cho người nhận
+                if (cur_username == fromUser) {
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    appendHtml = '<div class="fbChatConvItem">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += '<p class="cl">' + $.emoticons.replace(content) + '</p>';
+                    appendHtml += '</div></div></div>';
+                    if (chat_id.indexOf("\\") == -1) {
+                        chat_id = chat_id.replace(/[.]/g, '\\.');
+                        chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                    }
+                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                    var userdata = {
+                        cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                        from_fullname: fromFullName, to_fullname: toFullName,
+                        msg: content
+                    };
+                    InsertChatContent($.emoticons.replace(content), fromUser, toUser, 0, cosoId, chat_id, "fromUser", userdata);
+                    //alert("goi ham: send chat by fromUser");
+                    //socket.emit('send chat by fromUser', {
+                    //    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    //    from_fullname: fromFullName, to_fullname: toFullName,
+                    //    msg: content
+                    //});
+                }
+                else if (cur_username == toUser) {
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    appendHtml = '<div class="fbChatConvItem">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += '<p class="cl">' + $.emoticons.replace(content) + '</p>';
+                    appendHtml += '</div></div></div>';
+                    if (chat_id.indexOf("\\") == -1) {
+                        chat_id = chat_id.replace(/[.]/g, '\\.');
+                        chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                    }
+                    $("#" + chat_id).find(".conversation").append(appendHtml);
+                    $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                    var userdata = {
+                        cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                        from_fullname: fromFullName, to_fullname: toFullName,
+                        msg: content
+                    };
+                    InsertChatContent($.emoticons.replace(content), toUser, fromUser, 0, cosoId, chat_id, "toUser", userdata);
+                    //socket.emit('send chat by toUser', {
+                    //    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                    //    from_fullname: fromFullName, to_fullname: toFullName,
+                    //    msg: content
+                    //});
+                }
+            }
+            $("#" + chat_id).find("input[class='c-input']").val("").focus();
+        }
+        function SendChatFile(data, fromUser, toUser, fromFullName, toFullName) {
+            var chat_id = cosoId + "_" + fromUser + "_" + toUser;
+            var OutFilePath = data.OutFilePath;
+            var OutFileName = data.OutFileName;
+            var OutFileExt = data.OutFileExt;
+            var OutFileID = data.OutFileID;
+            var content = "";
+            var appendHtml = "";
+            if (OutFileName.length > 0) {
+                for (i = 0; i < OutFileName.length; i++) {
+                    var fileExt = OutFileExt[i];
+                    if (fileExt.match(/\.(jpg|jpeg|png|gif)$/)) {
+                        content += '<p><a class="img" href="/common/downloadfile/' + OutFileID[i] + '"><img style="width: auto;max-width: 150px;" src="' + OutFilePath[i] + '"></a></p?<br>';
+                    }
+                    else {
+                        content += '<p class="cl c-hasfile"><a class="file ' + fileExt.replace(".", "") + '" href="/common/downloadfile/' + OutFileID[i] + '">' + OutFileName[i] + '</a></p><br>';
+                    }
+                }
+                if (content.length > 0) {
+                    //alert(content);
+                    //Emit lên server để gửi thông tin chat cho người nhận
+                    if (cur_username == fromUser) {
+                        var currentdate = new Date();
+                        var datetime = currentdate.getHours() + ":"
+                            + currentdate.getMinutes() + ":"
+                            + currentdate.getSeconds();
+                        appendHtml = '<div class="fbChatConvItem">';
+                        appendHtml += '<div class="messages">';
+                        appendHtml += '<div class="direction_ltr">';
+                        appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                        appendHtml += content;
+                        appendHtml += '</div></div></div>';
+                        if (chat_id.indexOf("\\") == -1) {
+                            chat_id = chat_id.replace(/[.]/g, '\\.');
+                            chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                        }
+                        $("#" + chat_id).find(".conversation").append(appendHtml);
+                        $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                        var userdata = {
+                            cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                            from_fullname: fromFullName, to_fullname: toFullName,
+                            msg: content
+                        };
+                        InsertChatContent($.emoticons.replace(content), fromUser, toUser, 0, cosoId, chat_id, "fromUser", userdata);
+                        //alert("goi ham: send chat by fromUser"); //đã chạy
+                        //socket.emit('send chat by fromUser', {
+                        //    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                        //    from_fullname: fromFullName, to_fullname: toFullName,
+                        //    msg: content
+                        //});
+                    }
+                    else if (cur_username == toUser) {
+                        var currentdate = new Date();
+                        var datetime = currentdate.getHours() + ":"
+                            + currentdate.getMinutes() + ":"
+                            + currentdate.getSeconds();
+                        appendHtml = '<div class="fbChatConvItem">';
+                        appendHtml += '<div class="messages">';
+                        appendHtml += '<div class="direction_ltr">';
+                        appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                        appendHtml += content;
+                        appendHtml += '</div></div></div>';
+                        chat_id = chat_id.replace(/[.]/g, '\\.');
+                        chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+                        $("#" + chat_id).find(".conversation").append(appendHtml);
+                        $("#" + chat_id + " .c-content").animate({ scrollTop: $("#" + chat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                        var userdata = {
+                            cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                            from_fullname: fromFullName, to_fullname: toFullName,
+                            msg: content
+                        };
+                        InsertChatContent($.emoticons.replace(content), toUser, fromUser, 0, cosoId, chat_id, "toUser", userdata);
+                        //socket.emit('send chat by toUser', {
+                        //    cosoId: cosoId, from_user: fromUser, to_user: toUser,
+                        //    from_fullname: fromFullName, to_fullname: toFullName,
+                        //    msg: content
+                        //});
+                    }
+                }
+            }
+            $("#" + chat_id).find("input[class='c-input']").val("").focus();
+        }
+        function InsertChatContent(msg, from, to, group, coso, chat_id, usertype, userdata) {
+            $.ajax({
+                type: "POST",
+                url: '/Common/InsertChatContent',
+                cache: false,
+                data: {
+                    msg: msg,
+                    from: from,
+                    to: to,
+                    group: group,
+                    coso: coso
+                },
+                success: function (data) {
+                    userdata.noidungid = data;
+                    console.log(userdata);
+                    $("#" + chat_id + " .fbChatConvItem:last-child").attr("data-id", data);
+                    //$("#" + chat_id + " .fbChatConvItem:last-child").append("<a href='javascript:deleteNoiDung(" + data + ", \"" + chat_id + "\")' style='float:right;margin-top: -30px;'><i class='fa fa-close'></i></a>");
+                    if (usertype == "toUser") {
+                        socket.emit('send chat by toUser', userdata);
+                    }
+                    else if (usertype == "fromUser") {
+                        socket.emit('send chat by fromUser', userdata);
+                    }
+                    setTimeout(function () {
+                        $("#" + chat_id).find("input[class='c-input']").val("").focus();
+                    }, 300);
+                }
+            });
+        }
+        function deleteNoiDung(id, chat_id) {
+            $.confirm({
+                'title': 'Xác nhận xóa nội dung chat',
+                'message': 'Bạn chắc chắn muốn xóa nội dung này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes',
+                        'action': function () {
+                            $.ajax({
+                                type: "POST",
+                                url: '/Common/DeleteChatContent',
+                                cache: false,
+                                data: {
+                                    id: id,
+                                },
+                                success: function (data) {
+                                    if (data.Type == "SUCCESS") {
+                                        NotiSuccess(data.Mess);
+                                        $("#" + chat_id + " .fbChatConvItem[data-id=" + id + "]").remove();
+                                        var dataemit = {
+                                            chatId: chat_id, contentId: id
+                                        };
+                                        socket.emit('delete content chat', dataemit);
+                                    } else {
+                                        NotiError(data.Mess);
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    'Hủy': {
+                        'class': 'btn-info',
+                        'action': function () { }
+                    }
+                }
+            });
+        }
+        //Chat Group
+        function ShowAddUserToNewGroupChat(chat_id) {
+            if (chat_id.indexOf("\\") == -1) {
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            }
+            if ($("#" + chat_id).hasClass("active") == false) {
+                $("#" + chat_id).addClass("active");
+            }
+            $("#" + chat_id + " .c-group").show();
+            $("#" + chat_id + " .txtAddUser").focus();
+        }
+        //ham nay ko can replace
+        function CallAutoCompleteUser(chat_id) {
+            if (chat_id.indexOf("\\") == -1) {
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            }
+            $("#" + chat_id + " .txtAddUser").autocomplete({
+                source: userarray,
+                select: function (event, ui) {
+                    var index = ui.item.idx;
+                    var value = ui.item.label;
+                    var list_FullName = $("#" + chat_id + " .list-FullName").html();
+                    if (list_FullName.length == 0) {
+                        $("#" + chat_id + " .list-FullName").html(value);
+                        $("#" + chat_id + " .list-UserName").val(usernamearray[index]);
+                    }
+                    else {
+                        $("#" + chat_id + " .list-FullName").html(list_FullName + ", " + value);
+                        $("#" + chat_id + " .list-UserName").val($("#" + chat_id + " .list-UserName").val() + ", " + usernamearray[index]);
+                    }
+                    //if (false !== self._trigger("select", event, { item: item })) {
+                    //    $("#" + chat_id + " .txtAddUser").val("");
+                    //    $("#" + chat_id + " .txtAddUser").focus();
+                    //}
+                },
+            });
+        }
+        function AddUserToNewGroupChat(chat_id, fromUser, toUser, fromFullName, toFullName) {
+            if (chat_id.indexOf("\\") == -1) {
+                chat_id = chat_id.replace(/[.]/g, '\\.');
+                chat_id = chat_id.replace(/[@@/]/gi, '\\@@');
+            }
+            var user_adds = $("#" + chat_id + " .list-UserName").val();
+            var fullname_adds = $("#" + chat_id + " .list-FullName").html();
+            if (user_adds.length <= 0) {
+                $("#" + chat_id + " .c-group").hide();
+            }
+            else {
+                //emit to server add group chat
+                var users = user_adds.split(',');
+                var fullnames = fullname_adds.split(',');
+                if (users.length > 0) {
+                    var listUser = [];
+                    if (cur_username == fromUser) {
+                        listUser.push({ username: fromUser, fullname: fromFullName, isJoined: 1 });
+                        listUser.push({ username: toUser, fullname: toFullName, isJoined: 0 });
+                    }
+                    else {
+                        listUser.push({ username: fromUser, fullname: fromFullName, isJoined: 0 });
+                        listUser.push({ username: toUser, fullname: toFullName, isJoined: 1 });
+                    }
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i].trim().length > 0) {
+                            listUser.push({ username: users[i].trim(), fullname: fullnames[i].trim(), isJoined: 0 });
+                        }
+                    }
+                    // Call ajax lên server tạo mới nhóm chat
+                    // Rồi trả về thông tin của nhóm chat để gửi lên server nodejs.
+                    $.ajax({
+                        type: "POST",
+                        url: '/Common/InsertGroupChat',
+                        cache: false,
+                        data: {
+                            cosoId: 0,
+                            created_user: cur_username,
+                            listUserName: user_adds + "," + fromUser + "," + toUser
+                        },
+                        success: function (groupInfo) {
+                            $("#" + chat_id + " .c-group").hide();
+                            $("#" + chat_id + " .list-UserName").val("");
+                            $("#" + chat_id + " .list-FullName").html("");
+                            socket.emit('create chat group', {
+                                cosoId: cosoId,
+                                created_user: cur_username,
+                                current_UserName: cur_username,
+                                listUser: listUser,
+                                groupId: groupInfo.groupId,
+                                groupChat_id: groupInfo.groupChat_id
+                            });
+                        }
+                    });
+                }
+            }
+        }
+        socket.on("remove content chat", function (data) {
+            $("#" + data.chatId + " .fbChatConvItem[data-id=" + data.contentId + "]").remove();
+        })
+        //Mở cửa sổ chat nhóm
+        socket.on('open window chatgroup for createdUser', function (data) {
+            if (cur_username === data.createdUser) {
+                //console.log(data.listUser);
+                //Tạo và mở cửa sổ chat group
+                var groupChat_id = data.groupChatId;
+                //Thêm 1 cửa sổ chat
+                $.ajax({
+                    type: "POST",
+                    url: '/Common/ChatGroup',
+                    cache: false,
+                    data: {
+                        cosoId: data.cosoId,
+                        createdUser: data.createdUser,
+                        groupId: data.groupId,
+                        currentUserName: cur_username,
+                        soCuaSoChat: soCuaSoChat,
+                        reload: 0,
+                        groupChat_id: groupChat_id,
+                        //listUser: data.listUser
+                    },
+                    success: function (datachat) {
+                        soCuaSoChat += 1;
+                        $("#pnl-chat").append(datachat);
+                        $("#" + groupChat_id).find("input[class='c-input']").focus();
+                    }
+                });
+            }
+        });
+        //Đóng cửa sổ chat nhóm
+        function CloseGroupChatBox(groupChat_id, group_id) {
+            //Emit lên server để xóa chat box này trong mảng Chats đi
+            socket.emit('delete groupchat', { cosoId: cosoId, group_id: parseInt(group_id), username: cur_username });
+            //Xóa box chat nhóm tại client
+            $("#" + groupChat_id).remove();
+            soCuaSoChat = 0;
+            $("#pnl-chat .chat").each(function () {
+                var right = 200;
+                if (soCuaSoChat >= 1) {
+                    right += (250 * soCuaSoChat) + (10 * soCuaSoChat);
+                }
+                $(this).css("right", right);
+                soCuaSoChat++;
+            });
+        }
+        function showBieuTuongToGroup(groupChat_id, group_id) {
+            //alert(groupChat_id);
+            if ($("#" + groupChat_id).hasClass("active") == false) {
+                $("#" + groupChat_id).addClass("active");
+            }
+            $("#" + groupChat_id + " .overview").html($.emoticons.toString());
+            $("#" + groupChat_id + " .overview").toggle();
+            $("#" + groupChat_id + " .overview .emoticon").click(function () {
+                $("#" + groupChat_id + " .c-input").val($.emoticons.replace($(this).html()));
+                SendChatToGroup(groupChat_id, group_id);
+                $("#" + groupChat_id + " .overview").hide();
+            });
+        }
+        function ShowAddUserToNewGroupChatToMember(groupChat_id) {
+            if ($("#" + groupChat_id).hasClass("active") == false) {
+                $("#" + groupChat_id).addClass("active");
+            }
+            $("#" + groupChat_id + " .c-group-editname").hide();
+            $("#" + groupChat_id + " .c-group").show();
+            $("#" + groupChat_id + " .txtAddUser").focus();
+        }
+        function AddUserToNewGroupChatToMember(groupChat_id, group_id) {
+            var user_adds = $("#" + groupChat_id + " .list-UserName").val();
+            var fullname_adds = $("#" + groupChat_id + " .list-FullName").html();
+            if (user_adds.length <= 0) {
+                $("#" + groupChat_id + " .c-group").hide();
+            }
+            else {
+                //emit to server add group chat
+                var users = user_adds.split(',');
+                var fullnames = fullname_adds.split(',');
+                if (users.length > 0) {
+                    var listUser = [];
+                    for (var i = 0; i < users.length; i++) {
+                        if (users[i].trim().length > 0) {
+                            listUser.push({ username: users[i].trim(), fullname: fullnames[i].trim(), isJoined: 0 });
+                        }
+                    }
+                    //Call ajax lên server để update thông tin nhóm chat
+                    //Rồi trả về thông tin của nhóm chat để gửi lên server nodejs.
+                    $.ajax({
+                        type: "POST",
+                        url: '/Common/UpdateGroupChat',
+                        cache: false,
+                        data: {
+                            cosoId: cosoId,
+                            group_id: group_id,
+                            listUserName: user_adds
+                        },
+                        success: function (groupInfo) {
+                            var user_added = groupInfo.user_added.split(',');
+                            var _fullname_added = groupInfo.fullname_added.split(',');
+                            var username_added = "";
+                            var fullname_added = "";
+                            var has_update = 0;
+                            if (user_added.length > 0) {
+                                var _listUserAdded = [];
+                                for (var i = 0; i < user_added.length; i++) {
+                                    if (user_added[i].trim().length > 0) {
+                                        for (var j = 0; j < listUser.length; j++) {
+                                            if (listUser[j].username === user_added[i]) {
+                                                _listUserAdded.push(listUser[j]);
+                                                username_added += user_added[i] + ", ";
+                                                fullname_added += _fullname_added[i] + ", ";
+                                                has_update = 1;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            $("#" + groupChat_id + " .c-group").hide();
+                            $("#" + groupChat_id + " .list-UserName").val("");
+                            $("#" + groupChat_id + " .list-FullName").html("");
+                            if (has_update == 1) {
+                                var content = "Đã thêm " + fullname_added + " vào nhóm";
+                                var currentdate = new Date();
+                                var appendHtml = "";
+                                var datetime = currentdate.getHours() + ":"
+                                    + currentdate.getMinutes() + ":"
+                                    + currentdate.getSeconds();
+                                appendHtml = '<div class="fbChatConvItem">';
+                                appendHtml += '<div class="messages">';
+                                appendHtml += '<div class="direction_ltr">';
+                                appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                                appendHtml += '<p class="cl"><b><i>' + content + '</i></b></p>';
+                                appendHtml += '</div></div></div>';
+                                $("#" + groupChat_id).find(".conversation").append(appendHtml);
+                                $("#" + groupChat_id + " .c-content").animate({ scrollTop: $("#" + groupChat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                                //Cập nhật lại title của Tên nhóm
+                                var cur_title = $("#" + groupChat_id + " .c-groupname").attr("title");
+                                $("#" + groupChat_id + " .c-groupname").attr("title", cur_title + ", " + fullname_added);
+                                InsertChatGroupContent($.emoticons.replace(content), cur_username, group_id, cosoId, groupChat_id);
+                                var dataEmit = {
+                                    cosoId: cosoId,
+                                    listUser: _listUserAdded,
+                                    groupId: group_id,
+                                    groupChat_id: groupChat_id,
+                                    username_update: cur_username,
+                                    fullname_update: cur_fullname
+                                };
+                                socket.emit('update chat group', dataEmit);
+                            }
+                            else {
+                                notif({
+                                    type: 'success',
+                                    position: 'bottom',
+                                    msg: user_adds + ' đã tham gia nhóm chat!',
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        //Hiển thị thông tin thêm thành viên vào nhóm chat
+        socket.on('show info chatgroup update', function (data) {
+            if (cur_username != data.username_update) {
+                var content = data.msg;
+                var currentdate = new Date();
+                var appendHtml = "";
+                var datetime = currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+                appendHtml = '<div class="fbChatConvItem">';
+                appendHtml += '<div class="messages">';
+                appendHtml += '<div class="direction_ltr">';
+                appendHtml += '<b class="st">' + decodeEntities(data.fullname_update) + '</b> <span class="s-date">' + datetime + '</span>';
+                appendHtml += '<p><b><i>' + content + '</i></b></p>';
+                appendHtml += '</div></div></div>';
+                $("#" + data.groupChatId).find(".conversation").append(appendHtml);
+                $("#" + data.groupChatId + " .c-content").animate({ scrollTop: $("#" + data.groupChatId + " .c-content").prop("scrollHeight") }, 'slow');
+                //Cập nhật lại title của Tên nhóm
+                var cur_title = $("#" + data.groupChatId + " .c-groupname").attr("title");
+                $("#" + data.groupChatId + " .c-groupname").attr("title", cur_title + ", " + data.userAdded);
+            }
+        });
+        //Hiển thị thông tin cập nhật tên nhóm chat
+        socket.on('show info groupname update', function (data) {
+            if (cosoId == data.cosoId && cur_username != data.username_update) {
+                //Update lại HTML tên nhóm chat
+                $("#" + data.groupChatId + " .c-groupname").html(data.groupName);
+                var content = data.msg;
+                var currentdate = new Date();
+                var appendHtml = "";
+                var datetime = currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+                appendHtml = '<div class="fbChatConvItem">';
+                appendHtml += '<div class="messages">';
+                appendHtml += '<div class="direction_ltr">';
+                appendHtml += '<b class="st">' + decodeEntities(data.fullname_update) + '</b> <span class="s-date">' + datetime + '</span>';
+                appendHtml += '<p><b><i>' + content + '</i></b></p>';
+                appendHtml += '</div></div></div>';
+                $("#" + data.groupChatId).find(".conversation").append(appendHtml);
+                $("#" + data.groupChatId + " .c-content").animate({ scrollTop: $("#" + data.groupChatId + " .c-content").prop("scrollHeight") }, 'slow');
+            }
+        });
+        //Hiển thị thông tin thành viên rời khỏi nhóm chat
+        socket.on('show info left join groupchat', function (data) {
+            if (cosoId == data.cosoId && cur_username != data.username_update) {
+                var content = data.msg;
+                var currentdate = new Date();
+                var appendHtml = "";
+                var datetime = currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+                appendHtml = '<div class="fbChatConvItem">';
+                appendHtml += '<div class="messages">';
+                appendHtml += '<div class="direction_ltr">';
+                appendHtml += '<b class="st">' + decodeEntities(data.fullname_update) + '</b> <span class="s-date">' + datetime + '</span>';
+                appendHtml += '<p><b><i>' + content + '</i></b></p>';
+                appendHtml += '</div></div></div>';
+                $("#" + data.groupChatId).find(".conversation").append(appendHtml);
+                $("#" + data.groupChatId + " .c-content").animate({ scrollTop: $("#" + data.groupChatId + " .c-content").prop("scrollHeight") }, 'slow');
+                //Cập nhật lại title của Tên nhóm
+                var cur_title = $("#" + data.groupChatId + " .c-groupname").attr("title");
+                $("#" + data.groupChatId + " .c-groupname").attr("title", cur_title.replace('' + decodeEntities(data.fullname_update) + '', ''));
+            }
+        });
+        //Insert nội dung chat nhóm vào DB
+        function InsertChatGroupContent(msg, from, group, coso, groupChat_id) {
+            $.ajax({
+                type: "POST",
+                url: '/Common/InsertChatGroupContent',
+                cache: false,
+                data: {
+                    msg: msg,
+                    from: from,
+                    group: group,
+                    coso: coso
+                },
+                success: function (data) {
+                    setTimeout(function () {
+                        $("#" + groupChat_id).find("input[class='c-input']").val("").focus();
+                    }, 300);
+                }
+            });
+        }
+        function UpdateChatGroupName(groupname, msg, from, group, coso, groupChat_id) {
+            $.ajax({
+                type: "POST",
+                url: '/Common/UpdateGroupName',
+                cache: false,
+                data: {
+                    groupname: groupname,
+                    msg: msg,
+                    from: from,
+                    group: group,
+                    coso: coso
+                },
+                success: function (data) {
+                    setTimeout(function () {
+                        $("#" + groupChat_id).find("input[class='c-input']").val("").focus();
+                    }, 300);
+                }
+            });
+        }
+        function SendChatToGroup(groupChat_id, group_id) {
+            var content = $("#" + groupChat_id).find("input[class='c-input']").val();
+            var appendHtml = "";
+            if (content.length > 0) {
+                var currentdate = new Date();
+                var datetime = currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+                appendHtml = '<div class="fbChatConvItem">';
+                appendHtml += '<div class="messages">';
+                appendHtml += '<div class="direction_ltr">';
+                appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                appendHtml += '<p class="cl">' + $.emoticons.replace(content) + '</p>';
+                appendHtml += '</div></div></div>';
+                $("#" + groupChat_id).find(".conversation").append(appendHtml);
+                $("#" + groupChat_id + " .c-content").animate({ scrollTop: $("#" + groupChat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                InsertChatGroupContent($.emoticons.replace(content), cur_username, group_id, cosoId, groupChat_id);
+                //Emit lên server để gửi thông tin chat cho người trong nhóm chat nhận
+                socket.emit('send chat to group', {
+                    cosoId: cosoId, from_user: cur_username,
+                    from_fullname: cur_fullname,
+                    msg: content,
+                    groupChatId: groupChat_id,
+                    groupId: group_id
+                });
+            }
+            $("#" + groupChat_id).find("input[class='c-input']").val("").focus();
+        }
+        //show content chatgroup
+        socket.on('show content chatgroup', function (data) {
+            if (cur_username != data.username_sent) {
+                //kiểm tra xem user có nằm trong danh sách được nhận tin nhắn không?
+                var has_show = 0;
+                var isJoined = 0;
+                var _listUser = data.listUser;
+                for (var j = 0; j < _listUser.length; j++) {
+                    if (_listUser[j].username === cur_username) {
+                        has_show = 1;
+                        isJoined = _listUser[j].isJoined;
+                        break;
+                    }
+                }
+                var groupChat_id = data.groupChatId;
+                //Nếu user được hiển thị tin nhắn chat
+                if (has_show == 1) {
+                    //Nếu user chưa join trong nhóm chat thì hiển thị cửa sổ chat
+                    if (isJoined == 0) {
+                        //Tạo và mở cửa sổ chat group
+                        //Thêm 1 cửa sổ chat
+                        $.ajax({
+                            type: "POST",
+                            url: '/Common/ChatGroup',
+                            cache: false,
+                            data: {
+                                cosoId: data.cosoId,
+                                createdUser: data.chatGroup.createdUser,
+                                groupId: data.groupId,
+                                currentUserName: cur_username,
+                                soCuaSoChat: soCuaSoChat,
+                                reload: 0,
+                                groupChat_id: groupChat_id,
+                                //listUser: data.listUser
+                            },
+                            success: function (datachat) {
+                                soCuaSoChat += 1;
+                                $("#pnl-chat").append(datachat);
+                            }
+                        });
+                    }
+                        //Nếu user đã join trong nhóm chat thì hiển thị tin nhắn
+                    else if (isJoined == 1) {
+                        if ($("#" + groupChat_id).hasClass("active") == false) {
+                            $("#" + groupChat_id).addClass("active");
+                        }
+                        var content = data.msg;
+                        var currentdate = new Date();
+                        var appendHtml = "";
+                        var datetime = currentdate.getHours() + ":"
+                            + currentdate.getMinutes() + ":"
+                            + currentdate.getSeconds();
+                        appendHtml = '<div class="fbChatConvItem">';
+                        appendHtml += '<div class="messages">';
+                        appendHtml += '<div class="direction_ltr">';
+                        appendHtml += '<b class="st">' + decodeEntities(data.fullname_sent) + '</b> <span class="s-date">' + datetime + '</span>';
+                        appendHtml += '<p>' + $.emoticons.replace(content) + '</p>';
+                        appendHtml += '</div></div></div>';
+                        $("#" + data.groupChatId).find(".conversation").append(appendHtml);
+                        $("#" + data.groupChatId + " .c-content").animate({ scrollTop: $("#" + data.groupChatId + " .c-content").prop("scrollHeight") }, 'slow');
+                    }
+                }
+            }
+        });
+        function CallAutoCompleteUserToGroup(groupChat_id) {
+            $("#" + groupChat_id + " .txtAddUser").autocomplete({
+                source: userarray,
+                select: function (event, ui) {
+                    var index = ui.item.idx;
+                    var value = ui.item.label;
+                    var list_FullName = $("#" + groupChat_id + " .list-FullName").html();
+                    if (list_FullName.length == 0) {
+                        $("#" + groupChat_id + " .list-FullName").html(value);
+                        $("#" + groupChat_id + " .list-UserName").val(usernamearray[index]);
+                    }
+                    else {
+                        $("#" + groupChat_id + " .list-FullName").html(list_FullName + ", " + value);
+                        $("#" + groupChat_id + " .list-UserName").val($("#" + groupChat_id + " .list-UserName").val() + ", " + usernamearray[index]);
+                    }
+                    //if (false !== self._trigger("select", event, { item: item })) {
+                    //    $("#" + groupChat_id + " .txtAddUser").val("");
+                    //    $("#" + groupChat_id + " .txtAddUser").focus();
+                    //}
+                },
+            });
+        }
+        //sendFileAttachToGroup
+        function sendFileAttachToGroup(groupChat_id) {
+            $("#" + groupChat_id + " .fileAttach").click();
+        }
+        function sendFileAttachImageToGroup(groupChat_id) {
+            $("#" + groupChat_id + " .fileAttachImage").click();
+        }
+        function SendChatFileToGroup(data, groupChat_id, group_id) {
+            var OutFilePath = data.OutFilePath;
+            var OutFileName = data.OutFileName;
+            var OutFileExt = data.OutFileExt;
+            var OutFileID = data.OutFileID;
+            var content = "";
+            var appendHtml = "";
+            if (OutFileName.length > 0) {
+                for (i = 0; i < OutFileName.length; i++) {
+                    var fileExt = OutFileExt[i];
+                    if (fileExt.match(/\.(jpg|jpeg|png|gif)$/)) {
+                        content += '<p><a class="img" href="/common/downloadfile/' + OutFileID[i] + '"><img style="width: auto;max-width: 150px;" src="' + OutFilePath[i] + '"></a></p><br>';
+                    }
+                    else {
+                        content += '<p class="cl c-hasfile"><a class="file ' + fileExt.replace(".", "") + '" href="/common/downloadfile/' + OutFileID[i] + '">' + OutFileName[i] + '</a></p><br>';
+                    }
+                }
+                if (content.length > 0) {
+                    var currentdate = new Date();
+                    var datetime = currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+                    appendHtml = '<div class="fbChatConvItem">';
+                    appendHtml += '<div class="messages">';
+                    appendHtml += '<div class="direction_ltr">';
+                    appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                    appendHtml += content;
+                    appendHtml += '</div></div></div>';
+                    $("#" + groupChat_id).find(".conversation").append(appendHtml);
+                    $("#" + groupChat_id + " .c-content").animate({ scrollTop: $("#" + groupChat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                    InsertChatGroupContent($.emoticons.replace(content), cur_username, group_id, cosoId, groupChat_id);
+                    //Emit lên server để gửi thông tin chat cho người nhận
+                    socket.emit('send chat to group', {
+                        cosoId: cosoId, from_user: cur_username,
+                        from_fullname: cur_fullname,
+                        msg: content,
+                        groupChatId: groupChat_id,
+                        groupId: group_id
+                    });
+                }
+            }
+            $("#" + groupChat_id).find("input[class='c-input']").val("").focus();
+        }
+        function ShowConfigGroupChat(groupChat_id) {
+            $("#" + groupChat_id + " .c-config").toggle();
+            if ($("#" + groupChat_id).hasClass("active") == false) {
+                $("#" + groupChat_id).addClass("active");
+            }
+        }
+        function ShowEditNameGroupChat(groupChat_id) {
+            $("#" + groupChat_id + " .c-config").hide();
+            $("#" + groupChat_id + " .c-group").hide();
+            $("#" + groupChat_id + " .c-group-editname").show();
+            $("#" + groupChat_id + " .c-group-editname .txtGroupName").focus();
+        }
+        function SaveGroupName(groupChat_id, group_id) {
+            var groupname = $("#" + groupChat_id + " .c-group-editname .txtGroupName").val().trim();
+            if (groupname.length > 0) {
+                var content = "Đổi tên nhóm thành: " + groupname;
+                var currentdate = new Date();
+                var appendHtml = "";
+                var datetime = currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+                appendHtml = '<div class="fbChatConvItem">';
+                appendHtml += '<div class="messages">';
+                appendHtml += '<div class="direction_ltr">';
+                appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                appendHtml += '<p class="cl"><b><i>' + content + '</i></b></p>';
+                appendHtml += '</div></div></div>';
+                $("#" + groupChat_id).find(".conversation").append(appendHtml);
+                $("#" + groupChat_id + " .c-content").animate({ scrollTop: $("#" + groupChat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                UpdateChatGroupName(groupname, $.emoticons.replace(content), cur_username, group_id, cosoId, groupChat_id);
+                //Emit to server
+                socket.emit('update groupname', {
+                    cosoId: cosoId,
+                    userUpdate: cur_username,
+                    fullnameUpdate: cur_fullname,
+                    groupName: groupname,
+                    groupChatId: groupChat_id,
+                    groupId: group_id
+                });
+                //Update lại HTML tên nhóm chat
+                $("#" + groupChat_id + " .c-groupname").html(groupname);
+                $("#" + groupChat_id + " .c-group-editname").val("");
+            }
+            $("#" + groupChat_id + " .c-group-editname").hide();
+        }
+        function LeftJoinGroupChat(groupChat_id, group_id) {
+            //alert("Rời khỏi nhóm chat: " + groupChat_id);
+            $.confirm({
+                'title': 'Xác nhận rời khỏi nhóm chat',
+                'message': 'Bạn chắc chắn muốn rời khỏi nhóm chat này không?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes',
+                        'action': function () {
+                            var content = "Rời khỏi nhóm chat";
+                            var currentdate = new Date();
+                            var appendHtml = "";
+                            var datetime = currentdate.getHours() + ":"
+                                + currentdate.getMinutes() + ":"
+                                + currentdate.getSeconds();
+                            appendHtml = '<div class="fbChatConvItem">';
+                            appendHtml += '<div class="messages">';
+                            appendHtml += '<div class="direction_ltr">';
+                            appendHtml += '<b class="cl">Bạn</b> <span class="s-date">' + datetime + '</span>';
+                            appendHtml += '<p class="cl"><b><i>' + content + '</i></b></p>';
+                            appendHtml += '</div></div></div>';
+                            $("#" + groupChat_id).find(".conversation").append(appendHtml);
+                            $("#" + groupChat_id + " .c-content").animate({ scrollTop: $("#" + groupChat_id + " .c-content").prop("scrollHeight") }, 'slow');
+                            $.ajax({
+                                url: '@Url.Action("LeftGroupChat", "Common")',
+                                type: 'post',
+                                cache: false,
+                                data: {
+                                    coso: cosoId,
+                                    group_id: group_id,
+                                    username: cur_username
+                                },
+                                success: function (data) {
+                                    //Emit lên server để thông báo cho các thành viên khác biết
+                                    socket.emit('user left join groupchat', {
+                                        cosoId: cosoId,
+                                        userUpdate: cur_username,
+                                        fullnameUpdate: cur_fullname,
+                                        groupChatId: groupChat_id,
+                                        groupId: group_id
+                                    });
+                                    $("#" + groupChat_id).remove();
+                                    soCuaSoChat = 0;
+                                    $("#pnl-chat .chat").each(function () {
+                                        var right = 200;
+                                        if (soCuaSoChat >= 1) {
+                                            right += (250 * soCuaSoChat) + (10 * soCuaSoChat);
+                                        }
+                                        $(this).css("right", right);
+                                        soCuaSoChat++;
+                                    });
+                                },
+                                error: function (xhr) {
+                                    alert(xhr.responseText);
+                                }
+                            });
+                        }
+                    },
+                    'Hủy': {
+                        'class': 'btn-info',
+                        'action': function () { }
+                    }
+                }
+            });
+        }
+        //End chat group
+        //Chat Panel
+        function LoadChatBox(i, fromUser, toUser, fromFullName, toFullName) {
+            itemInListChatPanel = i;
+            var fromUser = '@user.TENDANGNHAP';
+            var fullName = '@user.HOTEN';
+            //Tạo 1 cửa sổ chat, lưu trên node server
+            socket.emit('create chat to user', {
+                cosoId: cosoId, from_user: fromUser,
+                to_user: toUser, from_fullname: fullName, to_fullname: toFullName,
+                current_UserName: cur_username
+            });
+        }
+        function showBieuTuongChatPanel(chat_id, fromUser, toUser, fromFullName, toFullName) {
+            //alert(chat_id);
+            if ($("#" + chat_id).hasClass("active") == false) {
+                $("#" + chat_id).addClass("active");
+            }
+            $("#" + chat_id + " .overview").html($.emoticons.toString());
+            $("#" + chat_id + " .overview").toggle();
+            $("#" + chat_id + " .overview .emoticon").click(function () {
+                $("#" + chat_id + " .c-input").val($.emoticons.replace($(this).html()));
+                SendChatPanel(fromUser, toUser, fromFullName, toFullName, chat_id);
+                $("#" + chat_id + " .overview").hide();
+            });
+        }
+        //End Chat Panel
+
+        function decodeEntities(encodedString) {
+            var textArea = document.createElement('textarea');
+            textArea.innerHTML = encodedString;
+            return textArea.value;
+        }
+        function changeProfile() {
+            $("#modal_changeprofile").modal("show");
+        }
+        function ChangePassword() {
+            AjaxCall("/Common/ChangePassword/", 'get', null, function (rs) {
+                $("#modal_changeprofile").html(rs);
+                $("#modal_changeprofile").modal("show");
+            });
+        }
+    </script>
+
+</body>
+</html>

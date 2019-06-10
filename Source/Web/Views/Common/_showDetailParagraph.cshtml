@@ -1,0 +1,29 @@
+﻿@model Nest.ISearchResponse<Web.Models.ElasticBCAModel>
+@{
+    var lstDocuments = Model.Documents.ToList();
+}
+@foreach (var doc in lstDocuments)
+{
+    var tmpidx = 1;
+    var docId = "BCA_" + doc.detaiid;
+    <div class="panel panel-default">
+        <div class="panel-heading">@doc.tieude</div>
+        <div class="panel-body ">
+            @foreach (var highlightsInEachHit in Model.Hits.Select(d => d.Highlights))
+            {
+                var lsthighlights = highlightsInEachHit.Values.Where(d => d.DocumentId == docId).ToList();
+                <div class="highligh-@tmpidx">
+                    @foreach (var hl in lsthighlights)
+                    {
+                        foreach (var detailhl in hl.Highlights)
+                        {
+                            @Html.Raw(detailhl)
+                            <span style="border-bottom: 1px solid #ddd; width: 100%"></span>
+                        }
+                    }
+                </div>
+                tmpidx = tmpidx + 1;
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,137 @@
+﻿@model Web.Models.ChonNguoiDungModel
+<div class="modal fade nhan_su_dialog_by_dnt" id="nhan_su_dialog_@Model.INDEX" tabindex="-1" data-backdrop="static">
+    <div class="modal-dialog" role="document" style="width:1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="closeModal close" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 style="font-weight: bold; text-transform: uppercase;" class="modal-title" id="myModalLabel_@Model.INDEX">@(string.IsNullOrEmpty(Model.TITLE) ? "Lựa chọn nhân viên" : Model.TITLE)</h4>
+            </div>
+            <div class="modal-body" id="modal_body_@Model.INDEX" style="height:450px;overflow-y:auto">
+                <div class="loading" style="z-index:999 !important;">Đang xử lý</div>
+                <div id="nhan_su_result_dialog_@Model.INDEX">
+                </div>
+                <div id="SearchResult">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnSave_choose_nguoi_dung_ids_@Model.INDEX">Chọn</button>
+                <button type="button" class="btn btn-default closeModal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".closeModal").click(function () {
+            $(this).closest(".modal").modal("hide");
+        });
+        $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').focus();
+        $("#" + '@Model.ID_CLICK').click(function () {
+            var keyword = $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').val();
+            var ids = $("#" + '@Model.VALUE_ID').val();
+            $.ajax({
+                type: "POST",
+                url: '/Common/ListUserV2',
+                cache: false,
+                data: {
+                    PHONGBAN_ID: '@Model.PHONGBAN_ID',
+                    TEXT_ID: '@Model.TEXT_ID',
+                    VALUE_ID: '@Model.VALUE_ID',
+                    IS_MULTICHOICE: '@Model.IS_MULTICHOICE',
+                    IDS: ids,
+                    KEYWORD: keyword,
+                    CALLBACK_FUNCTION: '@Model.CALLBACK_FUNCTION',
+                    INDEX: '@Model.INDEX',
+                    SHOW_CHUC_VU_ID: '@Model.SHOW_CHUC_VU_ID',
+                    EXCLUDE_IDS: '@Model.EXCLUDE_IDS',
+                    EXCEPT_DEPT: '@Model.EXCEPT_DEPT',
+                    ROLE: '@Model.ROLE'
+                },
+                beforeSend: function () {
+                    $(".loading").show();
+                },
+                success: function (data) {
+                    $("#nhan_su_result_dialog_" + '@Model.INDEX').html(data);
+                    $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').focus();
+                }, complete: function () {
+                    $(".loading").hide();
+                }
+            });
+            $("#nhan_su_dialog_" + '@Model.INDEX').modal("show");
+        });
+    });
+    $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').keypress(function (event) {
+        if (event.which == 13) {
+            event.preventDefault();
+            var keyword = $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').val();
+            var ids = $("#" + '@Model.VALUE_ID').val();
+            $.ajax({
+                type: "POST",
+                url: '/Common/ListUserV2',
+                cache: false,
+                data: {
+                    PHONGBAN_ID: '@Model.PHONGBAN_ID',
+                    TEXT_ID: '@Model.TEXT_ID',
+                    VALUE_ID: '@Model.VALUE_ID',
+                    IS_MULTICHOICE: '@Model.IS_MULTICHOICE',
+                    IDS: ids,
+                    KEYWORD: keyword,
+                    CALLBACK_FUNCTION: '@Model.CALLBACK_FUNCTION',
+                    INDEX: '@Model.INDEX',
+                    SHOW_CHUC_VU_ID: '@Model.SHOW_CHUC_VU_ID',
+                    EXCLUDE_IDS: '@Model.EXCLUDE_IDS',
+                    EXCEPT_DEPT: '@Model.EXCEPT_DEPT',
+                    ROLE: '@Model.ROLE'
+                },
+                beforeSend: function () {
+                    $(".loading").show();
+                },
+                success: function (data) {
+                    $("#nhan_su_result_dialog_" + '@Model.INDEX').html(data);
+                    $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').focus();
+                }, complete: function () {
+                    $(".loading").hide();
+                }
+            });
+        }
+    });
+    $("#btnSearchNguoiDung_" + '@Model.INDEX').click(function () {
+        var keyword = $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').val();
+        var ids = $("#" + '@Model.VALUE_ID').val();
+        console.log('@Model.PHONGBAN_ID');
+        $.ajax({
+            type: "POST",
+            url: '/Common/ListUserV2',
+            cache: false,
+            data: {
+                PHONGBAN_ID: '@Model.PHONGBAN_ID',
+                TEXT_ID: '@Model.TEXT_ID',
+                VALUE_ID: '@Model.VALUE_ID',
+                IS_MULTICHOICE: '@Model.IS_MULTICHOICE',
+                IDS: ids,
+                KEYWORD: keyword,
+                CALLBACK_FUNCTION: '@Model.CALLBACK_FUNCTION',
+                INDEX: '@Model.INDEX',
+                SHOW_CHUC_VU_ID: '@Model.SHOW_CHUC_VU_ID',
+                EXCLUDE_IDS: '@Model.EXCLUDE_IDS',
+                EXCEPT_DEPT: '@Model.EXCEPT_DEPT',
+                ROLE: '@Model.ROLE'
+            },
+            beforeSend: function () {
+                $(".loading").show();
+            },
+            success: function (data) {
+                $("#nhan_su_result_dialog_" + '@Model.INDEX').html(data);
+                $("#KEYWORD_NGUOIDUNG_" + '@Model.INDEX').focus();
+            }, error: function (err) {
+                console.log(err);
+            }, complete: function () {
+                $(".loading").hide();
+            }
+        });
+    });
+</script>
+

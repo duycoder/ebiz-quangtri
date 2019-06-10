@@ -1,0 +1,138 @@
+﻿<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+
+    /*.search-from .datepicker {
+        width: 100px !important;
+        float: left
+    }*/
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well search-from">
+        @using (Ajax.BeginForm("searchData", "SYSTINNHAN",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+                <div class="col-md-12">
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-3 txt-label">Tiêu đề:</div>
+                        <div class="col-md-9">
+                            <input name="TIEUDE" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-3 txt-label">
+                            Ngày gửi:
+                        </div>
+                        <div class="col-md-9">
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Từ" class="datepicker form-control" name="TUNGAY" id="TUNGAY" />
+                            </div>
+                            <div class="col-sm-2">
+                                <label>Đến:</label>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Đến" class="datepicker form-control" name="DENNGAY" id="DENNGAY" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-6 row-block">
+                        <div class="col-md-3 txt-label">Trạng thái:</div>
+                        <div class="col-md-9">
+                            <select name="LOAIVANBAN_ID" class="select2" style="width:100%">
+                                <option value="">Lựa chọn</option>
+                                <option value="1">Đã đọc</option>
+                                <option value="0">Chưa đọc</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2 txt-label">&nbsp;</div>
+                    <div class="col-md-4">&nbsp;</div>
+                </div>
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<script>
+    function failure(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-attribute").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $(".select2").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+
+    $("#TUNGAY").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#DENNGAY").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#DENNGAY").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#TUNGAY").datepicker('option', 'maxDate', date);
+        }
+    });
+</script>

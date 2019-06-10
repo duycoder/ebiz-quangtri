@@ -1,0 +1,84 @@
+﻿@using Model.Entities
+@model List<SYS_TINNHAN>
+<article class="col-xs-12 col-sm-12 col-md-3 col-lg-3 sortable-grid ui-sortable left notif-dialog" style="padding:5px 5px 5px 0px !important">
+    <div class="jarviswidget " role="widget">
+        <header role="heading" style="margin-right: 10px;margin-top: 10px;">
+            <span class="widget-icon"> <i class="	glyphicon glyphicon-bell txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10"><a href="/SYSTINNHANArea/SYSTINNHAN/Index">Thông báo mới</a></h2>
+        </header>
+        <div role="content" style="border: 0px;margin: 10px 0px 10px 0px;width: calc(100% - 10px);" id="notif-content">
+            <div class="widget-body">
+                <div class="col-sm-12 no-padding">
+                    @{
+                        foreach (var item in Model)
+                        {
+                            string content = item.NOIDUNG;
+                            if (!string.IsNullOrEmpty(content) && content.Trim().Length > 50)
+                            {
+                                content = item.NOIDUNG.Trim().Substring(0, 50 - 3) + "...";
+                            }
+
+                            <div class="col-sm-12 no-padding item-notif">
+                                <div class="col-sm-2 col-xs-2 no-padding notif-@item.ID notif-icon"><i class="fa fa-user fa-lg"></i></div>
+                                <div class="col-sm-10 col-xs-10 no-padding notif-@item.ID">
+                                    <div class="col-sm-12 no-padding show-lst-notif">
+                                        @if (!string.IsNullOrEmpty(item.URL))
+                                        {
+                                            <a class="notif-link" href='javascript:void(0)' onclick="UpdateStatus('@item.ID','@item.URL')" title='@item.NOIDUNG'>@(content)</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="notif-link" href='javascript:void(0)' title='@item.NOIDUNG' onclick='Detail(@item.ID)'>@(content)</a>
+                                        }
+                                    </div>
+                                    <label class="col-sm-12 no-padding"><i>@(item.NGAYTAO.HasValue ? item.NGAYTAO.Value.ToString("dd/MM/yyyy") : "")</i></label>
+                                </div>
+                            </div>
+                           
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+<style>
+    a.notif-link {
+        color: #ff0033 !important;
+        font-weight: bold
+    }
+</style>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script>
+    function Detail(id) {
+        AjaxCall("/SYSTINNHANArea/SYSTINNHAN/Detail/" + id, 'get', null, function (rs) {
+            $("#modal_create").html(rs);
+            $("#modal_create").modal("show");
+            $(".notif-" + id).remove();
+            $("#notification_" + id).remove();
+            $("#totalNotificationForUser").html($(".notification-body li").length);
+        });
+    }
+    function UpdateStatus(id, url) {
+        $.ajax({
+            url: '/Common/UpdateNotifStatus',
+            type: 'post',
+            //cache: false,
+            data: { "id": id },
+            success: function (data) {
+                location.href = url;
+                //document.location.href = url;
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }
+            //, complete: function () {
+            //    location.href = url;
+            //}
+        });
+    }
+    var height1 = $("#statistics-middle").height();
+    $(".notif-dialog .widget-body").height((height1 - 13) + "px");
+  
+</script>

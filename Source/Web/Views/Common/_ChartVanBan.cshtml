@@ -1,0 +1,84 @@
+﻿
+
+<article class="col-xs-12 col-sm-12 col-md-9 col-lg-9 sortable-grid ui-sortable left" style="padding:5px !important">
+    <div class="jarviswidget " role="widget" style="margin-left: 6px; margin-right: 6px;">
+        <header role="heading" style="margin-top: 10px;">
+            <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10">Báo cáo thống kê văn bản chưa xử lý của cá nhân</h2>
+        </header>
+        <div class="col-sm-12">
+            <div class="widget-body" id="widget-body">
+                <div id="container-chart" style="height: 380px"></div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<script type="text/javascript">
+    var slvanbanden = $("#soluong-vanbanden-chuaxuly").val();
+    var slvanbandi = $("#soluong-vanbandi-chuaxuly").val();
+    var data_den = []; data_den.push(parseInt(slvanbanden));
+    var data_di = []; data_di.push(parseInt(slvanbandi));
+    Highcharts.chart('container-chart', {
+    chart: {
+        type: 'column',
+        options3d: {
+            enabled: true,
+            alpha: 15,
+            beta: 15,
+            viewDistance: 25,
+            depth: 40
+        }
+    },
+
+    title: {
+        text: 'Thống kê văn bản đi đến chưa xử lý'
+    },
+
+    xAxis: {
+        categories: ['Thống kê văn bản đi đến chưa xử lý'],
+        labels: {
+            skew3d: true,
+            style: {
+                fontSize: '16px'
+            }
+        }
+    },
+
+    yAxis: {
+        allowDecimals: false,
+        min: 0,
+        title: {
+            text: 'Số lượng văn bản',
+            skew3d: true
+        }
+    },
+
+    tooltip: {
+        headerFormat: '<b>{point.key}</b><br>',
+        pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: {point.y} / {point.stackTotal}'
+    },
+
+    plotOptions: {
+        column: {
+            stacking: 'normal',
+            depth: 40
+        }
+    },
+
+    series: [{
+        name: 'Văn bản đến',
+        data: data_den,
+        stack: 'vanbanden'
+    }, {
+        name: 'Văn bản đi',
+        data: data_di,
+        stack: 'vanbandi',
+        color: 'red'
+    }]
+});
+    $(document).ready(function () {
+        $(".highcharts-credits").hide();
+    });
+
+</script>

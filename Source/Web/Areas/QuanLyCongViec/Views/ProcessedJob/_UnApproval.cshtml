@@ -1,0 +1,74 @@
+﻿<div class="modal-dialog">
+    @using (Ajax.BeginForm("UnApproval", "ProcessedJob", new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "createattributeForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">Từ chối phê duyệt công việc đã giao</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" name="ID" value="" id="UNAPPROVAL_ID" />
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Lý do từ chối:</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" placeholder="" name="COMMENT" id="COMMENT"></textarea>
+                            <div class="note-error">
+                                <span class="error red" id="COMMENT_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="checkSubmid()">Xác nhận</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    function checkSubmid() {
+        var err = 0;
+        if ($("#COMMENT").val() == "") {
+            $("#COMMENT_ERROR").html("Bạn chưa nhập lý do từ chối công việc");
+            err++;
+        } else {
+            $("#COMMENT_ERROR").html("");
+        }
+        if (err == 0) {
+            $("#UNAPPROVAL_ID").val($(".checkbox-child").val());
+            $("#createattributeForm").submit();
+            return true;
+        } else {
+            NotiError("Vui lòng kiểm tra lại thông tin nhập");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+        });
+    });
+    function successAjaxCreate(rs) {
+        if (rs.Type == "SUCCESS") {
+            reloadData();
+            $("#modal_create").modal("hide");
+            $("#modal_create").empty();
+            NotiSuccess(rs.Message);
+        } else {
+            NotiError(rs.Message);
+        }
+    }
+    function failureAjax(err) {
+        console.log(err);
+    }
+</script>

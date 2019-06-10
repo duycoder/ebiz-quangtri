@@ -1,0 +1,111 @@
+﻿@model Model.Entities.TAILIEUDINHKEM
+<style>
+    .lbl {
+        display: inline-block;
+        width: 120px;
+        margin-left: 10px;
+    }
+
+    #EDIT_ID, #EDIT_ParentID {
+        display: none;
+    }
+</style>
+@using (Ajax.BeginForm("SaveFileName", "ThuMucLuuTru", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "updateSuccess"
+}, new { id = "frmRenameThuMuc" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Đổi tên tài liệu</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="ITEM_ID" id="ITEM_ID" value="@Model.ITEM_ID" />
+                <input type="hidden" name="TAILIEU_ID" id="TAILIEU_ID" value="@Model.TAILIEU_ID" />
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label>Tên file:<span style="color:red">*</span></label>
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.TextBox("TENTAILIEU", Model.TENTAILIEU, new { @style = "width: 300px;", maxlength = "50", @class = "form-control", @id = "TENTAILIEU" })
+                            <div class="note-error">
+                                <span class="error" id="TENTAILIEU_NULL"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div>
+                        <table>
+                            @Html.TextBox("ITEM_ID", Model.ITEM_ID, new { @style = "width: 20px;display:none", maxlength = "100", @class = "e-input", @id = "ITEM_ID", @readonly = "readonly" })
+                            @Html.TextBox("TAILIEU_ID", Model.TAILIEU_ID, new { @style = "width: 20px;", maxlength = "100", @class = "e-input", @id = "EDIT_ID", @readonly = "readonly" })
+                            <tr>
+                                <td style="height: 20px;"></td>
+                                <td>
+                                    <span class="lb-Check" id="TENTAILIEU_NULL" style="margin-left: 0px; color: red;">Bạn cần nhập tên file</span>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>*@
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Lưu lại" id="btnChangeFile" class="btn btn-success" />
+                <input type="button" value="Đóng" data-dismiss="modal" class="btn btn-default" />
+            </div>
+        </div>
+
+    </div>
+}
+<script>
+    var EDIT_ID = $("#ITEM_ID").val();
+    function failure(xhr, error) {
+        notif({
+            type: 'error',
+            position: 'bottom',
+            msg: 'Đã xảy ra lỗi trong quá trình đổi tên file!',
+        });
+        $("#CreateThuMuc").modal('hide');
+        $("#CreateThuMuc").html("");
+    }
+    $("#RENAME").blur(function () {
+        if ($(this).val().trim() == "") {
+            $("#TENTAILIEU_NULL").html("Bạn chưa nhập tên file");
+        } else {
+            $("#TENTAILIEU_NULL").html("");
+        }
+    });
+    $(document).on('click', '#btnChangeFile', function () {
+        if ($("#TENTAILIEU").val().trim() == "") {
+            $("#TENTAILIEU").focus();
+            $("#TENTAILIEU_NULL").html("Bạn chưa nhập tên file");
+            return false;
+        } else {
+            $("#TENTAILIEU_NULL").html("");
+            return true;
+        }
+    });
+
+    function updateSuccess(data) {
+        LoadDataByID(EDIT_ID);
+        NotiSuccess(data);
+        $("#CreateThuMuc").modal('hide');
+        $("#CreateThuMuc").html("");
+    }
+    $(document).ready(function () {
+        //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                });
+            //});
+        });
+    });
+</script>

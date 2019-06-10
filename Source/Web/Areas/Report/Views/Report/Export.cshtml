@@ -1,0 +1,241 @@
+﻿@{
+    Layout = null;
+    Response.AddHeader("Content-disposition", "attachment; filename=Đánh giá chất lượng hoàn thành công việc.xls");
+    Response.ContentType = "application/octet-stream";
+}
+@model Web.Areas.Report.Models.DanhGiaCongViecModel
+<div class="form-horizontal">
+    <div class="col-sm-12 no-padding row center">
+        <h3 class="Bold" style="vertical-align:middle;margin-top:0px;margin-bottom:0px;font-size:15px;font-family:'Times New Roman', Times, serif">PHIẾU ĐÁNH GIÁ CHẤT LƯỢNG HOÀN THÀNH CÔNG VIỆC ĐƯỢC GIAO</h3>
+    </div>
+    <div class="col-sm-12 no-padding row" style="text-align:center">
+        <i style="font-size:12px;font-family:'Times New Roman', Times, serif">(Đánh giá này dựa vào tiêu chí 6T)</i>
+    </div>
+    <div class="col-sm-12">&nbsp;</div>
+    <table>
+        <tr>
+            <td style="vertical-align:middle;width:150px"><h4 class="Bold" style="font-weight:bold;font-size:13px;font-family:'Times New Roman', Times, serif">BỘ PHẬN ĐƯỢC ĐÁNH GIÁ:</h4></td>
+            <td style="text-align:left;vertical-align:middle;font-size:13px;font-family:'Times New Roman', Times, serif">
+                <p>@Model.CongViec.TEN_NGUOIXULYCHINH</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:150px"><h4 style="text-align:left;vertical-align:top;font-weight:bold;font-size:13px;font-family:'Times New Roman', Times, serif">Tên sản phẩm được đánh giá:</h4></td>
+            <td style="text-align:left;vertical-align:top;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.CongViec.TENCONGVIEC</td>
+        </tr>
+        <tr>
+            <td><h4 style="width:150px;font-weight:bold;font-size:13px;font-family:'Times New Roman', Times, serif">Ngày đánh giá:</h4></td>
+            <td style="font-size:13px;font-family:'Times New Roman', Times, serif;text-align:left">@(DateTime.Now.ToString("dd/MM/yyyy"))</td>
+        </tr>
+    </table>
+
+    <div class="col-sm-12 no-padding row">
+        @if (Model.PhieuDanhGia.TDG_XEPLOAI_ID == null)
+        {
+            <table class="hinet-table table table-striped table-hover" width="100%">
+                <thead>
+                    <tr>
+                        <th style="border:thin solid black;width:20px;font-size:13px;font-family:'Times New Roman', Times, serif">TT</th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            HẠNG MỤC ĐÁNH GIÁ
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Điểm tự ĐG
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Điểm soát xét
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Điểm duyệt
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Trọng số
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Tổng điểm
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif;width:20px">1</td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">Tự chủ cao</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_TUCHUCAO</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TUCHUCAO</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TUCHUCAO</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">2</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@(Model.PhieuDanhGia.DD_TUCHUCAO.HasValue ? (Model.PhieuDanhGia.DD_TUCHUCAO.Value * 2) : 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="center" style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif;width:20px">2</td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Trách nhiệm lớn
+                        </td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_TRACHNHIEMLON</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TRACHNHIEMLON</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TRACHNHIEMLON</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">2</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@(Model.PhieuDanhGia.DD_TRACHNHIEMLON.HasValue ? (Model.PhieuDanhGia.DD_TRACHNHIEMLON.Value * 2) : 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="center" style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif;width:20px">3</td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Tương tác tốt
+                        </td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_TUONGTACTOT</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TUONGTACTOT</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TUONGTACTOT</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">1</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@(Model.PhieuDanhGia.DD_TUONGTACTOT.HasValue ? (Model.PhieuDanhGia.DD_TUONGTACTOT.Value * 1) : 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="center" style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif;width:20px">4</td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Tốc độ nhanh
+                        </td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_TOCDONHANH</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TOCDONHANH</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TOCDONHANH</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">1</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@(Model.PhieuDanhGia.DD_TOCDONHANH.HasValue ? (Model.PhieuDanhGia.DD_TOCDONHANH.Value * 1) : 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="center" style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif;width:20px">5</td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Tiến bộ nhiều
+                        </td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_TIENBONHIEU</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TIENBONHIEU</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_TIENBONHIEU</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">1</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@(Model.PhieuDanhGia.DD_TIENBONHIEU.HasValue ? (Model.PhieuDanhGia.DD_TIENBONHIEU.Value * 1) : 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="center" style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif;width:20px">6</td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Thành tích vượt
+                        </td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_THANHTICHVUOT</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_THANHTICHVUOT</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.DD_THANHTICHVUOT</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">3</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@(Model.PhieuDanhGia.DD_THANHTICHVUOT.HasValue ? (Model.PhieuDanhGia.DD_THANHTICHVUOT.Value * 3) : 0)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center;border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            <label class="Bold">Tổng điểm</label>
+                        </td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif"></td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif"></td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif"></td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif"></td>
+                        <td style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TONGDIEM</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <table class="hinet-table table table-striped table-hover" width="100%">
+                <thead>
+                    <tr>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Điểm tự ĐG
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Xếp loại tự đánh giá
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Điểm duyệt
+                        </th>
+                        <th style="border:thin solid black;font-size:13px;font-family:'Times New Roman', Times, serif">
+                            Xếp loại duyệt
+                        </th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_TONGDIEM</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TDG_XEPLOAI</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.TONGDIEM</td>
+                        <td class="center" style="border:thin solid black;text-align:center;font-size:13px;font-family:'Times New Roman', Times, serif">@Model.PhieuDanhGia.XEPLOAI</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="col-sm-12 no-padding row">
+        <div class="col-sm-3 no-padding"><label style="font-weight:bold;font-size:13px;font-family:'Times New Roman', Times, serif"><b>Kết luận:</b> @Model.PhieuDanhGia.KETLUAN</label> </div>
+    </div>
+    <div class="col-sm-12 no-padding row">
+        <div class="col-sm-6 no-padding">
+            <table class="hinet-table table table-striped table-hover">
+                <tr>
+                    <th style="border:thin solid black;width:20px"></th>
+                    <th style="border:thin solid black">Xếp loại</th>
+                    <th style="border:thin solid black">Điểm số</th>
+                </tr>
+                <tr>
+                    <td style="border:thin solid black;width:20px">
+                        @if (40 < Model.PhieuDanhGia.TONGDIEM)
+                        {
+                            <span>v</span>
+                        }
+                    </td>
+                    <td style="border:thin solid black">
+                        Tốt
+                    </td>
+                    <td style="border:thin solid black">
+                        41-50
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border:thin solid black;width:20px">
+                        @if (35 < Model.PhieuDanhGia.TONGDIEM && 40 >= Model.PhieuDanhGia.TONGDIEM)
+                        {
+                            <span>v</span>
+                        }
+                    </td>
+                    <td style="border:thin solid black">
+                        Khá
+                    </td>
+                    <td style="border:thin solid black">
+                        36-40
+                    </td>
+
+                </tr>
+                <tr>
+                    <td style="border:thin solid black;width:20px">
+                        @if (26 <= Model.PhieuDanhGia.TONGDIEM && 35 >= Model.PhieuDanhGia.TONGDIEM)
+                        {
+                            <span>v</span>
+                        }
+                    </td>
+                    <td style="border:thin solid black">Đạt</td>
+                    <td style="border:thin solid black">
+                        26-35
+                    </td>
+                </tr>
+                <tr>
+                    <td style="border:thin solid black;width:20px">
+                        @if (25 >= Model.PhieuDanhGia.TONGDIEM)
+                        {
+                            <span>v</span>
+                        }
+                    <td style="border:thin solid black">
+                        Không đạt
+                    </td>
+                    <td style="border:thin solid black">
+                        25 trở xuống
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<style>
+    .hinet-table tr td {
+        border: 1px solid #000000;
+    }
+</style>

@@ -1,0 +1,323 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@model DetailVM
+@{
+    var room = Model.roomEntity;
+    var startTime = string.Format("{0}h{1}", Model.roomEntity.GIOBATDAU.GetValueOrDefault().ToString("D2"), Model.roomEntity.PHUTBATDAU.GetValueOrDefault().ToString("D2"));
+    var endTime = string.Format("{0}h{1}", Model.roomEntity.GIOKETTHUC.GetValueOrDefault().ToString("D2"), Model.roomEntity.PHUTKETTHUC.GetValueOrDefault().ToString("D2"));
+}
+
+<style type="text/css">
+    #dialog--booking {
+        width: 50%
+    }
+
+
+        #dialog--booking .modal-body {
+            font-size: 13px;
+        }
+
+        #dialog--booking.form-group {
+            border-bottom: 1px solid #ddd;
+            padding: 5px 0;
+        }
+
+        #dialog--booking .title-detail,
+        #dialog--booking .modal-body .col-sm-12 {
+            padding: 0;
+        }
+
+        #dialog--booking .form-group:last-child,
+        #dialog--booking .form-group:last-child {
+            border-bottom: none;
+        }
+
+        #dialog--booking .modal-body .content-detail {
+            color: #000;
+        }
+
+        #dialog--booking .time-data,
+        #dialog--booking .leader-data {
+            font-size: 15px;
+            font-weight: bold;
+            color: #B50101;
+        }
+
+        #dialog--booking .room-data {
+            font-size: 15px;
+            font-weight: bold;
+            color: #118ACB;
+        }
+
+        #dialog--booking .span--important--book {
+            width: 100%;
+            height: 20px;
+            line-height: 20px;
+            background: #b50101;
+            color: white;
+            position: relative;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+            #dialog--booking .span--important--book:before {
+                content: '';
+                border: 10px solid #b50101;
+                border-left-color: white;
+                border-left-width: 10px;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            #dialog--booking .span--important--book:after {
+                content: '';
+                border: 10px solid #b50101;
+                border-right-color: white;
+                border-right-width: 10px;
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+</style>
+
+@using (Ajax.BeginForm("SaveBooking", "QLPHONGHOP", new AjaxOptions
+{
+    HttpMethod = "post",
+    OnFailure = "saveBookingFailure",
+    OnSuccess = "saveBookingSuccess"
+}, new { @id = "form--save--booking" }))
+{
+    <div class="modal-dialog" role="document" id="dialog--booking">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ĐẶT PHÒNG CHO LỊCH HỌP</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <input type="hidden" value="@room.ID" name="ID" />
+                        <input type="hidden" value="" name="DUPLICATE" id="DUPLICATE"/>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Mục đích:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="tenphong">@room.MUCDICH</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Thành phần tham dự:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="tenphong">@room.THANHPHANTHAMDU</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Ngày họp:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="time-data">
+                                        @string.Format("{0:dd/MM/yyyy}", room.NGAYDAT)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Thời gian từ:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="time-data">
+                                        @(startTime + " - " + endTime)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @if (string.IsNullOrEmpty(room.TEN_LANHDAO) == false)
+                        {
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-3 pd0 title-detail">
+                                        <span>
+                                            <strong>Lãnh đạo:</strong>
+                                        </span>
+                                    </div>
+                                    <div class="col-sm-5 pdr-0 content-detail">
+                                        <span class="leader-data">
+                                            @room.TEN_LANHDAO
+                                        </span>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div class="span--important--book">
+                                            Lịch quan trọng&nbsp;<i class="fa fa-exclamation-circle icon--important--book"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Người đặt lịch:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="tenphong">
+                                        @room.TEN_NGUOITAO
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Ngày đặt lịch:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    <span class="tenphong">
+                                        @Html.Raw("<b>" + string.Format("{0:dd/MM/yyyy}", room.CREATED_AT) + "</b>" + "&nbsp;lúc&nbsp;<b>" + string.Format("{0:HH:mm:ss}", room.CREATED_AT) + "</b>")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="col-sm-3 pd0 title-detail">
+                                    <span>
+                                        <strong>Đặt phòng:</strong>
+                                    </span>
+                                </div>
+                                <div class="col-sm-9 pdr-0 content-detail">
+                                    @Html.DropDownList("PHONG_ID", Model.groupOfRooms, "--- Chọn phòng ---", new { @class = "select2" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0)" class="btn btn-primary" id="btn--save--booking">Lưu thông tin</a>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $("select.select2").select2();
+        });
+
+        $('#btn--save--booking').on('click', function(){
+            var obj = {
+                bookId :  @room.ID,
+                roomId : $('#PHONG_ID').val()
+            }
+            $.ajax({
+                url: '/QLPHONGHOPArea/QLPHONGHOP/CheckBookingRoom',
+                type: 'post',
+                dataType : "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(obj),
+                success: function (result) {
+                   if(result != null){
+                        if(result.isDuplicate == false){
+                            $('#form--save--booking').submit();
+                        }else{
+                            $('#DUPLICATE').val(result.duplicateIds);
+                            var roomName = $('#PHONG_ID option:selected').text();
+                            var startTime = '@startTime';
+                            var endTime = '@endTime';
+                            var message = "<span>Có <b>"+ result.totalBookDuplicate +"</b> cuộc họp diễn ra tại <b>" + roomName +"</b> trong khoảng thời gian từ <b>" + startTime + "</b> đến <b>" + endTime+ "</b>.</span>";
+                            message += " Gồm :</br>";
+                            if(result.totalNormalBookDuplicate > 0){ //GHI ĐÈ LỊCH HỌP THƯỜNG
+                                message += "<p>- <b style='color:#118ACB'>"+ result.totalNormalBookDuplicate + " phòng họp thường</b></p>";
+                            }
+                            if(result.totalSpecialBookDuplicate > 0) {
+                                message += "<p>- <b style='color:#B50101'>"+ result.totalSpecialBookDuplicate + " phòng họp có lãnh đạo</b></p>";
+                            }
+                            if(@room.USER_ID  > 0){
+                                if(result.totalSpecialBookDuplicate > 0) {
+                                    message += "<br/><p><b style='color:#B50101'>Vui lòng chọn phòng khác !!!<b/></p>";
+                                    $.confirm({
+                                        'title': 'PHÒNG HỌP ĐÃ ĐƯỢC ĐẶT LỊCH TRƯỚC',
+                                        'message': message,
+                                        'buttons': {
+                                            'Thoát': {
+                                                'class': 'btn-default',
+                                                'action': function () { }
+                                            }
+                                        }
+                                    });
+                                }else{
+                                    message += "<br/><p><b style='color:#118ACB'>Bạn có muốn hủy các lịch trên ???<b/></p>";
+                                    $.confirm({
+                                        'title': 'PHÒNG HỌP ĐÃ ĐƯỢC ĐẶT LỊCH TRƯỚC',
+                                        'message': message,
+                                        'buttons': {
+                                            'Đồng ý': {
+                                                'class': 'btn-confirm-yes btn-primary',
+                                                'action': function () {
+                                                   $('#form--save--booking').submit();
+                                                }
+                                            },
+                                            'Thoát': {
+                                                'class': 'btn-default',
+                                                'action': function () { }
+                                            }
+                                        }
+                                    });
+                                }
+                            }else{
+                                message += "<br/><p><b style='color:#B50101'>Vui lòng chọn phòng khác !!!<b/></p>";
+                                $.confirm({
+                                    'title': 'PHÒNG HỌP ĐÃ ĐƯỢC ĐẶT LỊCH TRƯỚC',
+                                    'message': message,
+                                    'buttons': {
+                                        'Thoát': {
+                                            'class': 'btn-default',
+                                            'action': function () { }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                   }
+                }, error: function (result) {
+                    NotiError('Có lỗi xảy ra');
+                }
+            })
+        });
+    })
+</script>

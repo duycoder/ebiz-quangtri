@@ -1,0 +1,218 @@
+﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using System.Web.Script.Serialization;
+@using Business.CommonBusiness;
+@using Web.Areas.THUMUCLUUTRUArea.Models;
+@model DungLuongLuuTruModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var jsonDatas = Html.Raw(JsonConvert.SerializeObject(Model.TreeData));
+    var jsonType = Html.Raw(JsonConvert.SerializeObject(Model.DS_TYPE));
+}
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" type="text/css" href="~/Content/Custom/css/multiple-select.css">
+
+<style>
+    .ms-drop {
+        /*width: 233px;*/
+        width: 100%;
+    }
+
+    .ms-choice > span {
+        width: 100%;
+    }
+
+    .ms-choice {
+        background: none;
+        border: 1px solid #999;
+        border-radius: 0px;
+        height: 30px;
+        width: 100%;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .lbl3 {
+        margin-top: 7px;
+    }
+
+    .color-red {
+        color: red;
+    }
+
+    .width-100 {
+        width: 100% !important;
+    }
+
+    .title {
+        font-size: x-large;
+    }
+</style>
+
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6">
+    </div>
+</div>
+<div id="content">
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Thiết lập dung lượng lưu trữ
+            </h2>
+        </header>
+        <div class="row">
+            <div class="col-sm-5">
+                <input id="search-dept" class="form-control" placeholder="Tên, mã đơn vị" />
+                <div class="tree smart-form">
+                    <ul id="rootNode"></ul>
+                </div>
+            </div>
+            <div class="col-sm-7" id="content-user">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+<script>
+    $("#search-dept").keypress(function (e) {
+        var key = generate_slugable($(this).val());
+        if (key != "") {
+            isSearch = true;
+        } else {
+            isSearch = false;
+        }
+        if (e.which == 13) {
+            $(".tree b.input-Name").each(function () {
+                var $row = $(this);
+                var name = generate_slugable($row.html());
+                if (name.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                    $row.parents("li").show()
+                }
+                else {
+                    $row.parent().parent().hide();
+                }
+            });
+        }
+    });
+    var deptId = 0;
+    var isSearch = false;
+    var data = eval(@jsonDatas);
+    var arrType = eval(@jsonType);
+    var failure = function () {
+        NotiError("Có lỗi");
+    }
+    var UserModalOpen = function (id) {
+        $("#frmChucNangEdit").find(".error").css("display", "none");
+        $.ajax({
+            url: '@Url.Action("GetUserPhongBan")',
+            data: {id:id},
+            type:"get",
+            async: false,
+            success: function (rs) {
+                $("#content-user").html(rs);
+            }, error: function (mes) {
+                NotiError("Có lỗi");
+            }
+        });
+
+    }
+
+    function reloadPage() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ReloadPage")',
+            cache: false,
+            async: false,
+            success: function (data) {
+                var treeData = getChild(data);
+                $("#rootNode").html(treeData);
+            }, complete: function () {
+                var mytreebranch = $(".tree").find("li:has(ul)").addClass("parent_li").attr("role", "treeitem").find(" > span").attr("title", "Thu gọn nhánh này");
+                $(".tree > ul").attr("role", "tree").find("ul").attr("role", "group"), mytreebranch.on("click", function (a) {
+                    var b = $(this).parent("li.parent_li").find(" > ul > li");
+                    b.is(":visible") ? (b.hide("fast"), $(this).attr("title", "Mở rộng").find(" > i").addClass("icon-plus-sign").removeClass("icon-minus-sign")) : (b.show("fast"), $(this).attr("title", "Thu gọn nhánh này").find(" > i").addClass("icon-minus-sign").removeClass("icon-plus-sign")), a.stopPropagation()
+                }
+       )
+            }
+        });
+    }
+    function getChild(item) {
+        var str = "";
+        if (item.ITEM_LEVEL <= 3) {
+            str += "<li>";
+
+        } else {
+            str += "<li style='display:none'>";
+        }
+        if (item.Child != null && item.Child.length > 0) {
+            str += '<span class="itemData">' +
+                '<input type="hidden" value="' + item.ID + '"/>'
+                + '<i class="fa fa-lg fa-plus-circle"></i><b class="input-Name">' + item.CODE + " - " + item.NAME + "</b></span>";
+            str += "<ul>";
+            for (var i = 0; i < item.Child.length; i++) {
+                str += getChild(item.Child[i]);
+            }
+            str += "</ul>";
+        } else {
+            str += '<span class="itemData">' + '<input type="hidden" value="' + item.ID + '"/>' + '<i ></i><b class="input-Name">' + item.CODE + " - " + item.NAME + "</b></span>";
+        }
+        str += "</li>";
+        return str;
+    }
+
+    var pagefunction = function () {
+        var treeData = getChild(data);
+        $("#rootNode").html(treeData);
+        $.contextMenu({
+            selector: 'span.itemData',
+            autoHide: true,
+            items: {
+                "user": {
+                    name: "Danh sách người dùng",
+                    icon: function (opt, $itemElement, itemKey, item) {
+                        $itemElement.html('<span  class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp; Danh sách người dùng' + opt.selector);
+                        return 'context-menu-icon-updated';
+                    },
+                    callback: function (key, opt) {
+                        var id = opt.$trigger.find("input").val();
+                        UserModalOpen(id);
+                        deptId = id;
+                    },
+                },
+            }
+        });
+        loadScript("/js/plugin/bootstraptree/bootstrap-tree.min.js");
+    };
+    $(document).ready(function () {
+        pageSetUp();
+        loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", function () {
+            loadScript("/Scripts/MenuContext/jquery.contextMenu.min.js", function () {
+                loadScript("/Scripts/multiple-select.js", pagefunction);
+            });
+        });
+    });
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+</script>

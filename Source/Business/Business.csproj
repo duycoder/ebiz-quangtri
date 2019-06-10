@@ -1,0 +1,365 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{581AC6D4-65EC-4CC9-88EB-140CE3F04117}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Business</RootNamespace>
+    <AssemblyName>Business</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\DLLOUTPUT\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AE.Net.Mail">
+      <HintPath>..\packages\AE.Net.Mail.1.7.10.0\lib\net45\AE.Net.Mail.dll</HintPath>
+    </Reference>
+    <Reference Include="BarcodeLib">
+      <HintPath>..\lib\BarcodeLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Ciloci.Flee">
+      <HintPath>..\lib\Ciloci.Flee.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Extended, Version=5.0.0.0, Culture=neutral, PublicKeyToken=05b7e29bdd433584, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\EntityFramework.Extended.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\lib\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Web\DLL\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NativeExcel, Version=2.0.18.0, Culture=neutral, PublicKeyToken=8e39ab1f1c5149a0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Web\DLL\NativeExcel.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Web\DLL\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Web\DLL\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Web\DLL\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Web\DLL\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="SocketIOClient">
+      <HintPath>..\..\..\Doji\Lib\SocketIOClient.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\duynt\AppData\Roaming\Skype\My Skype Received Files\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseBusiness\BaseBusiness.cs" />
+    <Compile Include="BaseBusiness\SearchBaseBO.cs" />
+    <Compile Include="BaseBusiness\UnitOfWork.cs" />
+    <Compile Include="Business\ActionAuditBusiness.cs" />
+    <Compile Include="Business\ChiaSeTaiLieuBusiness.cs" />
+    <Compile Include="Business\HSCVREADVANBANBusiness.cs" />
+    <Compile Include="Business\LogSMSBusiness.cs" />
+    <Compile Include="Business\HOSOCANBOCONGTACBusiness.cs" />
+    <Compile Include="Business\HOSO_CANBO_DAOTAOBusiness.cs" />
+    <Compile Include="Business\HOSOCANBOBusiness.cs" />
+    <Compile Include="Business\DM_DANHMUC_DATA_VAITROBusiness.cs" />
+    <Compile Include="Business\HOSO_CANBO_QUANHE_BANTHANBusiness.cs" />
+    <Compile Include="Business\HOSO_CANBO_QUANHE_KETHONBusiness.cs" />
+    <Compile Include="Business\HSCV_VANBANDEN_DONVINHANBusiness.cs" />
+    <Compile Include="Business\HSCV_VANBANDI_TRAODOIBusiness.cs" />
+    <Compile Include="Business\CHAT_NOIDUNGBusiness.cs" />
+    <Compile Include="Business\CHAT_GROUP_USERBusiness.cs" />
+    <Compile Include="Business\CHAT_GROUPBusiness.cs" />
+    <Compile Include="Business\CCTC_THANHPHANBusiness.cs" />
+    <Compile Include="Business\DMLoaiDonViBusiness.cs" />
+    <Compile Include="Business\DM_CHUCNANGBusiness.cs" />
+    <Compile Include="Business\DM_DANHMUC_DATABusiness.cs" />
+    <Compile Include="Business\DM_NGUOIDUNGBusiness.cs" />
+    <Compile Include="Business\DM_NGUOIDUNG_THAOTACBusiness.cs" />
+    <Compile Include="Business\DM_NHOMDANHMUCBusiness.cs" />
+    <Compile Include="Business\DM_THAOTACBusiness.cs" />
+    <Compile Include="Business\DUNGLUONG_LUUTRUBusiness.cs" />
+    <Compile Include="Business\EFILE_CHIASEBusiness.cs" />
+    <Compile Include="Business\EFILE_CHIASE_NGUOIDUNGBusiness.cs" />
+    <Compile Include="Business\FCM_NOTIFICATIONBusiness.cs" />
+    <Compile Include="Business\HSCV_CONGVIEC_NOIDUNGTRAODOIBusiness.cs" />
+    <Compile Include="Business\HSCV_CONGVIEC_LAPKEHOACHBusiness.cs" />
+    <Compile Include="Business\HSCV_CONGVIEC_XINLUIHANBusiness.cs" />
+    <Compile Include="Business\HSCV_SUBTASKBusiness.cs" />
+    <Compile Include="Business\HSCV_CAPNHATTIENDO_CVBusiness.cs" />
+    <Compile Include="Business\HSCV_TRINHDUYETKEHOACHBusiness.cs" />
+    <Compile Include="Business\LICHCONGTACBusiness.cs" />
+    <Compile Include="Business\PHIEUDANHGIACONGVIECBusiness.cs" />
+    <Compile Include="Business\HSCV_TRINHDUYETCONGVIECBusiness.cs" />
+    <Compile Include="Business\HSCV_CONGVIECBusiness.cs" />
+    <Compile Include="Business\HSCV_CONGVIEC_NGUOITHAMGIAXULYBusiness.cs" />
+    <Compile Include="Business\HSCV_VANBANDENBusiness.cs" />
+    <Compile Include="Business\HSCV_VANBANDIBusiness.cs" />
+    <Compile Include="Business\DM_VAITROBusiness.cs" />
+    <Compile Include="Business\HSCV_VANBANDI_DONVINHANBusiness.cs" />
+    <Compile Include="Business\LOAITAILIEU_THUOCTINHBusiness.cs" />
+    <Compile Include="Business\NGUOIDUNG_VAITROBusiness.cs" />
+    <Compile Include="Business\QLTokenBusiness.cs" />
+    <Compile Include="Business\QL_DANGKYXE_LAIXEBusiness.cs" />
+    <Compile Include="Business\QL_DANGKY_XEBusiness.cs" />
+    <Compile Include="Business\QL_LAIXEBusiness.cs" />
+    <Compile Include="Business\QL_NGUOINHAN_VANBANBusiness.cs" />
+    <Compile Include="Business\QL_PHONGHOPBusiness.cs" />
+    <Compile Include="Business\QL_XEBusiness.cs" />
+    <Compile Include="Business\QuanLyHoSoBusiness.cs" />
+    <Compile Include="Business\QuanLyHoSoNguoiNhapBusiness.cs" />
+    <Compile Include="Business\QuanLyVanBanBusiness.cs" />
+    <Compile Include="Business\QUANLY_PHONGHOPBusiness.cs" />
+    <Compile Include="Business\QUATRINH_LUONG_CANBOBusiness.cs" />
+    <Compile Include="Business\SYS_THONGBAOBusiness.cs" />
+    <Compile Include="Business\SYS_TINNHANBusiness.cs" />
+    <Compile Include="Business\TAILIEUDINHKEMBusiness.cs" />
+    <Compile Include="Business\TAILIEUDINHKEM_VERSIONBusiness.cs" />
+    <Compile Include="Business\TAILIEU_THUOCTINHBusiness.cs" />
+    <Compile Include="Business\THUMUC_LUUTRUBusiness.cs" />
+    <Compile Include="Business\VAITRO_THAOTACBusiness.cs" />
+    <Compile Include="Business\WF_FUNCTIONBusiness.cs" />
+    <Compile Include="Business\WF_FUNCTION_DONEBusiness.cs" />
+    <Compile Include="Business\WF_LOGBusiness.cs" />
+    <Compile Include="Business\WF_REVIEW_USERBusiness.cs" />
+    <Compile Include="Business\WF_REVIEWBusiness.cs" />
+    <Compile Include="Business\WF_MODULEBusiness.cs" />
+    <Compile Include="Business\WF_ITEM_USER_PROCESSBusiness.cs" />
+    <Compile Include="Business\WF_PROCESSBusiness.cs" />
+    <Compile Include="Business\WF_STATEBusiness.cs" />
+    <Compile Include="Business\WF_STATE_FUNCTIONBusiness.cs" />
+    <Compile Include="Business\WF_STEPBusiness.cs" />
+    <Compile Include="Business\WF_STEP_CONFIGBusiness.cs" />
+    <Compile Include="Business\WF_STEP_USER_PROCESSBusiness.cs" />
+    <Compile Include="Business\WF_STREAMBusiness.cs" />
+    <Compile Include="CommonBusiness\BaseEmailBO.cs" />
+    <Compile Include="CommonBusiness\ChatBO.cs" />
+    <Compile Include="CommonBusiness\CongViecEmailBO.cs" />
+    <Compile Include="CommonBusiness\JsonResultBO.cs" />
+    <Compile Include="CommonBusiness\JsonResultImportBO.cs" />
+    <Compile Include="CommonBusiness\PageListResultBO.cs" />
+    <Compile Include="CommonBusiness\BusinessException.cs" />
+    <Compile Include="CommonBusiness\ImapSmtpMailServer.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\IVTExcel.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\IVTExport.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\IVTRange.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\IVTValidation.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\IVTWorkbook.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\IVTWorksheet.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\SheetData.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTEnums.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTExport.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTRange.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTValidation.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTVector.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTWorkbook.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\VTWorksheet.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTExcel\WorkBookData.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTBorderStyle.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTComment.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTFont.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTFontUnderlineType.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTHorizontalAlignment.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTLineStyle.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTSheetVisibility.cs" />
+    <Compile Include="CommonBusiness\ExcelCommon\VTStyle\VTVerticalAlignment.cs" />
+    <Compile Include="CommonBusiness\UserBO.cs" />
+    <Compile Include="CommonBusiness\UserInfoBO.cs" />
+    <Compile Include="CommonBusiness\VanBanEmailBO.cs" />
+    <Compile Include="CommonModel\ACTIONAUDIT\ActionAuditSearchVM.cs" />
+    <Compile Include="CommonModel\CCTCTHANHPHAN\CCTCItemTreeBO.cs" />
+    <Compile Include="CommonModel\CCTCTHANHPHAN\CCTC_THANHPHAN_BO.cs" />
+    <Compile Include="CommonModel\CCTCTHANHPHAN\CCTC_THANHPHAN_SEARCHBO.cs" />
+    <Compile Include="CommonModel\CHIASETAILIEU\ChiaSeTaiLieuBO.cs" />
+    <Compile Include="CommonModel\CHIASETAILIEU\ChiaSeTaiLieuSearchModel.cs" />
+    <Compile Include="CommonModel\COMMENT\UserComment.cs" />
+    <Compile Include="CommonModel\CONSTANT\DMLOAII_CONSTANT.cs" />
+    <Compile Include="CommonModel\CONSTANT\PHANQUYENCONST.cs" />
+    <Compile Include="CommonModel\DMCHUCNANG\DM_CHUCNANG_BO.cs" />
+    <Compile Include="CommonModel\DMCHUCNANG\DM_CHUCNANG_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DMDANHMUCDATA\DM_DANHMUC_DATA_BO.cs" />
+    <Compile Include="CommonModel\DMDANHMUCDATA\DM_DANHMUC_DATA_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DMNGUOIDUNGTHAOTAC\DM_NGUOIDUNG_THAOTAC_BO.cs" />
+    <Compile Include="CommonModel\DMNGUOIDUNGTHAOTAC\DM_NGUOIDUNG_THAOTAC_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DMNguoiDung\DM_NGUOIDUNG_BO.cs" />
+    <Compile Include="CommonModel\DMNguoiDung\DM_NGUOIDUNG_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DMNguoiDung\NguoiDungPhongBanBO.cs" />
+    <Compile Include="CommonModel\DMNHOMDANHMUC\DM_NHOMDANHMUC_BO.cs" />
+    <Compile Include="CommonModel\DMNHOMDANHMUC\DM_NHOMDANHMUC_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DMTHAOTAC\DM_THAOTAC_BO.cs" />
+    <Compile Include="CommonModel\DMTHAOTAC\DM_THAOTAC_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DMVAITRO\DM_VAITRO_BO.cs" />
+    <Compile Include="CommonModel\DMVAITRO\DM_VAITRO_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DM_LOAIDONVI\DMLoaiDonViBO.cs" />
+    <Compile Include="CommonModel\DS_PHONGHOP\QLPHONGHOP_SEARCHBO.cs" />
+    <Compile Include="CommonModel\DS_PHONGHOP\QL_PHONG_BO.cs" />
+    <Compile Include="CommonModel\DUNGLUONGLUUTRU\DUNGLUONG_LUUTRU_BO.cs" />
+    <Compile Include="CommonModel\DUNGLUONGLUUTRU\DUNGLUONG_LUUTRU_SEARCH.cs" />
+    <Compile Include="CommonModel\EFILECHIASE\EFILE_CHIASE_BO.cs" />
+    <Compile Include="CommonModel\EFILECHIASE\EFILE_CHIASE_NGUOIDUNG_BO.cs" />
+    <Compile Include="CommonModel\EFILECHIASE\EFILE_CHIASE_SEARCHBO.cs" />
+    <Compile Include="CommonModel\HOSOCANBOCONGTAC\HOSOCANBOCONGTAC_BO.cs" />
+    <Compile Include="CommonModel\HOSOCANBOCONGTAC\HOSOCANBOCONGTAC_SEARCHBO.cs" />
+    <Compile Include="CommonModel\HOSOCANBOKETHON\HOSOCANBOKETHON_BO.cs" />
+    <Compile Include="CommonModel\HOSOCANBOKETHON\HOSOCANBOKETHON_SEARCHBO.cs" />
+    <Compile Include="CommonModel\HOSOCANBOQUANHEBANTHAN\HOSOCANBOQUANHEBANTHAN_BO.cs" />
+    <Compile Include="CommonModel\HOSOCANBOQUANHEBANTHAN\HOSOCANBOQUANHEBANTHAN_SEARCHBO.cs" />
+    <Compile Include="CommonModel\HOSOCANBO\HOSOCANBOCUSTOMBO.cs" />
+    <Compile Include="CommonModel\HOSOCANBO\HoSoCanBoSearch.cs" />
+    <Compile Include="CommonModel\HSCVCONGVIEC\CongViecBO.cs" />
+    <Compile Include="CommonModel\HSCVCONGVIEC\CongViecLuiHanBO.cs" />
+    <Compile Include="CommonModel\HSCVCONGVIEC\CongViecNoiDungTraoDoiBO.cs" />
+    <Compile Include="CommonModel\HSCVCONGVIEC\HSCV_CONGVIEC_SEARCH.cs" />
+    <Compile Include="CommonModel\HSCVCONGVIEC\SubTaskBO.cs" />
+    <Compile Include="CommonModel\HSCVSUBTASK\HSCV_SUBTASK_BO.cs" />
+    <Compile Include="CommonModel\HSCVVANBANDENDONVINHAN\HSCV_VANBANDEN_DONVINHAN_BO.cs" />
+    <Compile Include="CommonModel\HSCVVANBANDEN\HSCV_VANBANDEN_BO.cs" />
+    <Compile Include="CommonModel\HSCVVANBANDEN\HSCV_VANBANDEN_SEARCH.cs" />
+    <Compile Include="CommonModel\HSCVVANBANDI\HSCV_VANBANDI_BO.cs" />
+    <Compile Include="CommonModel\HSCVVANBANDI\HSCV_VANBANDI_SEARCH.cs" />
+    <Compile Include="CommonModel\LICH_CONGTAC\LICHCONGTAC_BO.cs" />
+    <Compile Include="CommonModel\LICH_CONGTAC\LICHCONGTAC_SEARCH.cs" />
+    <Compile Include="CommonModel\LOAITAILIEUTHUOCTINH\TAILIEU_THUOCTINH_BO.cs" />
+    <Compile Include="CommonModel\LOAITAILIEUTHUOCTINH\TAILIEU_THUOCTINH_SEARCH.cs" />
+    <Compile Include="CommonModel\LOGSMS\LOGSMS_BO.cs" />
+    <Compile Include="CommonModel\LOGSMS\LOGSMS_SEARCHBO.cs" />
+    <Compile Include="CommonModel\NGUOIDUNGVAITRO\NGUOIDUNG_VAITRO_BO.cs" />
+    <Compile Include="CommonModel\NGUOIDUNGVAITRO\NGUOIDUNG_VAITRO_SEARCHBO.cs" />
+    <Compile Include="CommonModel\QLCHUYEN\ChuyenBO.cs" />
+    <Compile Include="CommonModel\QLCHUYEN\ChuyenReportBO.cs" />
+    <Compile Include="CommonModel\QLCHUYEN\ChuyenSearchBO.cs" />
+    <Compile Include="CommonModel\QLDANGKYXE\DangKyXeBO.cs" />
+    <Compile Include="CommonModel\QLDANGKYXE\DangKyXeSearchBO.cs" />
+    <Compile Include="CommonModel\QLLAIXE\LaiXeBO.cs" />
+    <Compile Include="CommonModel\QLLAIXE\LaiXeSearchBO.cs" />
+    <Compile Include="CommonModel\QLNGUOINHANVANBAN\QL_NGUOINHAN_VANBAN_BO.cs" />
+    <Compile Include="CommonModel\QLNGUOINHANVANBAN\QL_NGUOINHAN_VANBAN_SEARCH_BO.cs" />
+    <Compile Include="CommonModel\QLPHONGHOP\QLPHONGHOP_BO.cs" />
+    <Compile Include="CommonModel\QLPHONGHOP\QLPHONGHOP_SEARCH.cs" />
+    <Compile Include="CommonModel\QLTOKEN\QL_TOKEN_BO.cs" />
+    <Compile Include="CommonModel\QLXE\XeBO.cs" />
+    <Compile Include="CommonModel\QLXE\XeSearchBO.cs" />
+    <Compile Include="CommonModel\QUANLYHOSO\QuanLyHoSoBO.cs" />
+    <Compile Include="CommonModel\QUANLYHOSO\QuanLyHoSoDetailBO.cs" />
+    <Compile Include="CommonModel\QUANLYHOSO\QuanLyHoSoSearchModel.cs" />
+    <Compile Include="CommonModel\QUANLYHOSO\ThongKeBO.cs" />
+    <Compile Include="CommonModel\QUANLYVANBAN\DetailVanBanBO.cs" />
+    <Compile Include="CommonModel\QUANLYVANBAN\ThongKeVanBanBO.cs" />
+    <Compile Include="CommonModel\QUANLYVANBAN\VanBanPageListBO.cs" />
+    <Compile Include="CommonModel\QUATRINHLUONGCANBO\QUANTRING_LUONG_CANBO_BO.cs" />
+    <Compile Include="CommonModel\QUATRINHLUONGCANBO\QUATRINH_LUONG_CANBO_SEARCHBO.cs" />
+    <Compile Include="CommonModel\SYSTHONGBAO\SYS_THONGBAO_BO.cs" />
+    <Compile Include="CommonModel\SYSTINNHAN\SYS_TINNHAN_BO.cs" />
+    <Compile Include="CommonModel\SYSTINNHAN\SYS_TINNHAN_SEARCH.cs" />
+    <Compile Include="CommonModel\TAILIEUDINHKEMVERSION\TAILIEUDINHKEM_VERSION_BO.cs" />
+    <Compile Include="CommonModel\TAILIEUDINHKEM\TAILIEUDINHKEM_BO.cs" />
+    <Compile Include="CommonModel\TAILIEUDINHKEM\TAILIEUTHUOCTINH_BO.cs" />
+    <Compile Include="CommonModel\THUMUCLUUTRU\THUMUC_LUUTRU_BO.cs" />
+    <Compile Include="CommonModel\THUMUCLUUTRU\THUMUC_LUUTRU_SEARCHBO.cs" />
+    <Compile Include="CommonModel\VAITROTHAOTAC\VAITRO_THAOTAC_BO.cs" />
+    <Compile Include="CommonModel\VAITROTHAOTAC\VAITRO_THAOTAC_SEARCHBO.cs" />
+    <Compile Include="CommonModel\WFLOG\WF_LOG_BO.cs" />
+    <Compile Include="CommonModel\WFMODULE\WF_MODULE_BO.cs" />
+    <Compile Include="CommonModel\WFMODULE\WF_MODULE_SEARCHBO.cs" />
+    <Compile Include="CommonModel\WFSTATE\WF_STATE_BO.cs" />
+    <Compile Include="CommonModel\WFSTATE\WF_STATE_SEARCHBO.cs" />
+    <Compile Include="CommonModel\WFSTEP\GoModel.cs" />
+    <Compile Include="CommonModel\WFSTEP\StepBackBO.cs" />
+    <Compile Include="CommonModel\WFSTEP\WF_STEP_BO.cs" />
+    <Compile Include="CommonModel\WFSTEP\WF_STEP_SEARCHBO.cs" />
+    <Compile Include="CommonModel\WFSTREAM\STATISTICVANBANBO.cs" />
+    <Compile Include="CommonModel\WFSTREAM\WF_STREAM_BO.cs" />
+    <Compile Include="CommonModel\WFSTREAM\WF_STREAM_SEARCHBO.cs" />
+    <Compile Include="CommonModel\WF_ITEM_USER_PROCESS\WF_ITEM_USER_PROCESS_BO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DLL\log4net.dll" />
+    <Content Include="DLL\NativeExcel.dll" />
+    <Content Include="DLL\NPOI.dll" />
+    <Content Include="DLL\NPOI.OOXML.dll" />
+    <Content Include="DLL\NPOI.OpenXml4Net.dll" />
+    <Content Include="DLL\NPOI.OpenXmlFormats.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonHelper\CommonHelper.csproj">
+      <Project>{a9a63d35-decb-4dc3-b813-1d449183b938}</Project>
+      <Name>CommonHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{25cc9e72-8a44-4e29-bd01-2807afdb5786}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

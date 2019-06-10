@@ -1,0 +1,223 @@
+﻿@using Business.CommonModel.CONSTANT;
+@{
+    ViewBag.Title = "Báo cáo thống kê văn bản đến";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<script src="~/js/print.min.js"></script>
+<link href="~/css/print.min.css" rel="stylesheet" />
+
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<style type="text/css">
+    .select2 {
+        width: 100%;
+    }
+
+    .block--report-title {
+        text-align: center;
+        color: #118ACB;
+        font-weight: bold;
+    }
+
+    .table--report-data {
+        border: 1px solid #118ACB;
+        width:100% !important;
+    }
+
+        .table--report-data thead tr th {
+            background: #118ACB;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            border-bottom: 1px solid #118ACB;
+        }
+
+        .table--report-data tbody tr th,
+        .table--report-data tbody tr td {
+            border: 1px solid #118ACB;
+            height: 20px;
+            line-height: 20px;
+            background: #fff;
+        }
+
+        .table--report-data tbody tr th {
+            color: #118ACB;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .table--report-data tbody tr td:first-child {
+            text-align: center;
+        }
+
+        .table--report-data tbody tr td:nth-child(2) {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .table--report-data tbody tr:last-child td:first-child {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .table--report-data tbody tr:last-child td:last-child {
+            font-weight: normal;
+        }
+</style>
+<div id="ribbon" style="background:#57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+    </div>
+</div>
+
+<div id="content">
+    <div class="clearfix hot-news-list-2">
+        <div class="jarviswidget" id="wid-id-0">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fa fa-bar-chart txt-color-darken"></i>
+                </span>
+
+                <h2 class="hidden-xs hidden-sm">
+                    Thống kê văn bản đến
+                </h2>
+            </header>
+
+            <div role="contentinfo">
+                <section id="widget-grid">
+                    <div class="row">
+                        <article class="col-sm-12">
+                            <div class="jarviswidget" id="wid-id-0" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+                                <header>
+                                    <span class="widget-icon">
+                                        <i class="glyphicon glyphicon-stats txt-color-darken"></i>
+                                    </span>
+                                    <h2>Loại thống kê</h2>
+
+                                    <ul class="nav nav-tabs pull-right in" id="myTab">
+                                        <li class="active">
+                                            <a data-toggle="tab" href="#s1">
+                                                <span class="hidden-mobile hidden-tablet">
+                                                    Theo lĩnh vực văn bản
+                                                </span>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a data-toggle="tab" href="#s2">
+                                                <span class="hidden-mobile hidden-tablet">
+                                                    Theo loại văn bản
+                                                </span>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a data-toggle="tab" href="#s3">
+                                                <span class="hidden-mobile hidden-table">
+                                                    Theo đơn vị gửi
+                                                </span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </header>
+
+                                <div class="no-padding">
+                                    <div class="jarviswidget-editbox">
+
+                                    </div>
+
+                                    <div class="widget-body">
+                                        <div id="myTabContent" class="tab-content">
+                                            <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
+                                                @{Html.RenderAction("GetReportCriteriaForm", "ReportVanBanDen", new { reportType = LOAI_BAOCAO_VANBAN_CONSTANT.BAOCAO_LINHVUC_VANBANDEN });}
+                                            </div>
+                                            <div class="tab-pane fade padding-10 no-padding-bottom" id="s2">
+                                                @{Html.RenderAction("GetReportCriteriaForm", "ReportVanBanDen", new { reportType = LOAI_BAOCAO_VANBAN_CONSTANT.BAOCAO_LOAI_VANBANDEN });}
+                                            </div>
+
+                                            <div class="tab-pane padding-10 no-padding-bottom" id="s3">
+                                                @{ Html.RenderAction("GetReportCriteriaForm", "ReportVanBanDen", new { reportType = LOAI_BAOCAO_VANBAN_CONSTANT.BAOCAO_DONVIGUI_VANBANDEN });}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LOAD THE AJAX API-->
+<script src="~/Scripts/chart.min.js"></script>
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $('select.select2').select2();
+        });
+
+        $(".datepicker").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-20:+20"
+        });
+    });
+
+    function exportExcel(reportType){
+        $.post('/Report/ReportVanBanDen/ExportExcelReportResult', {"reportType": reportType}, function(result){
+            if(result.Status){
+                location.href = result.Message;
+            }
+        });
+    }
+
+    function randomRGBA(){
+        var o = Math.round, r = Math.random, s = 255;
+        return 'rgba('+o(r() * s)+', '+o(r() * s)+', '+o(r() * s)+', '+r().toFixed(1)+')';
+    }
+
+    function buildChart(blockChartId,title, labels, data, colors){
+        var ctx = document.getElementById(blockChartId).getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+    }
+</script>

@@ -1,0 +1,240 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models
+@model ThuMucLuuTruModel
+<style>
+    .jFiler-items {
+        height: 233px !important;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    hr {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: 0;
+        border-top: 1px solid #eee;
+    }
+
+    .rdArchive-option {
+        display: none;
+    }
+
+    .upload-zip td:last-child {
+        padding-left: 15px
+    }
+
+    .upload-zip td .e-input {
+        width: 233px
+    }
+
+    #UploadZipRar .col-sm-2 {
+        padding-right: 0px !important;
+    }
+</style>
+@using (Ajax.BeginForm("saveZipFile", "ThuMucLuuTru", new AjaxOptions
+{
+    HttpMethod = "POST"
+}, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Upload file Zip/Rar và giải nén</h4>
+            </div>
+            <div class="modal-body" id="UploadZipRar">
+                <input type="hidden" value="@Model.ThuMuc.ID" name="FOLDER_ID" id="FOLDER_ID" />
+                <div class="form-horizontal">
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Đường dẫn:</label>
+                        </div>
+                        <div class="col-sm-10" id="DUONGDAN" style="margin-left:0px !important">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Tài liệu:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="file" accept=".zip,.rar" name="files" id="archive_file">
+                            <div class="note-error">
+                                <span class="red" id="filer_input_error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Giải nén tại:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <label>
+                                <input value="true" type="radio" name="rdArchive" checked>Tại đây
+                            </label>
+                            <label>
+                                <input value="false" type="radio" name="rdArchive">Nơi khác
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group rdArchive-option">
+                        <div class="col-sm-2">
+                            <label>Tên thư mục:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" name="TENTHUMUC" id="TENTHUMUC" class="e-input" placeholder="Nhập tên thư mục giải nén" />
+                            <div class="note-error">
+                                <span class="red" id="TENTHUMUC_error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Định dạng file:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Model.Extension
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-2" style="padding-right:0px">
+                            <label>Dung lượng tối đa:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Model.FileSize (Mb)
+                        </div>
+                    </div>
+                    @Html.Partial("_Storage")
+                </div>
+                @*<table class="upload-zip">
+                        <tr>
+                                <td>Phạm vi truy cập: </td>
+                                <td>
+                                    @Html.DropDownList("ACCESS_MODIFIER_ID", Model.lstAccessModifier, new { @style = "width: 100%", @class = "select-chosen" })
+                                </td>
+                            </tr>
+                    </table>*@
+            </div>
+            <div class="modal-footer">
+                <input type="button" id="btnArchiveFile" value="Giải nén Zip/Rar" class="btn btn-success" />
+                <input type="button" value="Đóng" data-dismiss="modal" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <input type="hidden" value="@Model.Extension" id="EXTENSION" />
+    <input type="hidden" value="@Model.FileSize" id="MAXSIZE" />
+}
+<script>
+     $(".select-chosen").chosen({width:"233px"});
+    $(document).on("change", "input[name=rdArchive]", function () {
+        var isChecked = $('input[name=rdArchive]:checked').val();
+        if (isChecked == "true") {
+            $(".rdArchive-option").hide();
+        } else {
+            console.log("sds2wssds");
+            $(".rdArchive-option").show();
+        }
+    });
+    var parent = $("#FOLDER_ID").val();
+    GetFullPath(parent);
+    $(function () {
+        $("#btnArchiveFile").click(function () {
+            var file = $("#archive_file").val();
+            var isChecked = $('input[name=rdArchive]:checked').val();
+            var canSubmit = true;
+            if (file == "") {
+                $("#filer_input_error").html("Chưa có tài liệu nào được lựa chọn");
+                canSubmit = false;
+            } else {
+                var fsize = $('#archive_file')[0].files[0].size;
+                var ftype = $('#archive_file')[0].files[0].type;
+                var fname = $('#archive_file')[0].files[0].name;
+                var ext = fname.split('.').pop();
+                if (ext.toLowerCase() != "rar" && ext.toLowerCase() != "zip") {
+                    canSubmit = false;
+                    $("#filer_input_error").html("Bạn chỉ được tải lên tài liệu với định dạng ZIP hoặc RAR");
+                }
+            }
+            if (isChecked == "false") {
+                var folderName = $("#TENTHUMUC").val();
+                if (folderName.trim().length == 0) {
+                    $("#TENTHUMUC").focus();
+                    $("#TENTHUMUC_error").html("Tên thư mục không được để trống");
+                    return false;
+                }
+                if (/<[a-z][\s\S]*>/i.test($("#TENTHUMUC").val())) {
+                    $("#TENTHUMUC").focus();
+                    $("#TENTHUMUC_error").html("Tên thư mục không được để trống");
+                    return false;
+                }
+                if (/[\\/:?*"<>|]/i.test($("#TENTHUMUC").val().trim())) {
+                    $("#TENTHUMUC").focus();
+                    $("#TENTHUMUC_error").html("Tên folder không thể chứa bất kỳ các ký tự nào sau đây: \ / : ? * \" < > |");
+                    return false;
+                }
+                if (/<[a-z][\s\S]*>/i.test($("#TENTHUMUC").val())) {
+                    $("#TENTHUMUC").focus();
+                    $("#TENTHUMUC_error").html("Tên thư mục không được chứa ký tự html");
+                    return false;
+                }
+                if (folderChecking(folderName, parent)) {
+                    $("#TENTHUMUC").focus();
+                    $("#TENTHUMUC_error").html("Tên thư mục này đã tồn tại");
+                    return false;
+                }
+            }
+            if (canSubmit) {
+                $(this).closest("form").submit();
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+    $("form").ajaxForm({
+        beforeSend: function () {
+            $(".loading").show();
+            $("#btnArchiveFile").prop('disabled', true);
+        },
+        uploadProgress: function () {
+
+        },
+        success: function (data) {
+            LoadDataByID($("#FOLDER_ID").val());
+            $("#CreateThuMuc").modal("hide");
+            $("#CreateThuMuc").html("");
+            $(".loading").hide();
+            NotiSuccess(data);
+        },
+        complete: function () {
+            $(".loading").hide();
+            $("#CreateThuMuc").modal('hide');
+            $("#CreateThuMuc").html("");
+
+        }, error: function (data) {
+            NotiError(data);
+        }
+    });
+    function folderChecking(thumuc, parentId) {
+        var flag = true;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("FolderChecking", "ThuMucLuuTru")',
+            data: {
+                name: thumuc,
+                parentID: parentId
+            },
+            cache: false,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data == "true") {
+                    flag = true;
+                } else {
+                    flag = false;
+                }
+            }, error: function (xrt) {
+            }
+        });
+        return flag;
+    }
+</script>

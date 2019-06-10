@@ -1,0 +1,409 @@
+﻿@model Web.Areas.QuanLyHoSoArea.Models.ImportHoSoModel
+@{
+    ViewBag.Title = "Import hồ sơ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Web.Areas.QuanLyHoSoArea.Models;
+@*<link href="~/Scripts/bootstrap/bootstrap.min.css" rel="stylesheet" />*@
+@*<link href="~/Content/select2/css/select2.min.css" rel="stylesheet" />*@
+<link href="~/Content/dataTable/datatables.min.css" rel="stylesheet" />
+
+
+
+@*<script src="~/Scripts/bootstrap/bootstrap.min.js"></script>*@
+@*<script src="~/Content/select2/js/select2.min.js"></script>*@
+@*<script src="~/Scripts/jquery.validate.min.js"></script>*@
+<script src="~/Content/dataTable/datatables.min.js"></script>
+<style>
+    .lbl {
+        display: inline-block;
+        width: 120px;
+        margin-left: 10px;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .form-control {
+        height: 28px !important;
+        border-radius: 3px !important;
+    }
+
+    .col-sm-2 {
+        padding-left: 30px;
+    }
+
+    .form-group .col-sm-12 {
+        padding-right: 15px !important;
+    }
+
+    .modal-header {
+        background-color: white;
+        color: black;
+        padding: 10px;
+    }
+
+    h2.import-title {
+        position: relative;
+        margin: 0px;
+        font-size: 15px;
+        color: #fff;
+        text-transform: uppercase;
+        font-weight: bold;
+        padding: 8px;
+        background: #118acb;
+        font-family: arial;
+        letter-spacing: 0px;
+        padding-left: 10px;
+    }
+
+    .alert {
+        margin: 5px 0;
+    }
+
+    .row {
+        padding: 10px;
+    }
+
+    /*.dataTables_info {
+        display: none;
+    }*/
+    .width40 {
+        width: 40px !important;
+    }
+
+    .width100 {
+        width: 100px !important;
+    }
+
+    .with150px {
+        width: 150px !important;
+    }
+</style>
+<div class="left-main-page" id="left-panel">
+    <div id="menu-left-content-scroll" class="menu-left-content block">
+        <h2>
+            <span class="titled">
+                Menu Chức năng
+            </span>
+            <span class="minifymed" id="scale-menu" aria-expanded="true" data-action="minifyMenu">
+                <i class="fa fa-backward" aria-hidden="true"></i>
+            </span>
+        </h2>
+        <div id="menu-left-content-scroll" class="menu-left-content block">
+            @{Html.RenderAction("NhanSuMenuChild", "Common", new { area = "" });}
+        </div>
+    </div>
+</div>
+<div class="right-main-page" style="background:#fff;">
+    <div class="right-content clearfix">
+        <div id="menu-child">
+            <h2 class="import-title">Import hồ sơ</h2>
+        </div>
+
+    </div>
+    <div>
+        <div class="row">
+            <form id="frmUpload" method="post" enctype="multipart/form-data">
+                <table style="margin-left:20px; width:500px">
+                    <tr style="height:30px"></tr>
+                    <tr>
+                        <td><strong>File import:</strong> </td>
+                        <td>
+                            <input onchange="fileValid(this)" id="fileBase" name="fileBase" type="file" />
+                        </td>
+                        <td>
+                            <button class="btn btn-default" type="button" onclick="upFile()"><i class="fa fa-cloud-upload text-danger" aria-hidden="true"></i> tải lên</button>
+                        </td>
+                    </tr>
+                    <tr style="height:20px">
+                        <td colspan="3">
+                            <span class="red" id="fileError"></span>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" id="listError" name="listError" />
+            </form>
+        </div>
+        <div class="row">
+            <div class="alert alert-danger" role="alert">
+                Chú ý cột dữ liệu 'THỜI HẠN BẢO QUẢN' import excel phải nhập đúng như mã ở bảng dưới đây
+            </div>
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr></tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã</th>
+                        <th>Thời hạn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.ListHanBaoQuan.Any())
+                        {
+                            var stt = 0;
+                            foreach (var item in Model.ListHanBaoQuan)
+                            {
+                                stt++;
+                                <tr>
+                                    <td>@stt</td>
+                                    <td>@item.DVS_CODE</td>
+                                    <td>@item.DVS_NAME</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3"><span class="text-danger">Chưa có thông tin</span></td>
+                            </tr>
+
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div id="divSuccess" style="display:none">
+                <div class="alert alert-danger" role="alert">
+                    Danh sách các hàng import dữ liệu đúng
+                </div>
+                <button class="b_btn btn-default" onclick="SaveImport()" style="float:right"><i class="fa fa-floppy-o text-success" aria-hidden="true"></i> Save Import</button>
+                <table class="table table-bordered table-condensed table-striped" id="tblSuccess">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Hộp số</th>
+                            <th>Hồ sơ số</th>
+                            <th>Tiêu đề hồ sơ</th>
+                            <th>Thời gian tài liệu</th>
+                            <th>Số tờ</th>
+                            <th>Thời hạn bảo quản</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div id="divError" style="display:none">
+                <div class="alert alert-danger" role="alert">
+                    Danh sách các hàng import dữ liệu sai
+                </div>
+                <button class="b_btn btn-default" style="float:right" onclick="ExportError()"><i class="fa fa-cloud-download text-danger" aria-hidden="true"></i> Export Excel</button>
+                <table class="table table-bordered table-condensed table-striped" id="tblError">
+                    <thead>
+                        <tr>
+                            <th class="width40">#</th>
+                            <th class="width40">Hộp số</th>
+                            <th class="width40">Hồ sơ số</th>
+                            <th class="width100">Tiêu đề hồ sơ</th>
+                            <th class="width100">Thời gian tài liệu</th>
+                            <th class="width40">Số tờ</th>
+                            <th class="width100">Thời hạn bảo quản</th>
+                            <th class="width40">Ghi chú</th>
+                            <th>Thông báo lỗi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+
+<textarea id="temSuccess" style="display:none">
+<tr>
+<td>{0}</td>
+<td>{1}</td>
+<td>{2}</td>
+<td>{3}</td>
+<td>{4}</td>
+<td>{5}</td>
+<td>{6}</td>
+<td>{7}</td>
+    </tr>
+</textarea>
+<textarea id="temError" style="display:none">
+<tr>
+<td>{0}</td>
+<td>{1}</td>
+<td>{2}</td>
+<td>{3}</td>
+<td>{4}</td>
+<td>{5}</td>
+<td>{6}</td>
+<td>{7}</td>
+<td>{8}</td>
+    </tr>
+</textarea>
+
+<script type="text/javascript">
+    function SaveImport() {
+                $.ajax({
+            type: 'post',
+            url: '@Url.Action("SaveImport")',
+            success: function (response) {
+                if (response.Status) {
+                    CommonJS.showNotifySuccess("Import dữ liệu thành công");
+                    $("#divSuccess").hide();
+                    $("#tblSuccess tbody").empty();
+                } else {
+                    CommonJS.showNotifyError(response.Messages);
+                }
+            },
+            error: function (xhr) {
+                CommonJS.showNotifyError(xhr.responseText);
+            }
+        });
+    }
+    function ExportError() {
+
+ window.location.href = '@Url.Action("ExportListError")';
+    }
+    function upFile() {
+        var file = $("#fileBase").val();
+        if (file == "") {
+            $("#fileError").html('Bạn chưa chọn file tải lên');
+            $("#fileError").show();
+            $("#fileError").fadeOut(10000);
+            return false;
+        }
+
+        $("#frmUpload").attr("enctype", "multipart/form-data");
+        var dataString = new FormData($("#frmUpload").get(0));
+        console.log(dataString);
+        $.ajax({
+            url: '@Url.Action("LoadDataImport")',
+            type: 'post',
+            data: dataString,
+            cache: false,
+            //async: false,
+            contentType: false,
+            processData: false,
+            success: successHandler,
+            error: errorHandler,
+        });
+    }
+    function successHandler(response)
+    {
+        if (!response.Status) {
+            CommonJS.showNotifyError(response.Messages);
+            return false;
+        }
+
+
+        //danh sách import thành công
+        if (response.result.ListSuccess.length > 0) {
+            var stt = 0;
+            $("#tblSuccess tbody").empty();
+            var template = jQuery.validator.format($("#temSuccess").val().trim());
+            $.each(response.result.ListSuccess, function (index, element) {
+                stt++;
+                $("#tblSuccess tbody").append($(template(stt, element.HOPSO, element.HOSO_SO, element.TIEUDE_HOSO, element.THOIGIAN_TAILIEU, element.SOTO, element.THOIHAN_BAOQUAN, element.GHICHU)));
+            });
+            $("#divSuccess").show();
+            if (!$.fn.DataTable.isDataTable('#tblSuccess')) {
+                $("#tblSuccess").DataTable({
+                    searching: true,
+                    lengthChange: false,
+                    dom: '<"top"i>rt<"bottom"flp><"clear">',
+                     language: {
+                        //"lengthMenu": "Display _MENU_ records per page",
+                        //"zeroRecords": "No Data Found",
+                         "info": "Hiển thị _START_ - _END_ trên tổng số _TOTAL_ bản ghi",
+                        //"infoEmpty": "No records available",
+                        //"infoFiltered": "(filtered from _MAX_ total records)"
+                    }
+                });
+            }
+        }
+
+        //danh sách import lỗi
+        if (response.result.ListError.length > 0) {
+            var stt = 0;
+            var template = jQuery.validator.format($("#temError").val().trim());
+            $("#tblError tbody").empty();
+            $.each(response.result.ListError, function (index, element) {
+                stt++;
+                $("#tblError tbody").append($(template(stt, element.HOPSO, element.HOSO_SO, element.TIEUDE_HOSO, element.THOIGIAN_TAILIEU, element.SOTO, element.THOIHAN_BAOQUAN, element.GHICHU, element.MESSAGE)));
+            });
+            $("#divError").show();
+            if (!$.fn.DataTable.isDataTable('#tblError')) {
+                $("#tblError").dataTable({
+                    searching: true,
+                    lengthChange: false,
+                    dom: '<"top"i>rt<"bottom"flp><"clear">',
+                    language: {
+                        //"lengthMenu": "Display _MENU_ records per page",
+                        //"zeroRecords": "No Data Found",
+                        "info": "Hiển thị _START_ - _END_ trên tổng số _TOTAL_ bản ghi",
+                        //"infoEmpty": "No records available",
+                        //"infoFiltered": "(filtered from _MAX_ total records)"
+                    }
+
+                });
+            }
+        }
+        $("#fileBase").val("");
+
+    }
+    function errorHandler(xhr) {
+        console.log(xhr.responseText);
+        //CommonJS.showNotifyError(xhr.responseText);
+    }
+
+    function fileValid(file) {
+        var fileUpload = $(file).val();
+        if (fileUpload != "") {
+            var fileExtens = ['xlsx'];
+            var extens = fileUpload.split('.');
+            extens = extens[extens.length - 1];
+            if ($.inArray(extens, fileExtens) == -1) {
+                // ' + fileExtens.join(', ')
+                $("#fileError").html('Định dạng file tải lên không hợp lệ, yêu cầu định dạng file xlsx');
+                $("#fileError").show();
+                $("#fileError").fadeOut(10000);
+                $(file).val("");
+
+            }
+        }
+    }
+
+    //$(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+
+    //});
+    //$(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+    //    $(".loading-ajax").hide();
+    //});
+    //$(document).ajaxStart(function () {
+    //    $(".loading-ajax").html("Đang xử lý");
+    //    $(".loading-ajax").show();
+    //});
+    //$(document).ajaxStop(function () {
+    //    $(".loading-ajax").hide();
+    //});
+</script>
+<style>
+    .pagination a {
+        border-radius: 0% !important;
+        width: auto !important;
+    }
+
+    .e-input {
+        width: 233px;
+    }
+
+    .SearchResult {
+        padding: 10px;
+    }
+
+    .pagination {
+        margin: 0;
+    }
+</style>

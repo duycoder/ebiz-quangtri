@@ -1,0 +1,308 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@using Newtonsoft.Json
+@model EditLichCongTacViewModel
+@{ 
+    var jsonDestinations = Html.Raw(JsonConvert.SerializeObject(Model.groupOfDestinations));
+}
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<style type="text/css">
+    .ms-drop {
+        width: 100%;
+    }
+
+    .ms-choice {
+        background: none;
+        border: 1px solid #999;
+        border-radius: 0px;
+        height: 30px;
+        width: 100%;
+    }
+
+    .ms-parent {
+        width: 100%;
+    }
+
+    .ms-choice > span {
+        width: 100%;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .text-danger {
+        color: red;
+    }
+
+    
+</style>
+@using (Ajax.BeginForm("SaveLichCongTac", "LICHCONGTAC", new { @area = "LICHCONGTACArea" },
+                        new AjaxOptions()
+                        {
+                            HttpMethod = "POST",
+                            OnFailure = "failEditCalendar",
+                            OnSuccess = "successEditCalendar",
+                        }, new { id = "form--create-lichcongtac" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ID" value="@Model.entityLichCongTac.ID" />
+    <div class="tab-content custom-scroll">
+        <fieldset>
+            <div class="row">
+                <section class="col col-lg-12">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="lbl control-label" for="TIEUDE">
+                                    Tiêu đề:&nbsp;<span class="text-danger">*</span>
+                                </label>
+                            </div>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control required checkHTMLInjection" name="TIEUDE" id="TIEUDE" value="@Model.entityLichCongTac.TIEUDE" autofocus />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="LANHDAO_ID" class="lbl control-label">
+                                    Người đi công tác:&nbsp;
+                                </label>
+                            </div>
+
+                            <div class="col-sm-3">
+                                @Html.DropDownList("LANHDAO_ID", Model.groupOfLanhDaos, new { @class = "width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label class="lbl control-label" for="NGAY_CONGTAC">
+                                    Ngày công tác:&nbsp;<span class="text-danger">*</span>
+                                </label>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <input type="text" name="NGAY_CONGTAC" id="NGAY_CONGTAC" class="form-control required datepicker1 checkDateValid checkHTMLInjection" value="@(Model.entityLichCongTac.NGAY_CONGTAC.ToString("dd/MM/yyyy"))" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-1">
+                                <label class="lbl control-label" for="NGAY_CONGTAC">
+                                    Giờ:&nbsp;<span class="text-danger">*</span>
+                                </label>
+                            </div>
+
+                            <div class="col-sm-1 form-group" style="margin-bottom:0">
+                                @Html.DropDownList("GIO_CONGTAC", Model.groupHours, "--- Giờ ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-1">
+                                <label class="lbl control-label" for="NGAY_CONGTAC">
+                                    Phút:&nbsp;<span class="text-danger">*</span>
+                                </label>
+                            </div>
+
+                            <div class="col-sm-1 form-group" style="margin-bottom:0">
+                                @Html.DropDownList("PHUT_CONGTAC", Model.groupMinutes, "--- Phút ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_action_box = "true", @data_live_search = "true" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                <label for="DIADIEM" class="lbl control-label">
+                                    Địa điểm:&nbsp;
+                                </label>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <textarea class="form-control checkHTMLInjection" name="DIADIEM" id="DIADIEM" maxlength="500">@Model.entityLichCongTac.DIADIEM</textarea>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-1">
+                                <label for="GHICHU" class="lbl control-label">
+                                    Ghi chú:&nbsp;
+                                </label>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <textarea class="form-control checkHTMLInjection" name="GHICHU" id="GHICHU" maxlength="500">@Model.entityLichCongTac.GHICHU</textarea>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </fieldset>
+    </div>
+    <div class="form-actions center">
+        <center>
+            <a class="btn btn-primary btn-sm" id="btnSave">Lưu lịch công tác</a>
+            @if (Model.isPopUp)
+            {
+                <a class="btn btn-default btn-sm" data-dismiss="modal" href="javascript:void(0)">
+                    Hủy bỏ
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-default btn-sm" href="@Url.Action("Index")">Hủy bỏ</a>
+            }
+        </center>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        loadScript("/ckeditor/ckeditor.js", function () {
+            loadScript("/Content/select/js/bootstrap-select.js", function () {
+                $(".selectpicker1").selectpicker();
+
+                $(".datepicker1").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    prevText: '<i class="fa fa-chevron-left"></i>',
+                    nextText: '<i class="fa fa-chevron-right"></i>',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-20:+20"
+                });
+            })
+        });
+
+        $('#btnSave').on('click', function () {
+            var isValidForm = onSubmit();
+            if (!isValidForm) {
+                return false;
+            } else {
+                $.confirm({
+                'title': @Model.entityLichCongTac.ID  > 0 ? 'Xác nhận cập nhật lịch công tác' : 'Xác nhận tạo lịch công tác',
+                'message': @Model.entityLichCongTac.ID  > 0 ? 'Bạn có chắc chắn cập nhật lịch công tác này?' : 'Bạn có chắc chắn thêm lịch công tác này',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                           $('#form--create-lichcongtac').submit();
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                        }
+                    }
+                });
+            }
+        });
+
+
+        var autoCompleteDestinations = [];
+        var jsonDestinations = eval(@jsonDestinations);
+
+
+        jsonDestinations.forEach(function(item){
+            autoCompleteDestinations.push(item);
+        });
+
+        $("#DIADIEM" ).autocomplete({
+            source: jsonDestinations
+        });
+    });
+
+
+    function onSubmit() {
+        var errorCount = 0;
+        var formName = 'form--create-lichcongtac';
+
+        var isValidRequiredField = requiredFieldForFormId(formName);
+        if (!isValidRequiredField) {
+            return false;
+        }
+
+        var isValidSelectField = RequireDropDownlist(formName);
+        if (!isValidSelectField) {
+            return false;
+        }
+
+        var isValidDateField = validateDateField(formName);
+        if (!isValidDateField) {
+            return false;
+        }
+
+        var isValidHTMLInjection = validateHTMLInjectionField(formName);
+        if (!isValidHTMLInjection) {
+            return false;
+        }   
+        return (errorCount > 0) ? false : true;
+    }
+
+    $('#LANHDAO_ID, #NGUOICHUTRI_ID').on('change', function(){
+        var sourceId = $(this).attr('id');
+        var targetId = '';
+
+        switch(sourceId){
+            case 'LANHDAO_ID':
+                targetId = 'NGUOICHUTRI_ID';
+                break;
+            default:
+                targetId = 'LANHDAO_ID';
+                break;
+        }
+
+        disableSelectedOptions(sourceId, targetId);
+    });
+
+    function disableSelectedOptions(sourceId, targetId){
+        var value = $('#' + sourceId).val() || [];
+        $("#"+ targetId + " option").each(function(index, item){
+            if(value.indexOf($(item).val()) > -1){
+                $(item).attr('disabled', true);
+            }else if($(item).is(':disabled')){
+                $(item).removeAttr('disabled');
+            }
+        })
+
+        $('#' + targetId).selectpicker('refresh');
+    }
+
+    function failEditCalendar(rs){
+        NotiError(rs.Message);
+    }
+
+    function successEditCalendar(rs){
+        if(rs.Status){
+            NotiSuccess(rs.Message);
+            if('@Model.isPopUp' == 'True'){
+                $('#modal--edit--lich-cong-tac').modal('hide');
+                searchLichCongTac();
+            }else{
+                setTimeout(function(){
+                    location.href='/LICHCONGTACArea/LICHCONGTAC/Index';
+                }, 1000);
+            }
+        }else{
+           NotiError(rs.Message);
+        }
+    }
+</script>

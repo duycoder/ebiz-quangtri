@@ -1,0 +1,316 @@
+﻿@using Business.CommonBusiness
+@using Web.FwCore
+@using Web.Common
+@using Web.Areas.QuanLyHoSoArea.Models
+@model QuanLyHoSoModel
+<script src="~/Scripts/jquery-validation-1.17.0/dist/jquery.validate.min.js"></script>
+@using (Ajax.BeginForm("SaveHoSo", "QuanLyHoSo", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "failure",
+    OnSuccess = "FormSuccess"
+}, new { id = "frmHoSo", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="margin:auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">@(Model.HoSo.ID == 0 ? "Thêm mới hồ sơ" : "Cập nhật hồ sơ")</h4>
+            </div>
+            <div class="modal-body" style="height:470px;overflow:auto">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Tên kho:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("KHO_ID", Model.ListKho, "---Chọn kho---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Tên phông:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("PHONG_ID", Model.ListPhong, "---Chọn phông---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Phông số:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="PHONGSO" id="PHONGSO" class="form-control" value="@Model.HoSo.PHONGSO" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Mục lục số:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="MUCLUC_SO" id="MUCLUC_SO" class="form-control" value="@Model.HoSo.MUCLUC_SO" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Hộp số:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="HOPSO" id="HOPSO" class="form-control" value="@Model.HoSo.HOPSO" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Hồ sơ số:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="HOSO_SO" id="HOSO_SO" class="form-control" value="@Model.HoSo.HOSO_SO" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Tiêu đề: <span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" name="TIEUDE" id="TIEUDE" style="width:100% !important" class="form-control" value="@Model.HoSo.TIEUDE" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Chú giải: </label>
+                        </div>
+                        <div class="col-sm-10">
+                            <textarea name="CHUGIAI" id="CHUGIAI" class="form-control" rows="3" style="min-height:70px">@Model.HoSo.CHUGIAI</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Thời gian TL: <span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input type="text" name="THOIGIAN_TAILIEU" id="THOIGIAN_TAILIEU" style="width:100% !important" class="form-control" value="@Model.HoSo.THOIGIAN_TAILIEU" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Số lượng tờ:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="SOLUONG_TO" id="SOLUONG_TO" class="form-control" value="@Model.HoSo.SOLUONG_TO" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Bảo quản:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("THOIHAN_BAOQUAN_ID", Model.ListThoiHan, "---Thời hạn bảo quản---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Năm chỉnh lý:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("NAM_CHINHLY", Model.NamChinhLy, "---Chọn Năm---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Mức độ truy cập:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("MUCDO_TRUYCAP", Model.ListAccessModifier, "---Chọn mức độ---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                            <label>Hồ sơ năm:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("HOSO_NAM", Model.ListNamHoSo, "---Chọn năm---", new { @class = "form-control", @style = "width:100%" })
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Người nhập:<span class="red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownList("NGUOINHAP", Model.ListNguoiNhap, "---Người nhập---", new { @class = "form-control", @style = "width:100%", @multiple = "multiple" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="ID" name="ID" value="@Model.HoSo.ID" />
+                <input type="hidden" id="ListNguoiNhap" name="ListNguoiNhap" />
+                <button type="button" class="btn btn-success" onclick="SaveForm()">
+                    @{
+                        if (Model.HoSo.ID > 0)
+                        {
+                            <span>Cập nhật</span>
+                        }
+                        else
+                        {
+                            <span>Thêm mới</span>
+                        }
+                    }
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+}
+<script type="text/javascript">
+    function FormSuccess(response) {
+        NotiSuccess(response.Message);
+        CloseModalHoSo();
+        reloadData();
+    }
+    function failure(xhr, error) {
+        CommonJS.alert(xhr.responseText);
+    }
+    function SaveForm() {
+        if ($("#frmHoSo").valid()) {
+            $("#frmHoSo").submit();
+        }
+    }
+    $(document).on("change", "input[type=text]", function () {
+        if ($(this).val() != null && $(this).val().length > 0) {
+            $(this).val($(this).val().trim());
+        }
+    });
+    $(document).ready(function () {
+        $(".datepicker").datepicker({ dateFormat: 'dd/mm/yy', changeMonth: true, changeYear: true, yearRange: "-65:+65" })
+            .on('change', function () {
+                $(this).valid();  // triggers the validation test
+                //$(this).closest("form").valid();
+            });
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+        });
+        $("select.form-control").select2().change(function () {
+            $(this).valid();
+        });
+       $("#frmHoSo").validate({
+            onkeyup: false,
+            rules: {
+                KHO_ID: "required",
+                PHONG_ID: "required",
+                PHONGSO: {
+                    required: true,
+                    digits: true,
+                },
+                MUCLUC_SO: "required",
+                HOPSO: "required",
+                HOSO_SO: {
+                    required: true,
+                    HoSoSoExited: true
+                },
+                TIEUDE: {
+                    required: true,
+                    TieuDeExisted: true
+                },
+                THOIGIAN_TAILIEU:"required",
+                //SOLUONG_TO: {
+                //    digits: true
+                //},
+                THOIHAN_BAOQUAN_ID: {
+                    required: true
+                },
+                HOSO_NAM: "required",
+                NGUOINHAP: "required"
+
+            },
+            messages: {
+                KHO_ID: "Bạn chọn kho",
+                PHONG_ID: "Bạn chọn phông",
+                PHONGSO: {
+                    required: "Bạn nhập phông số",
+                    digits: "Phông phải là số",
+                },
+                MUCLUC_SO: "Bạn nhập mục lục số",
+                HOPSO: {
+                    required: "Bạn nhập hộp số",
+                },
+                HOSO_SO: "Bạn nhập hồ sơ số",
+                TIEUDE: {
+                    required: "Bạn nhập tiêu đề",
+                },
+                THOIGIAN_TAILIEU:"Bạn nhập thời gian tài liệu",
+                //SOLUONG_TO: {
+                //    digits: "Số lượng tờ phải là số"
+                //},
+                THOIHAN_BAOQUAN_ID: {required: "Bạn chọn thời hạn bảo quản"},
+                HOSO_NAM: "Bạn chọn hồ sơ năm",
+                NGUOINHAP: "Bạn chọn người nhập"
+            }
+            , errorElement: "em",
+            errorPlacement: function (error, element) {
+                error.addClass("help-block");
+                if (element.prop("type") === "checkbox") {
+                    error.insertAfter(element.parent("label"));
+                } else {
+                    if (element.next().length > 0) {
+                        error.insertAfter(element.next());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            },
+
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-4").addClass("has-error").removeClass("has-success");
+                $(element).parents(".col-sm-10").addClass("has-error").removeClass("has-success");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents(".col-sm-4").addClass("has-success").removeClass("has-error");
+                $(element).parents(".col-sm-10").addClass("has-success").removeClass("has-error");
+
+            },
+        });
+        $.validator.addMethod("TieuDeExisted", function (value, element) {
+            var result = true;
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("TieuDeExist")',
+                cache: false,
+                async: false,
+                dataType: 'json',
+                data: {
+                    tieuDe: value, id: $("#ID").val()
+                },
+                success: function (data) {
+                    console.log(!data);
+                    result = !data;
+                }
+            });
+            return result;
+        }, "Tiêu đề đã tồn tại");
+        $.validator.addMethod("HoSoSoExited", function (value, element) {
+            var result = true;
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("HoSoSoExist")',
+                cache: false,
+                async: false,
+                dataType: 'json',
+                data: {
+                    hoSoSo: value,
+                    id: $("#ID").val()
+                },
+                success: function (data) {
+                    console.log(data);
+                    result = !data;
+                }
+            });
+            return result;
+        }, "Hồ sơ số đã tồn tại");
+    });
+</script>

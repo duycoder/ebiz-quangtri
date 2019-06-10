@@ -1,0 +1,74 @@
+﻿@using Web.Areas.CCTCTHANHPHANArea.Models;
+@model ChuyenPhongBanVM
+<div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">Chuyển phòng ban - @Model.nguoiDung.HOTEN</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @Html.DropDownList("phongban", Model.listPhongBan, new { @class = " txt-select2", @style = "width:100%" })
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="button" class="btn btn-primary" onclick="saveVaiTro()">Hoàn thành</button>
+
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    var saveVaiTro = function () {
+        var idphong =parseInt($("#phongban").val());
+        $.ajax({
+            url: '/cctcthanhphanarea/cctcthanhphan/ChuyenBan',
+            type: 'post',
+            data:JSON.stringify({'id': @Model.nguoiDung.ID,'idphongban':idphong}),
+            dataType:"json",
+            contentType:"application/json",
+            success:successAjaxVaiTro,
+            error: function () {
+                NotiError("Không thực hiện được thao tác");
+            }
+        })
+
+    }
+
+
+    function successAjaxVaiTro(rs) {
+        if (rs.Status) {
+            NotiSuccess("Cập nhật thành công");
+            $("#ChuyenPhongUserModal").modal("hide");
+            reloadModel();
+            
+        } else {
+            NotiError(rs.Message);
+        }
+    }
+
+
+    var pagePhanQuyenfunction = function () {
+        $(".txt-select2").select2();
+    }
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js", pagePhanQuyenfunction);
+
+    });
+</script>

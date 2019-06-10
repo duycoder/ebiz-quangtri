@@ -1,0 +1,52 @@
+﻿@model Web.Areas.THUMUCLUUTRUArea.Models.TaiLieuThuocTinhModel
+<div class="form-group">
+    <h3 class="group-tittle mt10" style="margin-top:0px;">Danh sách thuộc tính của tài liệu</h3>
+</div>
+@{
+    int size = Model.ListThuocTinh.Count;
+    for (int i = 0; i < size; i += 2)
+    {
+        if (i + 1 < size)
+        {
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <label>@(Model.ListThuocTinh[i].TEN_THUOCTINH): </label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="hidden" name="ListThuocTinh[@i].THUOCTINH_ID" value="@Model.ListThuocTinh[i].ID" />
+                    <input type="text" name="ListThuocTinh[@i].GIATRI" id="" class="form-control" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <label>@(Model.ListThuocTinh[i + 1].TEN_THUOCTINH): </label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="hidden" name="ListThuocTinh[@(i+1)].THUOCTINH_ID" value="@Model.ListThuocTinh[i+1].ID" />
+                    <input type="text" name="ListThuocTinh[@(i+1)].GIATRI" id="" class="form-control" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <label>@(Model.ListThuocTinh[i].TEN_THUOCTINH): </label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="hidden" name="ListThuocTinh[@i].THUOCTINH_ID" value="@Model.ListThuocTinh[i].ID" />
+                    <input type="text" name="ListThuocTinh[@i].GIATRI" id="" class="form-control" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+                <div class="col-sm-2">&nbsp;</div>
+                <div class="col-sm-4">&nbsp;</div>
+            </div>
+        }
+    }
+}

@@ -1,0 +1,234 @@
+﻿@using Web.Areas.QL_LAIXEArea.Models;
+@using Newtonsoft.Json
+@model LaiXeBenhVienIndexViewModel
+@{
+    ViewBag.Title = "Quản lý xe";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var data = Html.Raw(JsonConvert.SerializeObject(Model.listLaiXeBenhViens.ListItem));
+}
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style type="text/css">
+    #btn--car-group-function a {
+        margin: 0 5px;
+    }
+
+    #tbl-xebenhvien {
+        padding: 0;
+    }
+</style>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6" id="btn--car-group-function">
+        <a class="btn btn-default pull-right" href="javascript:void(0)" id="btn--create-laixe-benhvien">
+            <i class="fa fa-plus"></i>&nbsp;<span>Thêm mới</span>
+        </a>
+
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button">
+            <i class="fa fa-search"></i>&nbsp;<span>Tìm kiếm</span>
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="widget-t-body no-padding">
+        <div class="jarviswidget">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fas fa-car txt-color-darken"></i>
+                </span>
+
+                <h2 class="group-title mt10">
+                    Quản lý lái xe tỉnh ủy
+                </h2>
+            </header>
+
+            <div class="widget-t-body no-padding">
+                <div id="tbl-laixebenhvien" class="hntbl-cover">
+                    <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ tên</th>
+                                <th>Giới tính</th>
+                                <th>Số CMND</th>
+                                <th>Điện thoại</th>
+                                <th>Email</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal--edit-laixe-benhvien" class="modal fade" tabindex="-1" role="dialog"></div>
+
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    var data = eval(@data);
+    function pageFunction(){
+        var config = [
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'HOTEN',
+                content: function (data) {
+                    return data.HOTEN;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'GIOITINH',
+                content: function (data) {
+                    return data.GIOITINH == true ? 'Nam' : 'Nữ';
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'CMND',
+                content: function (data) {
+                    return data.CMND;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'SODIENTHOAI',
+                content: function (data) {
+                    return data.SODIENTHOAI;
+                }
+            },{
+                isSort:true,
+                nameModel:'EMAIL',
+                content: function (data) {
+                    return data.EMAIL;
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'ID',
+                content: function (data) {
+                    var html = '<div class="btn-group">';
+                    html += '<a href="javascript:void(0)" onclick="edit('+data.ID+')" title="Chỉnh sửa"><i class="glyphicon glyphicon-edit"> </i></a>';
+                    html += '<a href="javascript:void(0)" onclick="deleteDriver('+data.ID+')" title="Xóa"><i class=" glyphicon glyphicon-remove" style="color:red"> </i></a>';
+                    html += '</div>';
+                    return html;
+                }
+            }
+        ]
+
+        var getDataFunction = function (page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("GetData")',
+                type: 'post',
+                cache: false,
+                data: {"pageIndex":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-laixebenhvien").hinetTable("data",{
+                        pageSize: pageSize!= -1 ? pageSize:data.Count,
+                        pageIndex: page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem
+                    });
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        }
+
+        var tblData=$("#tbl-laixebenhvien").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.listLaiXeBenhViens.TotalPage,
+            recordCount: @Model.listLaiXeBenhViens.Count,
+            getData:getDataFunction,
+            listItem:data,
+            config: config
+        });
+    }
+
+    function reloadData() {
+        $("#tbl-laixebenhvien").hinetTable("reload");
+    }
+
+    $(function(){
+        loadScript("/Scripts/jquery-hinet-table.js", function(){
+            pageFunction();
+
+            $('#btn--create-laixe-benhvien').on('click',function(){
+                $.get('/QL_LAIXEArea/QL_LAIXE/Create', function(rs){
+                    $('#modal--edit-laixe-benhvien').html(rs);
+                    $('#modal--edit-laixe-benhvien').modal('show');
+                });
+            })
+        });
+    });
+
+    function edit(id){
+        $.get('/QL_LAIXEArea/QL_LAIXE/Edit/'+id, function(rs){
+            $('#modal--edit-laixe-benhvien').html(rs);
+            $('#modal--edit-laixe-benhvien').modal('show');
+       });
+    }
+    
+    function deleteDriver(id){
+        $.confirm({
+                'title': 'Xác nhận xóa',
+                'message': 'Bạn có chắc chắn muốn xóa lái xe này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("Delete")',
+                                data: { 'id': id },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess('Xóa lái xe thành công');
+                                        reloadData();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+</script>

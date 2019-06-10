@@ -1,0 +1,349 @@
+﻿@using Business.CommonBusiness
+@using Web.FwCore
+@using Web.Common
+@using Web.Areas.QuanLyHoSoArea.Models
+@model QuanLyHoSoDetailViewModel
+<style>
+    .modal-body label span {
+        font-weight: bold;
+    }
+
+    .italic {
+        font-weight: normal !important;
+        font-style: italic;
+    }
+</style>
+<div class="modal-dialog" style="margin:auto">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Chi tiết hồ sơ</h4>
+        </div>
+        <div class="modal-body form-horizontal" style="height:500px;overflow:auto">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Tên kho:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.TEN_KHO))
+                            {
+                                <span> @Model.HoSo.TEN_KHO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Tên phông:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.TEN_PHONG))
+                            {
+                                <span> @Model.HoSo.TEN_PHONG </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Phông số:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.PHONGSO))
+                            {
+                                <span> @Model.HoSo.PHONGSO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Mục lục số:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.MUCLUC_SO))
+                            {
+                                <span> @Model.HoSo.MUCLUC_SO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Hộp số:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.HOPSO))
+                            {
+                                <span> @Model.HoSo.HOPSO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Hồ sơ số:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.HOSO_SO))
+                            {
+                                <span> @Model.HoSo.HOSO_SO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Tiêu đề: </label>
+                    </div>
+                    <div class="col-sm-10">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.TIEUDE))
+                            {
+                                <span>@Model.HoSo.TIEUDE</span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Chú giải: </label>
+                    </div>
+                    <div class="col-sm-10">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.CHUGIAI))
+                            {
+                                <span>@Model.HoSo.CHUGIAI</span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Thời gian TL: </label>
+                    </div>
+                    <div class="col-sm-10">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.THOIGIAN_TAILIEU))
+                            {
+                                <span>@Model.HoSo.THOIGIAN_TAILIEU</span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Số lượng tờ:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (Model.HoSo.NAM_CHINHLY.HasValue)
+                            {
+                                <span> @Model.HoSo.SOLUONG_TO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Hạn bảo quản:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (Model.HoSo.THOIHAN_BAOQUAN_ID.HasValue)
+                            {
+                                <span>@Model.HoSo.THOIHAN</span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Năm chỉnh lý:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (Model.HoSo.NAM_CHINHLY.HasValue)
+                            {
+                                <span> @Model.HoSo.SOLUONG_TO </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Mức độ truy cập:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.HoSo.TEN_MUCDO_TRUYCAP))
+                            {
+                                <span> @Model.HoSo.TEN_MUCDO_TRUYCAP </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label>Hồ sơ năm:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (Model.HoSo.HOSO_NAM.HasValue)
+                            {
+                                <span> @Model.HoSo.HOSO_NAM </span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Người nhập:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>
+                            @if (!string.IsNullOrEmpty(Model.NguoiNhap))
+                            {
+                                <span>@Model.NguoiNhap</span>
+                            }
+                            else
+                            {
+                                <span class="italic">Chưa có thông tin</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12" style="padding-left:30px">
+                    <label class="text-danger">Danh sách văn bản</label>
+                    <div id="tblVanBan">
+                        @Html.Partial("_ListVanBan", Model.ListVanBan)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+
+</div>
+
+}
+<script type="text/javascript">
+    function DeleteVanBan(id) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa văn bản này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+
+                        $.ajax({
+                            url: '/QuanLyHoSoArea/QuanLyHoSo/DeleteVanBan',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                    NotiError(rs.Message);
+                                reloadVanBan();
+                                reloadData();
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+
+                            }
+                        })
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    function reloadVanBan()
+    {
+        AjaxCall("/QuanLyHoSoArea/QuanLyHoSo/GetListVanBan", "get", { hoSoId:@Model.HoSo.ID}, function (rs) {
+            $("#tblVanBan").html(rs);
+        });
+    }
+    $(document).ready(function () {
+        $("select.form-control").select2().on("change", function (e) {
+            $(this).valid()
+        });
+    });
+</script>

@@ -1,0 +1,297 @@
+﻿@using Web.Areas.CongViecArea.Models
+@model CongViecViewModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .red {
+        color: red;
+    }
+
+    .bs-example {
+        position: relative;
+        padding: 15px 15px 15px;
+        margin: 0 0px 15px;
+        margin-left: 0;
+        margin-right: 0;
+        background-color: #fff;
+        border-width: 1px;
+        border-color: #ddd;
+        border-radius: 4px 4px 0 0;
+        box-shadow: none;
+        border-style: solid;
+    }
+
+        .bs-example:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+</style>
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        @*<a class="btn btn-default pull-right" href="javascript:ActionCreate()">
+                <i class="fa fa-plus"></i> <span>Thêm mới văn bản trình ký</span>
+            </a>*@
+        <a class="btn btn-default pull-right" href="@Url.Action("Index")">
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
+        </a>
+    </div>
+</div>
+<div id="widget-grid">
+    <div class="row">
+        <article class="col-sm-12 col-md-12">
+            <div class="jarviswidget jarviswidget-sortable">
+                <header role="heading">
+                    <h2>Tạo mới công việc cá nhân</h2>
+                </header>
+                <div role="content">
+                    <div class="widget-body">
+                        <form id="workform" class="form-horizontal" action="QuanLyCongViec/QuanLyCongViec/InsertCongViecCaNhan" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Tên công việc<span class="red">*</span>
+                                </label>
+                                <div class="col-md-10">
+                                    <input class="form-control required" placeholder="Tên công việc" type="text" name="TENCONGVIEC">
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                    @*Dành cho công việc cá nhân*@
+                                    <input type="hidden" name="ISVIECCANHAN" value="1">
+
+                                </div>
+                            </div>
+                            @if (Model.TYPE >= 1)
+                            {
+                                @*<div class="form-group">
+                                    <label class="col-md-2 control-label"></label>
+                                    <div class="col-md-10">
+
+
+                                        <div class="bs-example">
+                                            @if (Model.VanBanDen != null)
+                                            {
+                                                <input type="hidden" name="HSCV_VANBANDEN_ID" value="@Model.VanBanDen.ID" />
+                                                <blockquote>
+                                                    <b>Văn bản đến liên quan: <a href="/#VanBanDenArea/VanBanDen/ViewDetail/@Model.VanBanDen.ID" target="_blank">@Model.VanBanDen.SOKYHIEU</a></b>
+                                                    <p>
+                                                        @Model.VanBanDen.TRICHYEU
+                                                    </p>
+                                                    <small>Đơn vị ban hành: <cite title="Source Title">@Model.VanBanDen.DONVIBANHANH</cite></small>
+                                                    <small>Hình thức văn bản: <cite title="Source Title">@Model.VanBanDen.LOAIVANBAN</cite></small>
+                                                    <small>Độ khẩn: <cite title="Source Title">@Model.VanBanDen.DOKHAN</cite></small>
+                                                    <small>Ngày ban hành: <cite title="Source Title">@string.Format("{0:dd/MM/yyyy}", Model.VanBanDen.NGAYVANBAN)</cite></small>
+                                                    <small>Thời hạn xử lý: <cite title="Source Title">@string.Format("{0:dd/MM/yyyy}", Model.VanBanDen.THOIHAN_XULY)</cite></small>
+                                                </blockquote>
+                                            }
+                                            @if (Model.VanBanDi != null)
+                                            {
+                                                <input type="hidden" name="HSCV_VANBANDI_ID" value="@Model.VanBanDi.ID" />
+                                                <blockquote>
+                                                    <b>Văn bản đi liên quan: <a href="/#hsvanbandiarea/hsvanbandi/detail/@Model.VanBanDi.ID" target="_blank">@Model.VanBanDi.TRICHYEU</a></b>
+                                                    <p>
+                                                        @Model.VanBanDi.NOIDUNGVANBAN
+                                                    </p>
+                                                    <small>Đơn vị soạn thảo: <cite title="Source Title">@Model.VanBanDi.DONVISOANTHAO</cite></small>
+                                                    <small>Hình thức văn bản: <cite title="Source Title">@Model.VanBanDi.LOAIVANBAN</cite></small>
+                                                    <small>Độ khẩn: <cite title="Source Title">@Model.VanBanDi.DOKHAN</cite></small>
+                                                </blockquote>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>*@
+                            }
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Ngày bắt đầu<span class="red">*</span>
+                                </label>
+                                <div class="col-md-4">
+                                    <input class="form-control datepicker1 required" placeholder="Ngày bắt đầu" type="text" name="NGAYBATDAU">
+                                    <div class="note-error">
+                                        <span id="ErrNGAYBATDAU" class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                                <label class="col-md-2 control-label">
+                                    Ngày kết thúc<span class="red">*</span>
+                                </label>
+                                <div class="col-md-4">
+                                    <input class="form-control datepicker1 required" placeholder="Ngày kết thúc" type="text" name="HANKETTHUC">
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Độ ưu tiên
+                                </label>
+                                <div class="col-md-4">
+                                    @Html.DropDownList("DOUUTIEN_ID", Model.ListDoUuTien, new { @class = "selectpicker1" })
+                                </div>
+                                <label class="col-md-2 control-label">
+                                    Độ khẩn
+                                </label>
+                                <div class="col-md-4">
+                                    @Html.DropDownList("TRANGTHAI_ID", Model.ListDoKhan, new { @class = "selectpicker1" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Nội dung công việc
+                                    @*<span class="red">*</span>*@
+                                </label>
+                                <div class="col-md-10">
+                                    <textarea style="display:none" class="form-control" type="text" id="NOIDUNGCONGVIEC_INPUT" name="NOIDUNGCONGVIEC"></textarea>
+                                    <div id="NOIDUNGCONGVIEC"></div>
+                                    <div class="note-error">
+                                        <span class="error mes-note-error"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Tài liệu đính kèm
+                                </label>
+                                <div class="col-md-10">
+                                    @{Html.RenderPartial("../Common/UploadFile", new List<Model.Entities.TAILIEUDINHKEM>());}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Nhận thông báo
+                                </label>
+                                <div class="col-md-10">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" class="checkbox style-0" value="1" name="TYPE_NOTIFY">
+                                        <span>Qua email</span>
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" class="checkbox style-0" value="2" name="TYPE_NOTIFY">
+                                        <span>Tin nhắn</span>
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" class="checkbox style-0" value="3" name="TYPE_NOTIFY">
+                                        <span>Tin thông báo</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">
+                                    Nhắc việc trước
+                                </label>
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <input class="form-control" id="append" type="text" name="SONGAYNHACTRUOCHAN">
+                                        <span class="input-group-addon">(ngày)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <legend></legend>
+                            <div class="form-group" style="text-align:center">
+                                <button type="button" class="btn btn-success" onclick="saveForm()">Lưu</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+
+
+<script>
+    //pageSetUp();
+
+    var pageFunction = function () {
+
+        $(".selectpicker1").selectpicker();
+        $(".datepicker1").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-20:+20"
+        });
+        CKEDITOR.replace('NOIDUNGCONGVIEC', {  // Define the toolbar groups as it is a more accessible solution.
+            toolbarGroups: [
+    { "name": "basicstyles", "groups": ["basicstyles"] },
+    { "name": "links", "groups": ["links"] },
+    { "name": "paragraph", "groups": ["list", "blocks"] },
+    { "name": "document", "groups": ["mode"] },
+    { "name": "insert", "groups": ["insert"] },
+    { "name": "styles", "groups": ["styles"] },
+    { "name": "about", "groups": ["about"] }
+            ],
+            // Remove the redundant buttons from toolbar groups defined above.
+            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+        });
+        //    CKEDITOR.replace('NOIDUNGCONGVIEC', {  // Define the toolbar groups as it is a more accessible solution.
+        //        toolbarGroups: [
+        //{ "name": "basicstyles", "groups": ["basicstyles"] },
+        //{ "name": "links", "groups": ["links"] },
+        //{ "name": "paragraph", "groups": ["list", "blocks"] },
+        //{ "name": "document", "groups": ["mode"] },
+        //{ "name": "insert", "groups": ["insert"] },
+        //{ "name": "styles", "groups": ["styles"] },
+        //{ "name": "about", "groups": ["about"] }
+        //        ],
+        //        // Remove the redundant buttons from toolbar groups defined above.
+        //        removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+        //    });
+    }
+    $(document).ready(function () {
+        loadScript("/ckeditor/ckeditor.js", function () {
+            loadScript("/Content/select/js/bootstrap-select.js", pageFunction);
+        });
+    })
+    function saveForm() {
+        var checkRequired = RequireForm("workform");
+        if (checkRequired == false) {
+            NotiError("Kiểm tra lại các thông tin cần nhập");
+        } else {
+            $("#NOIDUNGCONGVIEC_INPUT").val(CKEDITOR.instances['NOIDUNGCONGVIEC'].getData());
+            $("#workform").submit();
+        }
+        return false;
+    }
+    function RequireForm(formID) {
+        var check_err = true;
+        var item = $("#" + formID + " .required");
+        item.each(function () {
+            //var parent = $(this).parents(" .form-group").first();
+            var errText = $(this).next().find(".error");
+            if ($(this).val() == null || $(this).val().length == 0) {
+                console.log($(this));
+                errText.html("Bạn phải nhập thông tin này");
+                errText.css('display', 'inline');
+                check_err = false;
+            } else {
+                errText.css('display', 'none');
+            }
+        })
+
+        return check_err;
+    }
+</script>

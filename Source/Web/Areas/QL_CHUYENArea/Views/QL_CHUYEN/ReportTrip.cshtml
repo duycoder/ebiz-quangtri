@@ -1,0 +1,305 @@
+﻿@using Web.Areas.QL_CHUYENArea.Models;
+@using Business.CommonModel.CONSTANT;
+@model ReportTripViewModel
+@{
+    ViewBag.Title = "Báo cáo công tác vận chuyển";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style type="text/css">
+    .select2 {
+        width: 100%;
+    }
+
+    .row-block, .well {
+        overflow: hidden;
+        margin-bottom:0;
+    }
+
+    .block--button--submit {
+        margin-top: 0;
+    }
+
+    #content .jarviswidget {
+        margin: 0 0 10px 0;
+    }
+
+    #form--report--by-day .well,
+    #form--report--by-month .well,
+    #form--report--by-year .well {
+        border-top:none;
+    }
+
+    #block--select--report-type .well {
+        border-bottom:none;
+    }
+</style>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+    </div>
+</div>
+
+<div id="content">
+    <div class="widget-t-body no-padding">
+        <div class="jarviswidget">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fas fa-bar-chart-o txt-color-darken"></i>
+                </span>
+
+                <h2 class="group-tittle mt10">
+                    Báo cáo công tác vận chuyển
+                </h2>
+            </header>
+        </div>
+    </div>
+
+    <div id="block--select--report-type">
+        <div id="collapseDiv" class="" aria-expanded="false" role="tabpanel">
+            <div class="well">
+                <div class="row row-block">
+                    <div class="col-md-2 control-label" for="TENXE">Loại báo cáo:</div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("select--report-type", Model.groupOfTypes, "--- Chọn loại báo cáo ---", new { @class = "select2" })
+                    </div>
+
+                    <div class="col-md-2 control-label" for="CANBO_ID">Cán bộ:</div>
+                    <div class="col-md-4">
+                        @Html.DropDownList("CANBO_ID", Model.groupOfUsers, new { @class = "select2", @multiple="true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @using (Ajax.BeginForm("ReportTrip", "QL_CHUYEN", new { @area = "QL_CHUYENArea" }, new AjaxOptions
+    {
+        HttpMethod = "POST",
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "block--report-result"
+    }, new { @id = "form--report--by-day", @class = "form--report" }))
+    {
+        <input type="hidden" name="CANBO_ID" />
+        <div class="well" style="padding-top:0">
+            <input type="hidden" name="queryType" value="@LOAI_BAOCAO_THOIGIAN_CONSTANT.NGAY" />
+            <div class="row row-block">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryTimeStart">
+                        Ngày bắt đầu:
+                    </label>
+                </div>
+
+                <div class="col-sm-4 form-group">
+                    <input type="text" class="form-control datepicker required checkDateValid checkHTMLInjection" id="queryTimeStart" name="queryTimeStart" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryTimeEnd">
+                        Ngày kết thúc:
+                    </label>
+                </div>
+
+                <div class="col-sm-4 form-group">
+                    <input type="text" class="form-control datepicker required checkDateValid checkHTMLInjection" id="queryTimeEnd" name="queryTimeEnd" />
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 block--button--submit">
+                <center>
+                    <button type="submit" class="btn btn-primary">
+                        <span>
+                            <i class="fa fa-bar-chart"></i>&nbsp;BÁO CÁO
+                        </span>
+                    </button>
+                </center>
+            </div>
+        </div>
+    }
+
+
+    @using (Ajax.BeginForm("ReportTrip", "QL_CHUYEN", new { @area = "QL_CHUYENArea" }, new AjaxOptions
+    {
+        HttpMethod = "POST",
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "block--report-result"
+    }, new { @id = "form--report--by-month", @class = "hide form--report" }))
+    {
+        <input type="hidden" name="CANBO_ID" />
+        <div class="well" style="padding-top:0">
+            <input type="hidden" name="queryType" value="@LOAI_BAOCAO_THOIGIAN_CONSTANT.THANG" />
+
+            <div class="row row-block">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryMonth">
+                        Tháng:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryMonth", Model.groupOfMonths, "--- Chọn tháng ---", new { @class = "requiredDropDownList select2" })
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryYear">
+                        Năm:
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryYear", Model.groupOfYears, "--- Chọn năm ---", new { @class = "requiredDropDownList select2" })
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 block--button--submit">
+                    <center>
+                        <button type="submit" class="btn btn-primary">
+                            <span>
+                                <i class="fa fa-bar-chart"></i>&nbsp;BÁO CÁO
+                            </span>
+                        </button>
+                    </center>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    @using (Ajax.BeginForm("ReportTrip", "QL_CHUYEN", new { @area = "QL_CHUYENArea" }, new AjaxOptions
+    {
+        HttpMethod = "POST",
+        InsertionMode = InsertionMode.Replace,
+        UpdateTargetId = "block--report-result"
+    }, new { @id = "form--report--by-year", @class = "hide form--report" }))
+    {
+        <input type="hidden" name="CANBO_ID" />
+        <div class="well" style="padding-top:0">
+            <input type="hidden" name="queryType" value="@LOAI_BAOCAO_THOIGIAN_CONSTANT.NAM" />
+            <div class="row row-block">
+                <div class="col-sm-2">
+                    <label class="control-label" for="queryYear">
+                        Năm
+                    </label>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @Html.DropDownList("queryYear", Model.groupOfYears, "--- Chọn năm ---", new { @class = "requiredDropDownList select2" })
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 block--button--submit">
+                    <center>
+                        <button type="submit" class="btn btn-primary">
+                            <span>
+                                <i class="fa fa-bar-chart"></i>&nbsp;BÁO CÁO
+                            </span>
+                        </button>
+                    </center>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div id="block--report-result">
+
+    </div>
+</div>
+
+<script>
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $(".select2").select2();
+        });
+
+        $(".datepicker").datepicker({
+            dateFormat: 'dd/mm/yy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-20:+20"
+        });
+
+        $('#CANBO_ID').on('change',function(){
+            $('input[type=hidden][name="CANBO_ID"]').val($(this).val());
+        });
+
+        $('#select--report-type').on('change',function(){
+            $('.form--report').addClass('hide');
+
+            var type = $(this).val();
+            var formId = '';
+            switch(type){
+                case '@LOAI_BAOCAO_THOIGIAN_CONSTANT.NGAY':
+                    formId = 'form--report--by-day';
+                    break;
+                case '@LOAI_BAOCAO_THOIGIAN_CONSTANT.THANG':
+                    formId = 'form--report--by-month';
+                    break;
+                case '@LOAI_BAOCAO_THOIGIAN_CONSTANT.NAM':
+                    formId = 'form--report--by-year';
+                    break;
+           }
+           if(formId != ''){
+                $('#' + formId).removeClass('hide');
+           }
+        });
+
+        $('form').on('submit',function(evt){
+            var formId = $(this).attr('id');
+            var isValidRequiredField = requiredFieldForFormId(formId);
+            if (!isValidRequiredField) {
+                return false;
+            }
+
+            var isValidSelectField = RequireDropDownlist(formId);
+            if (!isValidSelectField) {
+                return false;
+            }
+
+            var isValidDateField = validateDateField(formId);
+            if (!isValidDateField) {
+                return false;
+            }
+
+            var isValidHTMLInjection = validateHTMLInjectionField(formId);
+            if (!isValidHTMLInjection) {
+                return false;
+            }
+            return true;
+        });
+    })
+
+    function exportReportTrip(){
+        $.post('/QL_CHUYENArea/QL_CHUYEN/ExportReportTrip', function(result){
+            console.log(result);
+            if(result.Status){
+                location.href = result.Message;
+            }else{
+                NotiError(result.Message);
+            }
+        });
+    }
+</script>

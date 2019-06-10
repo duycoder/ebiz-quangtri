@@ -1,0 +1,214 @@
+﻿@using Web.Models
+@model ChatViewModel
+@{
+    //var chat_id = !string.IsNullOrEmpty(Model.chatPanel_id) ? Model.chatPanel_id : string.Format("{0}_{1}_{2}", Model.cosoId.ToString(), Model.fromUser, Model.toUser);
+    var chat_id = Model.chatPanel_id;
+}
+
+<div class="pnlchat" id="@chat_id">
+    <div class="chat-header">
+        <div class="chat-title">
+            <span id="chatUser">@(Html.Raw(Model.fromUser == Model.currentUserName ? Model.toFullName : Model.fromFullName)) </span>
+        </div>
+        <a style="right:30px" title="Thêm thành viên vào nhóm chat" href="javascript:ShowAddUserToNewGroupChat('@chat_id')">
+            <img src="~/Content/Custom/css/img/add_user.png" />
+        </a>
+        @*<a style="right:10px" title="Đóng cửa sổ chat này" href="javascript:CloseChatBox('@Model.fromUser', '@Model.toUser')">
+                <img src="~/Content/Custom/css/img/c-close.png" />
+            </a>*@
+    </div>
+    <div class="chat-body" style="height:450px;">
+        <div class="c-group" style="background:#f9f9f9">
+            <input style="width: 92%;" type="text" placeholder="Thêm thành viên" class="txtAddUser" />
+            <a class="btnAddUser" href="javascript:AddUserToNewGroupChat('@chat_id','@Model.fromUser', '@Model.toUser','@Model.fromFullName', '@Model.toFullName')" style="background-color: #336699; padding: 4px 5px 5px 5px; color: white;">Xong</a>
+            <p style="margin-bottom:0px;" class="list-FullName"></p>
+            <input type="hidden" class="list-UserName" value="" />
+        </div>
+        <div class="c-content" style="height:430px;max-height:430px; overflow-y:auto; float:left;width:100%;background:#f9f9f9;">
+            <div class="conversation">
+                <div class="fbChatConvItem">
+                    <div class="show_time">@string.Format("{0:dd/MM/yyyy}", DateTime.Now)</div>
+                </div>
+                @if (Model.listChat != null && Model.listChat.Count > 0)
+                {
+                    foreach (var chat in Model.listChat)
+                    {
+                        if (Model.currentUserName == chat.TOUSER)
+                        {
+                            <div class="fbChatConvItem" data-id="@chat.ID">
+                                <div class="messages">
+                                    <div class="direction_ltr">
+                                        <b class="st">@chat.FROMFULLNAME</b>
+                                        @if (chat.NGAYGUI.Value.Year == DateTime.Now.Year && chat.NGAYGUI.Value.Month == DateTime.Now.Month && chat.NGAYGUI.Value.Day == DateTime.Now.Day)
+                                        {
+                                            <span class="s-date">@string.Format("{0:hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="s-date">@string.Format("{0:dd/MM/yyyy | hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        <p>@Html.Raw(chat.NOIDUNG)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        if (Model.currentUserName == chat.FROMUSER)
+                        {
+                            <div class="fbChatConvItem"  data-id="@chat.ID">
+                                <div class="messages">
+                                    <div class="direction_ltr">
+                                        <b class="cl">Bạn</b>
+                                        @if (chat.NGAYGUI.Value.Year == DateTime.Now.Year && chat.NGAYGUI.Value.Month == DateTime.Now.Month && chat.NGAYGUI.Value.Day == DateTime.Now.Day)
+                                        {
+                                            <span class="s-date">@string.Format("{0:hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="s-date">@string.Format("{0:dd/MM/yyyy | hh:mm:ss}", chat.NGAYGUI)</span>
+                                        }
+                                        <p>@Html.Raw(chat.NOIDUNG)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="c-tip" style="float:left;width:100%; display:block;height:15px; background:#f9f9f9"></div>
+        <div class="c-action" style="float:left;width:100%;position:relative;background:#fff;border: solid 1px #ddd;">
+            <input type="text" class="c-input" placeholder="Nhập tin nhắn ..." style="height:56px;" />
+            <div style="float:left; width:52px; margin-right:2px;margin-left:2px; padding-top:10px">
+                @*<a style="padding: 0px;width: 16px;margin: 0px 2px 0px 0px;float:left;" title="Biểu tượng" href="javascript:showBieuTuongChatPanel('@chat_id','@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName')" class="btnemoticon"></a>*@
+                <a style="padding: 0px;width: 16px;margin: 0px 2px 0px 0px;float:left;" title="Đính kèm tệp" href="javascript:sendFileAttach('@chat_id')" class="btnAttFile"></a>
+                <a style="padding: 0px;width: 16px;margin: 0px;float:left;" title="Gửi hình ảnh" href="javascript:sendFileAttachImage('@chat_id')" class="btnSendPicture"></a>
+            </div>
+            <div class="overview"></div>
+            <input type="hidden" id="MAXITEM" value="@(Model.listChat!=null && Model.listChat.Count > 0 ? Model.listChat[0].ID : 0)" />
+        </div>
+        <div style="display:none;" class="_sendFileAttach">
+            @using (Html.BeginForm("UploadFileAttachmentChat", "Common", new { area = "" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="file" name="attachment" multiple="" accept="*" title="Thêm tệp" class="fileAttach">
+                <input type="submit" name="btnSaveUploadFileAttachment" class="btnSaveUploadFileAttachment" />
+            }
+        </div>
+        <div style="display:none;" class="_sendFileAttachImage">
+            @using (Html.BeginForm("UploadFileAttachmentChat", "Common", new { area = "" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="file" name="attachment" multiple="" accept="image/*" title="Thêm ảnh" class="fileAttachImage">
+                <input type="submit" name="btnSaveUploadFileAttachmentImage" class="btnSaveUploadFileAttachmentImage" />
+            }
+        </div>
+    </div>
+    @{
+        chat_id = chat_id.Replace(".", "\\\\.");
+        chat_id = chat_id.Replace("@", "\\\\@");
+    }
+    <script>
+        var chatPanel = $("#@chat_id .c-content");
+        $("#@chat_id .c-content").animate({ scrollTop: $("#@chat_id .c-content").prop("scrollHeight") }, 'slow');
+        //$("#@chat_id .c-input").focus();
+        $("#@chat_id .c-title").click(function () {
+            if ($("#@chat_id").hasClass("active")) {
+                $("#@chat_id").removeClass("active");
+                $("#@chat_id .overview").hide();
+            }
+            else {
+                $("#@chat_id").addClass("active");
+                $("#@chat_id").find("input[class='c-input']").focus();
+            }
+        });
+        $("#@chat_id .c-input").focus(function () {
+            $("#@chat_id").addClass("active");
+            $("#@chat_id .overview").hide();
+        });
+        $("#@chat_id .c-input").keyup(function () {
+            var content = $("#@chat_id .c-input").val();
+            if (content.length > 0) {
+                DisplayTyping('@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName');
+            }
+            else {
+                HideTyping('@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName');
+            }
+        });
+        @*$("#@chat_id .c-input").focusout(function () {
+            HideTyping('@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName');
+        });*@
+        $("#@chat_id .c-input").bind('keypress', function (e) {
+            if (e.keyCode == 13) {
+                SendChatPanel('@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName', '@chat_id');
+            }
+        });
+        $("#@chat_id .fileAttach").change(function () {
+            //alert("change");
+            $("#@chat_id .btnSaveUploadFileAttachment").click();
+        });
+        $("#@chat_id .txtAddUser").keypress(function () {
+            CallAutoCompleteUser('@chat_id');
+        });
+        $("#@chat_id ._sendFileAttach form").ajaxForm({
+            beforeSend: function () {
+
+            },
+            uploadProgress: function () {
+
+            },
+            success: function (data) {
+                SendChatFile(data, '@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName');
+            },
+            complete: function () {
+            },
+            error: function (data) {
+
+            }
+        });
+
+        $("#@chat_id .fileAttachImage").change(function () {
+            //alert("change");
+            $("#@chat_id .btnSaveUploadFileAttachmentImage").click();
+        });
+        $("#@chat_id ._sendFileAttachImage form").ajaxForm({
+            beforeSend: function () {
+
+            },
+            uploadProgress: function () {
+
+            },
+            success: function (data) {
+                SendChatFile(data, '@Model.fromUser', '@Model.toUser', '@Model.fromFullName', '@Model.toFullName');
+            },
+            complete: function () {
+            },
+            error: function (data) {
+
+            }
+        });
+        chatPanel.scroll(function () {
+            if (chatPanel.scrollTop() <= 0) {
+                //console.log("Load thêm dữ liệu nhỏ hơn " + $("#MAXITEM").val());
+                if ($("#MAXITEM").val() != "0") {
+                    $.ajax({
+                        type: "POST",
+                        url: '/ChatArea/Chat/GetMoreChatContent',
+                        cache: false,
+                        data: {
+                            fromUser: '@Model.fromUser',
+                            toUser: '@Model.toUser',
+                            fromFullName: '@Model.fromFullName',
+                            toFullName: '@Model.toFullName',
+                            chatId: '@chat_id',
+                            maxItem: $("#MAXITEM").val()
+                        },
+                        success: function (datachat) {
+                            $(".conversation").prepend(datachat);
+                            chatPanel.animate({ scrollTop: chatPanel.height() });
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</div>

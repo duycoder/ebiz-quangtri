@@ -1,0 +1,187 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@using Business.CommonModel.QLPHONGHOP;
+@model PhongHopViewModel
+@{
+    ViewBag.Title = "Danh sách phòng họp";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style type="text/css">
+    #modal--room--booking .modal-body,
+    #modal--detail--booking .modal-body {
+        max-height: 550px !important;
+        font-size: 13px;
+    }
+
+    .select2 {
+        width: 100% !important;
+    }
+
+    #calendar--tabs-content .span--important--book {
+        width: 100%;
+        height: 20px;
+        line-height: 20px;
+        background: #b50101;
+        color: white;
+        position: relative;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+        #calendar--tabs-content .span--important--book:before {
+            content: '';
+            border: 10px solid #b50101;
+            border-left-color: white;
+            border-left-width: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #calendar--tabs-content .span--important--book:after {
+            content: '';
+            border: 10px solid #b50101;
+            border-right-color: white;
+            border-right-width: 10px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+</style>
+
+<div id="ribbon">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6"></div>
+</div>
+
+<div id="content">
+    <div class="widget-t-body no-padding">
+        <div class="jarviswidget">
+            <header role="heading">
+                <span class="widget-icon">
+                    <i class="fas fa-calendar txt-color-darken"></i>
+                </span>
+
+                <h2 class="group-tittle mt10">
+                    Quản lý phòng họp
+                </h2>
+            </header>
+        </div>
+    </div>
+
+    <div id="block--list--calendars">
+        @{Html.RenderAction("SearchPhongHop", new { searchModel = new QLPHONGHOP_SEARCH() });}
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal--room--booking">
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal--detail--booking">
+
+</div>
+
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<script>
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+
+    function search(searchModel){
+        $.ajax({
+                url: '/QLPHONGHOPArea/QLPHONGHOP/SearchPhongHop',
+                type: 'post',
+                dataType : "html",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(searchModel),
+                success: function (result) {
+                    $('#block--list--calendars').html(result);
+                }, error: function (result) {
+                    NotiError('Có lỗi xảy ra');
+                }
+        })
+    }
+
+    function booking(id){
+        $.get('/QLPHONGHOPArea/QLPHONGHOP/BookingRoom?id='+id, function(result){
+            $('#modal--room--booking').html(result);
+            $('#modal--room--booking').modal('show');
+        });
+    }
+
+    function showInfo(id){
+        $.get('/QLPHONGHOPArea/QLPHONGHOP/DetailBooking?id='+id, function(result){
+            $('#modal--detail--booking').html(result);
+            $('#modal--detail--booking').modal('show');
+        });
+    }
+
+    function cancel(id){
+        $.confirm({
+                'title': 'Xác nhận hủy',
+                'message': 'Bạn có chắc chắn muốn hủy lịch họp này?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $.ajax({
+                                url: '@Url.Action("DeleteLichHop")',
+                                data: { 'id': id, 'isCancel': true },
+                                type: 'post',
+                                success: function (rs) {
+                                    if (rs.Status) {
+                                        NotiSuccess('Hủy lịch họp thành công');
+                                        searchLichByWeek();
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-default',
+                        'action': function () { }
+                    }
+                }
+            });
+    }
+
+
+    function saveBookingFailure(){
+        NotiError('Đặt phòng không thành công');
+    }
+
+    function saveBookingSuccess(rs){
+        if(rs.Status){
+            NotiSuccess(rs.Message);
+            $('#modal--room--booking').modal('hide');
+            searchLichByWeek();
+        }else{
+            NotiError(rs.Message);
+        }
+    }
+
+
+    function searchLichByWeek(){
+        //lấy ngày đầu tiên của tuần
+       var week = parseInt($('#select--week').val());
+       var year = parseInt($('#select--year').val());
+       var day = (1 + (week - 1) * 7);
+       var startDate = new Date(year, 0, day + 1);
+       var searchModel = {
+            calendarDay: startDate,
+       }
+       search(searchModel);
+    }
+</script>

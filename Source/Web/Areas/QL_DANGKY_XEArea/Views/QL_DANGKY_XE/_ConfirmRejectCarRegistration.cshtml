@@ -1,0 +1,60 @@
+﻿@using Model.Entities;
+@model QL_DANGKY_XE
+@using (Ajax.BeginForm("RejectCarRegistration", "QL_DANGKY_XE", new { @area = "QL_DANGKY_XEArea" }, new AjaxOptions
+{
+    HttpMethod = "POST",
+    OnSuccess = "onRejectSuccess",
+    OnFailure = "onRejectFailure"
+}, new { @id = "form--reject-car-registration" }))
+{
+    <input type="hidden" name="ID" value="@Model.ID" />
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    KHÔNG TIẾP NHẬN YÊU CẦU ĐĂNG KÝ XE
+                </h5>
+            </div>
+            <div class="modal-body">
+                <fieldset>
+                    <div class="row">
+                        <section class="col col-lg-12">
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-3">
+                                        <label class="lbl control-label" for="LYDO_TUCHOI">
+                                            Lý do từ chối:&nbsp;<span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <textarea name="LYDO_TUCHOI" id="LYDO_TUCHOI" class="form-control required"></textarea>
+                                        <div class="note-error">
+                                            <span class="error mes-note-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="btn--reject-car-registration">Gửi</a>
+                <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(function(){
+        $('#btn--reject-car-registration').on('click',function(){
+            var formName = 'form--reject-car-registration';
+            var isValid = requiredFieldForFormId(formName);
+            if(isValid){
+                $('#'+formName).submit();
+                $('#modal--reject-car-register').modal('hide');
+            }
+        });
+    })
+</script>

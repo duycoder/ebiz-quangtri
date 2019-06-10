@@ -1,0 +1,18 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@model EditLichCongTacViewModel
+
+<div class="modal-dialog" role="document" style="width:70%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                @(Model.entityLichCongTac.ID > 0 ? "Cập nhật lịch công tác".ToUpper() : "Thêm mới lịch công tác".ToUpper())
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            @Html.Partial("_EditLichCongTacPartial")
+        </div>
+    </div>
+</div>

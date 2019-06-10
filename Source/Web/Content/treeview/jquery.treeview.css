@@ -1,0 +1,220 @@
+.treeview, .treeview ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+    .treeview ul {
+        background-color: white;
+        margin-top: 4px;
+    }
+
+
+/* fix for IE6 */
+* html .hitarea {
+    display: inline;
+    float: none;
+}
+
+.treeview li {
+    margin: 0;
+    padding: 3px 0pt 3px 16px;
+}
+
+.treeview a.selected {
+    background-color: #eee;
+}
+
+#treecontrol {
+    margin: 1em 0;
+    display: none;
+}
+
+.treeview .hover {
+    color: red;
+    cursor: pointer;
+}
+
+.treeview li.collapsable, .treeview li.expandable {
+    background-position: 0 -176px;
+}
+
+.treeview .expandable-hitarea {
+    background-position: -80px -3px;
+}
+
+.treeview li.last {
+    background-position: 0 -1766px
+}
+
+.treeview li.lastCollapsable {
+    background-position: 0 -111px
+}
+
+.treeview li.lastExpandable {
+    background-position: -32px -67px
+}
+
+.treeview div.lastCollapsable-hitarea, .treeview div.lastExpandable-hitarea {
+    background-position: 0;
+}
+
+
+.treeview-red .hitarea, .treeview-red li.lastCollapsable, .treeview-red li.lastExpandable {
+    background-image: url(images/treeview-red.gif);
+}
+
+.treeview-black .hitarea, .treeview-black li.lastCollapsable, .treeview-black li.lastExpandable {
+    background-image: url(images/treeview-black.gif);
+}
+
+.treeview-gray .hitarea, .treeview-gray li.lastCollapsable, .treeview-gray li.lastExpandable {
+    background-image: url(images/treeview-gray.gif);
+}
+
+.treeview-famfamfam .hitarea, .treeview-famfamfam li.lastCollapsable, .treeview-famfamfam li.lastExpandable {
+    background-image: url(images/treeview-famfamfam.gif);
+}
+
+.treeview .placeholder {
+    background: url(images/ajax-loader.gif) 0 0 no-repeat;
+    height: 16px;
+    width: 16px;
+    display: block;
+}
+
+.filetree li {
+    padding: 3px 0 2px 16px;
+    margin-bottom: 3px;
+}
+
+.filetree span.folder, .filetree span.file {
+    padding: 7px 32px;
+}
+
+.filetree span.file {
+    background: url(images/file.gif) 0 0 no-repeat;
+}
+
+.if_folder_blue {
+    background: url(/Content/images/folder/if_folder_blue.png) 0 0 no-repeat;
+    background-size: 22px 22px;
+}
+
+.if_folder_close {
+    background: url(/Content/images/folder/if_folder-close.png) 0 0 no-repeat;
+}
+
+.if_folder_green {
+    background: url(/Content/images/folder/if_folder-green.png) 0 0 no-repeat;
+    background-size: 22px 22px;
+}
+
+.if_folder_house {
+    background: url(/Content/images/folder/if_folder-house.png) 0 0 no-repeat;
+    background-size: 22px 22px;
+}
+
+.if_folder_music {
+    background: url(/Content/images/folder/if_folder-music.png) 0 0 no-repeat;
+    background-size: 22px 22px;
+}
+
+.if_folder_open {
+    background: url(/Content/images/folder/if_folder-open.png) 0 0 no-repeat;
+}
+
+.if_folder_picture {
+    background: url(/Content/images/folder/if_folder-picture.png) 0 0 no-repeat;
+    background-size: 22px 22px;
+}
+
+.if_folder_search {
+    background: url(/Content/images/folder/if_folder-saved-search.png) 0 0 no-repeat;
+    /*background-size: 22px 22px;*/
+}
+
+.if_folder_video {
+    background: url(/Content/images/folder/if_folder-video.png) 0 0 no-repeat;
+    background-size: 22px 22px;
+}
+
+.if_folder_information {
+    background: url(/Content/images/folder/if_icon-85-folder-information.png) 0 0 no-repeat;
+}
+
+.if_folder_lockedc {
+    background: url(/Content/images/folder/if_icon-100-folder-locked.png) 0 0 no-repeat;
+    /*background-size: 22px 22px;*/
+}
+
+.if_folder_checked {
+    background: url(/Content/images/folder/if_icon-104-folder-checked.png) 0 0 no-repeat;
+    /*background-size: 22px 22px;*/
+}
+
+.if_folder_remove {
+    background: url(/Content/images/folder/if_icon-106-folder-remove_314683.png) 0 0 no-repeat;
+    /*background-size: 22px 22px;*/
+}
+
+.folder-left-padding {
+    padding: 6px 32px !important;
+}
+
+.mp4, .avi, .mpeg-4, .wmv, .mkv, .mov, .h265, .m4v {
+    background: url('/Content/Images/1463391715_video.png');
+    padding: 10px 15px 10px 38px;
+    background-repeat: no-repeat;
+    background-position: 4px 2px;
+    margin: 0 15px 0 0;
+    float: left;
+    line-height: 1.3em;
+    text-align: center;
+}
+
+.nu-context-menu {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: block;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 0;
+    z-index: 9999;
+}
+
+    .nu-context-menu.active {
+        opacity: 1;
+        height: auto;
+        width: auto;
+    }
+
+    .nu-context-menu ul {
+        font-size: 15px;
+        list-style: none;
+        text-align: left;
+    }
+
+        .nu-context-menu ul li {
+            clear: both;
+            color: #777;
+            cursor: pointer;
+            font-weight: 400;
+            line-height: 1.42857;
+            padding: 2px 20px;
+            white-space: nowrap;
+        }
+
+            .nu-context-menu ul li:hover {
+                background-color: #0081c2;
+                background-image: linear-gradient(to bottom, #0088cc, #0077b3);
+                background-repeat: no-repeat;
+                color: rgb(255, 0, 110);
+                text-decoration: none;
+                color: #ffffff;
+            }

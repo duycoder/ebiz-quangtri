@@ -1,0 +1,3 @@
+﻿@using Web.FwCore
+@model List<SelectListItem>
+@Html.DropDownList("NHANVIEN_ID", Model, new { @class = "selectpicker1", @title = "Chọn nhân viên", @data_actions_box = "true", @data_live_search = "true", @multiple = "multipel" })

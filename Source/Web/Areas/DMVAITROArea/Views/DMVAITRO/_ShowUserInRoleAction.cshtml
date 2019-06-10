@@ -1,0 +1,157 @@
+﻿@using Web.Areas.DMVAITROArea.Models
+
+@model PhanQuyenVM
+@{
+    var stt = 1;
+}
+<div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">Cập nhật người dùng vai trò</h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="form-horizontal" id="update_user_in_role">
+                @using (Ajax.BeginForm("AddUserToRole", "DMVAITRO", new { @area = "DMVAITROArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxAddUser",
+    }, new { id = "AddUserdmvaitroForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <label class="" style="width: 100%;"><strong>Bổ sung cán bộ</strong></label>
+
+                    <div class="form-group">
+                        <div class="col-sm-9" id="usernotinrole">
+                            <input type="hidden" name="VAITRO_ID" id="VAITRO_ID" value="@Model.VaiTroID" />
+                            @Html.DropDownList("USER_ID", Model.ListUserNotInRole, new { @class = "requiredDropDownList", @style = "width: 100%", @multiple = "multiple" })
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-primary" id="btnSave" onclick="checkSubmid()">Bổ sung</button>
+                        </div>
+                    </div>
+                }
+                <label class="" style="width: 100%;"><strong>Danh sách cán bộ thuộc vai trò</strong></label>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Stt</th>
+                            <th>Cán bộ</th>
+                            <th style="text-align: center;">Loại bỏ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reloaduser">
+                        @foreach (var item in Model.ListUserInRole)
+                        {
+                            <tr>
+                                <td>@stt</td>
+                                <td>
+                                    @item.HOVATEN
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="javascript:void(0)" onclick="RemoveUsserInRole(@item.NGUOIDUNG_VAITRO_ID)">
+                                        <i class=" glyphicon glyphicon-remove fa-lg" style="color:red"> </i>
+                                    </a>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function RemoveUsserInRole(UserRoleID) {
+        $.ajax({
+            url: '/DMVaiTroArea/DMVaiTro/RemoveUsserInRole',
+            type: 'post',
+            cache: false,
+            data: { "UserRoleID": UserRoleID },
+            success: function (data) {
+                reloadnotuser();
+                reloaduser();
+                NotiSuccess("Loại bỏ người dùng thành công!");
+            },
+            error: function (err) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+    function successAjaxAddUser(rs) {
+        if (rs.Status) {
+            //$("#modal_edit").modal("hide");
+            //$("#modal_edit").empty();
+            reloadnotuser();
+            reloaduser();
+            NotiSuccess("Cập nhật thành công!");
+        } else {
+
+            NotiError("Không thể cập nhật!");
+        }
+    }
+    function reloaduser(){
+        var RoleID = $("#VAITRO_ID").val();
+        $.ajax({
+            url: '/DMVaiTroArea/DMVaiTro/ReloadUserInRole',
+            type: 'post',
+            cache: false,
+            data: { "RoleID": RoleID },
+            success: function (data) {
+                $("#reloaduser").html(data);
+            },
+            error: function (err) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+    function reloadnotuser(){
+        var RoleID = $("#VAITRO_ID").val();
+        $.ajax({
+            url: '/DMVaiTroArea/DMVaiTro/ReloadUserNotInRole',
+            type: 'post',
+            cache: false,
+            data: { "RoleID": RoleID },
+            success: function (data) {
+                $("#usernotinrole").html(data);
+            },
+            error: function (err) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+
+
+    function checkSubmid() {
+        var err = checkForm('AddUserdmvaitroForm');
+        if (err) {
+            $("#AddUserdmvaitroForm").submit();
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $("#USER_ID").select2();
+        });
+    });
+</script>

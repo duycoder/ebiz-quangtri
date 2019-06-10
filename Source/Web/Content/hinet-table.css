@@ -1,0 +1,48 @@
+﻿.hntbl-cover {
+    padding: 10px;
+    /*overflow-x: scroll;*/
+}
+
+.hinet-table {
+    border: 1px solid #ddd;
+}
+
+
+
+    .hinet-table thead tr th {
+        /*text-align: center;*/
+        cursor: pointer;
+        min-width: 30px;
+        padding: 5px 10px;
+        vertical-align: middle;
+        position: relative;
+        line-height: 3;
+        font-size:12px;
+    }
+    .hinet-table tbody tr td{
+        font-size:12px;
+    }
+
+.sort-asc::after {
+    content: url('../../../../hinetTable/sort_asc.png');
+    float: right;
+    width: 9px;
+    margin-top: 14px;
+    line-height: 0;
+}
+
+.sort-desc::after {
+    content: url('../../../../hinetTable/sort_desc.png');
+    float: right;
+    width: 9px;
+    margin-top: 4px;
+    line-height: 0;
+}
+
+.sort-none::after {
+    content: url('../../../../hinetTable/sort_both.png');
+    float: right;
+    width: 9px;
+    margin-top: 9px;
+    line-height: 0;
+}

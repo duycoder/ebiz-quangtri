@@ -1,0 +1,249 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models
+@model ThuMucLuuTruModel
+@using (Html.BeginForm("AddNewVersion", "ThuMucLuuTru", FormMethod.Post, new { id = "UploadFileFrm", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Danh sách các phiên bản của tài liệu</h4>
+            </div>
+            <div class="modal-body" style="height:450px;overflow-y:auto">
+                <div class="form-horizontal">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <h3 class="group-tittle mt10" style="margin-bottom:10px">Thông tin phiên bản hiện tại</h3>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12 font-bold" style="font-weight:bold">
+                            @Model.TaiLieu.TENTAILIEU
+                        </div>
+                    </div>
+                    <div class="col-sm-12">&nbsp;</div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            Phiên bản hiện tại được cập nhật lúc @String.Format("{0:dd/M/yyyy HH:mm}", @Model.TaiLieu.NGAYTAO): <a href="javascript:void(0)" onclick="DownloadFileIndex(@Model.TaiLieu.TAILIEU_ID)">Tải xuống</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">&nbsp;</div>
+                    <div class="form-group row">
+                        <div class="col-sm-2">
+                            <label>Phiên bản: <span style="color:red">*</span></label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" name="VERSION" id="VERSION_FILE" placeholder="Nhập phiên bản cho tài liệu" class="filebase form-control" style="width:233px" />
+                            <div class="note-error">
+                                <span class="error" id="VERSION_FILE_NULL"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Tài liệu:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input id="filebase" style="border: none; display: inline" class="filebase" type="file" value="Chọn tài liệu" name="filebase" />
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" value="@Model.TaiLieu.TAILIEU_ID" name="TAILIEU_ID" />
+                <div>
+                    @if (Model.ListVersion.Count > 0)
+                    {
+                        <h3 class="group-tittle mt10" style="margin-bottom:10px">Danh sách các phiên bản cũ hơn</h3>
+                        <table class="table table-bordered VersionFile">
+                            <thead>
+                                <tr class=" head">
+                                    <th>Tên tài liệu</th>
+                                    <th>Phiên bản</th>
+                                    <th>Người tải</th>
+                                    <th>Ngày tải</th>
+                                    <th style="width:90px">Tải xuống</th>
+                                    <th style="width:50px">Xóa</th>
+                                    <th style="width:90px">Khôi phục</th>
+                                </tr>
+                            </thead>
+                            @foreach (var item in Model.ListVersion)
+                            {
+                                <tr>
+                                    <td>@item.TEN_TAILIEU</td>
+                                    <td>@item.VERSION</td>
+                                    <td>@item.TENNGUOITAI</td>
+                                    <td>@String.Format("{0:dd-MM-yyyy}", @item.NGAYTAI)</td>
+                                    <td class="center">
+                                        <a class="btnDownload" href="javascript:void(0)" onclick="DownloadFile(@item.ID)">
+                                            <i class="glyphicon glyphicon-download-alt"></i>
+                                        </a>
+                                    </td>
+                                    <td class="center">
+                                        <a href="javascript:void(0)" onclick="RemoveFile(@item.ID,@item.TAILIEU_ID)" class="btnDelete" title="Xóa tài liệu">
+                                            <i class="glyphicon glyphicon-trash"></i>
+                                        </a>
+                                    </td>
+                                    <td class="center">
+                                        <a href="javascript:void(0)" onclick="RestoreFile(@item.ID,@item.TAILIEU_ID)" title="Sử dụng phiên bản này" class="btnRestore">
+                                            <i class="glyphicon glyphicon-refresh"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Cập nhật" class="btn btn-success filebase" id="btnUploadFile" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $("#btnUploadFile").click(function () {
+            if ($("#VERSION_FILE").val().trim().length == 0) {
+                $("#VERSION_FILE").focus();
+                $("#VERSION_FILE_NULL").html("Bạn chưa nhập tên phiên bản mới");
+                return false;
+            } else {
+                $("#VERSION_FILE_NULL").html("");
+            }
+        return true;
+    });
+    function RestoreFile(ID, TAILIEU) {
+        $.confirm({
+            'title': 'Xác nhận khôi phục',
+            'message': 'Bạn có chắc chắn mình muốn sử dụng phiên bản này?',
+            'buttons': {
+                'Khôi phục': {
+                    'class': 'btn-confirm-yes',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("PreviousVersionFIle", "ThuMucLuuTru")',
+                            type: 'post',
+                            cache: false,
+                            data: { ID: ID, TAILIEU_ID: TAILIEU },
+                            success: function (data) {
+                                ReloadGrid(TAILIEU);
+                                NotiSuccess(data);
+                            },
+                            error: function (err) {
+                                NotiError("Có lỗi xảy ra trong quá trình xóa tài liệu");
+                            }
+                        });
+                    }
+                },
+                'Đóng': {
+                    'class': 'btn-info',
+                    'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+    function RemoveFile(ID, TAILIEU) {
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa tài liệu này?',
+            'buttons': {
+                'Xóa': {
+                    'class': 'btn-confirm-yes',
+                    'action': function () {
+                        $.ajax({
+                            url: '@Url.Action("XoaFileVersion", "ThuMucLuuTru")',
+                            type: 'post',
+                            cache: false,
+                            data: { ID: ID },
+                            success: function (data) {
+                                ReloadGrid(TAILIEU);
+                                NotiSuccess(data);
+                            },
+                            error: function (err) {
+                                NotiError("Có lỗi xảy ra trong quá trình xóa tài liệu");
+                            }
+                        });
+                    }
+                },
+                'Không xóa': {
+                    'class': 'btn-info',
+                    'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+    }
+     function DownloadFile(ID) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CheckkingVersion", "ThuMucLuuTru")',
+            data: {
+                ID: ID
+            },
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                if (data == "Co") {
+                    location.href = "./DownloadFilePath?ID=" + ID;
+                } else {
+                    $.confirm({
+                        'title': 'Không tìm thấy tài liệu',
+                        'message': 'Xin lỗi không thể tìm thấy tài liệu mà bạn đang yêu cầu.',
+                        'buttons': {
+                            'Đóng': {
+                                'class': 'btn-info',
+                                'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    $("form").ajaxForm({
+        beforeSend: function () {
+
+        },
+        uploadProgress: function () {
+
+        },
+        success: function (data) {
+            $("#CreateThuMuc").modal('hide');
+            ManagerVersion('@Model.TaiLieu.TAILIEU_ID');
+            NotiSuccess(data);
+        },
+        complete: function () {
+            $("#CreateThuMuc").modal('hide');
+            $("#CreateThuMuc").html("");
+        }, error: function (data) {
+            NotiError("Có lỗi xảy ra trong quá trình cập nhật");
+
+        }
+    });
+    $(document).ready(function () {
+        //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                });
+            //});
+        });
+    });
+     function ReloadGrid(ID) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VersionFile", "ThuMucLuuTru")',
+            data: {
+                TAILIEU: ID
+            },
+            cache: false,
+            dataType: "html",
+            success: function (data) {
+                $("#CreateThuMuc").html(data);
+                //$("#CreateThuMuc").modal('show');
+                $("#CreateThuMuc").find(".modal-dialog").css("width", "950px");
+            }
+        });
+    }
+</script>
+<style>
+    .table th {
+        text-align: center
+    }
+</style>

@@ -1,0 +1,215 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@using Business.CommonModel.QLPHONGHOP;
+@using CommonHelper.DateExtend
+@model LichHopByWeekViewModel
+
+<div class="widget-t-body no-padding">
+    <div class="well">
+        <h2 class="txt-color-blueDark">
+            @Model.title
+        </h2>
+
+        <div class="row">
+            <div class="col-sm-6 col-md-6">
+                <div class="btn-group" role="group" aria-label="Calendar Type" style="float:left;">
+                    <button type="button" class="btn btn-default" id="btn--previous">
+                        <i class="glyphicon glyphicon-chevron-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" id="btn--next">
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-md-6">
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        @Html.DropDownList("select--week", Model.groupOfWeeks, new { @class = "txt-select2", @style = "width:100%" })
+                    </div>
+
+                    <div class="col-sm-6">
+                        @Html.DropDownList("select--year", Model.groupOfYears, new { @class = "txt-select2", @style = "width:100%" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <table class="table table-bordered table-condensed table-responsive calendar--table--data-week">
+                    <thead>
+                        <tr>
+                            @foreach (var day in Model.groupOfDates)
+                            {
+
+                                if (day == Model.groupOfDates.FirstOrDefault())
+                                {
+                                    <th>Thời gian</th>
+                                }
+                                <th>
+                                    <span>
+                                        @(day.GetNameOfDay())
+                                    </span>
+                                    <br />
+                                    <span>
+                                        @(string.Format("{0:dd/MM}", day))
+                                    </span>
+                                </th>
+
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var hour in Model.groupOfHours)
+                        {
+                            <tr>
+                                <td>
+                                    @hour.title
+                                </td>
+                                @foreach (var day in hour.groupOfEntities)
+                                {
+                                    var calendars = day.groupOfCalendars ?? new List<QLPHONGHOP_BO>();
+                                    <td class="@(day.isToday ? "calendar--cell--highlight" : "")">
+                                        <div class="calendar--cell--content @(calendars.Count == 0 ? "calendar--cell--empty" : "")">
+                                            @if (calendars.Count > 0)
+                                            {
+                                                foreach (var cal in calendars)
+                                                {
+                                                    <div class="calendar--cell--data @(cal.USER_ID > 0 ? "calendar--cel--data-important" : "")">
+                                                        <b class="calendar--cell--hour">
+                                                            @(cal.GIOBATDAU.GetValueOrDefault().ToString("D2") + "h" + cal.PHUTBATDAU.GetValueOrDefault().ToString("D2") + " - " + cal.GIOKETTHUC.GetValueOrDefault().ToString("D2") + "h" + cal.PHUTKETTHUC.GetValueOrDefault().ToString("D2") + ":")
+                                                        </b>
+                                                        <span>
+                                                            @(cal.MUCDICH.Length > 20 ? (cal.MUCDICH.Substring(0, 20 - 3)) + "..." : cal.MUCDICH) @(Html.Raw((string.IsNullOrEmpty(cal.TENPHONG) && cal.PHONG_ID > 0) ? "&nbsp;<b class='info--has-booked'>(Đã đặt phòng)</b>" : ""))
+                                                        </span>
+
+                                                        <div class="calendar--cell--editor">
+                                                            <div class="btn-group">
+                                                                <a href="javascript:void(0)" onclick="showInfo(@cal.ID)" title="Xem chi tiết lịch họp">
+                                                                    <i class="fa fa-search fa-lg">
+                                                                    </i>&nbsp;&nbsp;
+                                                                </a>
+                                                                @if (Model.currentUserId == cal.CREATED_BY && cal.NGAYDAT.Value.IsOldWeek() == false && cal.PHONG_ID <= 0)
+                                                                {
+                                                                    <a href="javascript:void(0)" onclick="edit(@cal.ID)" title="Chỉnh sửa lịch họp">
+                                                                        <i class="fa fa-pencil-square fa-lg">
+                                                                        </i>&nbsp;&nbsp;
+                                                                    </a>
+
+                                                                    <a href="javascript:void(0)" onclick="deleteCalendar(@cal.ID)" title="Xóa lịch họp">
+                                                                        <i class="glyphicon glyphicon-remove fa-lg" style="">
+                                                                        </i>&nbsp;&nbsp;
+                                                                    </a>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="calendar--cell--add-new">
+                                                    <div class="btn-group">
+                                                        <a href="javascript:void(0)" onclick="create(@day.entityDay.Year, @day.entityDay.Month, @day.entityDay.Day, @hour.title)" title="Tạo mới lịch họp">
+                                                            <i class="fa fa-plus fa-lg">
+                                                            </i>&nbsp;&nbsp;
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        @if (calendars.Count > 0)
+                                        {
+                                            <a href="javascript:void(0)" class="calendar--cell--add" onclick="create(@day.entityDay.Year, @day.entityDay.Month, @day.entityDay.Day, @day.entityDay.Hour)" title="Tạo mới lịch họp">
+                                                <i class="fa fa-plus"></i>&nbsp;Thêm mới
+                                            </a>
+                                        }
+
+                                        @if (calendars.Count > 2)
+                                        {
+                                            <a href="javascript:void(0)" onclick="showExtend()" class="calendar--cell--extend">
+                                                <i class="fa fa-sort-down"></i>&nbsp;Xem thêm
+                                            </a>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function(){
+            $('#select--week, #select--year').select2();
+        });
+
+        $('#btn--previous').on('click',function(){
+            //lấy ngày đầu tiên của tuần
+            var week = parseInt($('#select--week').val());
+            var year = parseInt($('#select--year').val());
+            var day = (1 + (week - 1) * 7) + 1 - 7;
+            var startDate = new Date(year, 0, day);
+            var searchModel = {
+                calendarType: $('#CALENDAR_TYPE').val(),
+                calendarDay: startDate,
+                queryUserId: $('#select--leader').val() != '' ? parseInt($('#select--leader')) : null
+            }
+            search(searchModel);
+        });
+
+        $('#btn--next').on('click',function(){
+            //lấy ngày đầu tiên của tuần
+            var week = parseInt($('#select--week').val());
+            var year = parseInt($('#select--year').val());
+            var day = (1 + (week - 1) * 7) + 1 + 6;
+            var startDate = new Date(year, 0, day);
+            var searchModel = {
+                calendarType: $('#CALENDAR_TYPE').val(),
+                calendarDay: startDate,
+                queryUserId: $('#select--leader').val() != '' ? parseInt($('#select--leader').val()) : null
+            }
+            search(searchModel);
+        });
+
+        $('#select--week, #select--year').on('change',function(){
+            searchLichByWeek();
+        });
+    });
+
+    function searchLichByWeek(){
+        //lấy ngày đầu tiên của tuần
+            var week = parseInt($('#select--week').val());
+            var year = parseInt($('#select--year').val());
+            var day = (1 + (week - 1) * 7);
+            var startDate = new Date(year, 0, day + 1);
+            var searchModel = {
+                calendarType: $('#CALENDAR_TYPE').val(),
+                calendarDay: startDate,
+                queryUserId: $('#select--leader').val() != '' ? parseInt($('#select--leader').val()) : null
+            }
+            search(searchModel);
+    }
+
+
+    function showExtend(){
+        var target = $(event.currentTarget);
+        var dataContent = $(target).parents('td').first().find('.calendar--cell--content');
+        if($(target).hasClass('expanded')){
+            $(dataContent).css({height: '100px'})
+            $(target).html('<i class="fa fa-sort-down"></i>&nbsp;Xem thêm');
+            $(target).removeClass('expanded');
+        }
+        else{
+            $(dataContent).css({height: 'auto'})
+            $(target).html('<i class="fa fa-sort-up"></i>&nbsp;Rút gọn');
+            $(target).addClass('expanded');
+        }
+    }
+</script>

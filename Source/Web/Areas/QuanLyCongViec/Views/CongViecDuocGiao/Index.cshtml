@@ -1,0 +1,346 @@
+﻿@{
+    ViewBag.Title = "Quản lý công việc";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Web.Areas.CongViecArea.Models
+@using Newtonsoft.Json
+@model CongViecIndexViewModel
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListResult.ListItem));
+}
+<style>
+    .congviecgoc {
+        font-weight: bolder;
+    }
+
+    .congviec-level-1 {
+        background-color: #FAEBD7 !important;
+        font-weight: bold;
+    }
+
+    .expired {
+        color: red;
+    }
+    #tbl-vanbanden table{
+        font-weight:bolder;
+    }
+</style>
+<link href="~/Scripts/MenuContext/jquery.contextMenu.min.css" rel="stylesheet" />
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
+        <a class="btn btn-default pull-right" href="@Url.Action("Create","QuanLyCongViec")">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDiv" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            Tìm kiếm
+        </a>
+        <a class="btn btn-default pull-right" href="/QuanLyCongViec/QuanLyCongViec/ImportCongViec?controllerName=CongViecDuocGiao" style="margin-right: 5px;">
+            <i class="fa fa-upload"></i> <span>Import</span>
+        </a>
+    </div>
+</div>
+<div id="content">
+    @Html.Partial("_Search")
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý công việc được giao
+            </h2>
+        </header>
+        <div class="widge-t-body no-padding">
+            <div id="tbl-vanbanden" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>STT</th>
+                            <th>Công việc</th>
+                            <th>Mức độ hoàn thành</th>
+                            <th>Người giao việc</th>
+                            <th>Người xử lý chính</th>
+                            <th>Độ khẩn</th>
+                            <th>Độ ưu tiên</th>
+                            @*<th>Ngày nhận việc</th>*@
+                            <th>Ngày hoàn thành</th>
+                            @*<th>Trạng thái</th>*@
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="loading-ajax" style="z-index:99999 !important">Đang xử lý...</div>
+<div id="modal_create" class="modal fade" role="dialog">
+</div>
+
+<script type="text/javascript">
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    $("body").addClass("minified");
+    var typeId = 0;
+    var lstData = eval(@lstData);
+    function pagefunction() {
+        var conf = [
+            {
+                tdClass: "center width-30",
+                isSort: false,
+                nameModel: "",
+                isCounter: false,
+                content: function (data) {
+                    var html = "";
+                    if (data.HasChild) {
+                        //html = "<i data-id='" + data.ID + "' class='fa fa-eye icon-hover fa-lg'></i>";
+                        html = "<i data-id='" + data.ID + "' class='fa fa-folder icon-hover fa-lg'></i>";
+                    }
+                    return html;
+                }
+            },
+            {
+                tdClass:"center width-30",
+                isSort:false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort:true,
+                nameModel:'TENCONGVIEC',
+                content: function (data) {
+                    var html = "<a  class='text-ellipsis' href='/QuanLyCongViec/QuanLyCongViec/Detail/" + data.ID + "' title = 'Chi tiết'>" + data.TENCONGVIEC + "</a>";
+                    return html;
+                }
+            },
+            {
+                tdClass: "text-justify",
+                isSort:false,
+                nameModel:'PHANTRAMHOANTHANH',
+                content: function (data) {
+                    var html = "<div class='progress progress-xs' data-progressbar-value='" + ((data.PHANTRAMHOANTHANH != null && data.PHANTRAMHOANTHANH != "") ? data.PHANTRAMHOANTHANH : "0") + "'><div class='progress-bar'></div></div>";
+                    return html;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_NGUOIGIAOVIEC',
+                content: function (data) {
+                    return data.TEN_NGUOIGIAOVIEC;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_NGUOIXULYCHINH',
+                content: function (data) {
+                    return data.TEN_NGUOIXULYCHINH;
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOKHAN',
+                content: function (data) {
+                    if (data.ICON_DOKHAN != null && data.ICON_DOKHAN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOKHAN + '" title="' + data.TEN_DOKHAN + '" />';
+                    } else {
+                        return data.TEN_DOKHAN;
+                    }
+                }
+            },
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'TEN_DOUUTIEN',
+                content: function (data) {
+                    if (data.ICON_DOUUTIEN != null && data.ICON_DOUUTIEN != "") {
+                        return '<img class="division-icon" src="' + data.ICON_DOUUTIEN + '" title="' + data.TEN_DOUUTIEN + '" />';
+                    } else {
+                        return data.TEN_DOUUTIEN;
+                    }
+                }
+            },
+            //{
+            //    tdClass: "center",
+            //    isSort: true,
+            //    nameModel: 'NGAY_NHANVIEC',
+            //    content: function (data) {
+            //        return ToDate(data.NGAY_NHANVIEC);
+            //    }
+            //},
+            {
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'NGAYHOANTHANH_THEOMONGMUON',
+                content: function (data) {
+                    if (data.IS_HASPLAN && data.NGAYKETTHUC_KEHOACH != null) {
+                        return ToDate(data.NGAYKETTHUC_KEHOACH);
+                    } else {
+                        return ToDate(data.NGAYHOANTHANH_THEOMONGMUON);
+                    }
+                }
+            },
+            @*{
+                tdClass: "center",
+                isSort: true,
+                nameModel: 'NGAYKETTHUC',
+                content: function (data) {
+                    var html = "";
+                    switch (data.TRANGTHAI_ID) {
+                        case parseInt('@TrangThaiCongViecConstant.PENDING'):
+                            html = "<span class='text-error'>Chờ phê duyệt</span>";
+                            break;
+                        case parseInt('@TrangThaiCongViecConstant.APPROVED'):
+                            html = "<span class='text-success'>Đã phê duyệt</span>";
+                            break;
+                                  case parseInt('@TrangThaiCongViecConstant.UNAPPROVAL'):
+                            html = "<span class='text-success'>Không được phê duyệt</span>";
+                            break;
+                    }
+                    return html;
+                }
+            }*@
+        ];
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '@Url.Action("getData")',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-vanbanden").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }, complete: function () {
+                    CheckTable();
+                }
+            });
+        }
+        var tblData=$("#tbl-vanbanden").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.ListResult.TotalPage,
+            recordCount: @Model.ListResult.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+        CheckTable();
+    }
+    function reloadData() {
+        $("#tbl-vanbanden").hinetTable("reload");
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js", pagefunction);
+    });
+    $(document).on("click", ".icon-hover", function () {
+        var jobId = $(this).attr("data-id");
+        var parentId = $(this).closest("tr").attr("data-parent");
+        if (parentId == undefined) {
+            parentId = jobId;
+        }
+        var rowIndex = $(this).parent().next().html();
+        console.log(rowIndex);
+        var stt = $(this).attr("data-no") == undefined ? rowIndex : $(this).attr("data-no");
+        if ($(".list-child-" + jobId).length == 0) {
+            if ($(this).hasClass("fa-folder")) {
+                $(this).removeClass("fa-folder");
+                $(this).addClass("fa-folder-open");
+            }
+            if ($(this).hasClass('fa-plus-square-o')) {
+                $(this).removeClass("fa-plus-square-o");
+                $(this).addClass("fa-minus-square-o");
+            }
+            var this1 = $(this);
+            $.ajax({
+                url: '/QuanLyCongViec/QuanLyCongViec/LoadCongViecCon',
+                type: 'post',
+                cache: false,
+                data: { id: jobId, RowNo: stt, RootId: parentId, rowIndex: rowIndex},
+                success: function (data) {
+                    $(data).insertAfter($(this1).closest("tr"));
+                },
+                error: function (xhr) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        } else if ($(".list-child-" + jobId).is(":visible")) {
+            $(".list-child-" + jobId).hide();
+
+            if ($(this).hasClass("fa-folder-open")) {
+                $(this).removeClass("fa-folder-open");
+                $(this).addClass("fa-folder");
+            }
+            if ($(this).hasClass('fa-minus-square-o')) {
+                $(this).removeClass("fa-minus-square-o");
+                $(this).addClass("fa-plus-square-o");
+            }
+        } else {
+            $(".list-child-" + jobId).show();
+            if ($(this).hasClass("fa-folder")) {
+                $(this).removeClass("fa-folder");
+                $(this).addClass("fa-folder-open");
+            }
+            if ($(this).hasClass('fa-minus-square-o')) {
+                $(this).removeClass("fa-minus-square-o");
+                $(this).addClass("fa-plus-square-o");
+            }
+        }
+    });
+    function CheckTable() {
+        $(".hinet-table tbody tr").each(function () {
+            var value = $(this).find("td:last-child").html();
+            var tiendo = $(this).find(".progress-xs").attr("data-progressbar-value");
+            if (tiendo == null || tiendo == undefined || parseInt(tiendo) < 100) {
+                var parts = value.split("/");
+                var expired = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (expired < new Date()) {
+                    $(this).addClass("expired");
+                    $(this).find("td:last-child").html(value + "<div class='col-sm-12 no-padding'><i>(Quá hạn)</i></div>");
+                }
+            }
+        });
+    }
+</script>
+<style>
+    table th {
+        text-align: center;
+    }
+
+    .hinet-table td:nth-child(4), .table-child td:nth-child(4) {
+        width: 10.666667% !important;
+    }
+
+    .text-justify, .text-justify a {
+        text-align: justify !important;
+    }
+
+    .hinet-table td:nth-child(3), .table-child td:nth-child(3) {
+        width: 20% !important;
+    }
+</style>

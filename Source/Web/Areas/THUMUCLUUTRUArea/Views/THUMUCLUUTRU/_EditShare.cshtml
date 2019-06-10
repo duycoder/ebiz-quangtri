@@ -1,0 +1,210 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models;
+@using Web.Models
+@model ThuMucLuuTruModel
+@using (Ajax.BeginForm("SaveEditShare", "ThuMucLuuTru", new AjaxOptions
+{
+    InsertionMode = InsertionMode.Replace,
+    HttpMethod = "POST",
+    OnFailure = "SharingFile1",
+    OnSuccess = "SharingFile1"
+}, new { id = "frmCreateThuMuc1" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog" style="">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Cập nhật chia sẻ tài liệu</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" name="ID" value="@Model.ChiaSe.ID" />
+                    @{
+                        if (Model.IsFolder)
+                        {
+                            <div class="form-group row">
+                                <div class="col-sm-2">Tên thư mục:</div>
+                                <div class="col-sm-4">
+                                    @Model.ThuMuc.TENTHUMUC
+                                </div>
+                                <div class="col-sm-2" style="padding-right:0px">
+                                    Phạm vi truy cập:
+                                </div>
+                                <div class="col-sm-4">
+                                    @{
+                                        switch (Model.ThuMuc.ACCESS_MODIFIER)
+                                        {
+                                            case AccessModifier.ALL_DEPARTMENT:
+                                                <span>Toàn phòng ban</span>
+                                                break;
+                                            case AccessModifier.ALL_SYSTEM:
+                                                <span>Toàn hệ thống</span>
+                                                break;
+                                            case AccessModifier.ALL_UNIT:
+                                                <span>Toàn đơn vị</span>
+                                                break;
+                                            case AccessModifier.PRIVATE:
+                                                <span>Cá nhân</span>
+                                                break;
+                                        }
+                                    }
+                                    <div class="note-error">
+                                        <span class="error" id=""></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-2">Thao tác:</div>
+                                <div class="col-sm-4">
+                                    @{
+                                        switch (Model.ThuMuc.PERMISSION)
+                                        {
+                                            case FolderPermission.CAN_READ:
+                                                <span>Chỉ đọc</span>
+                                                break;
+                                            case FolderPermission.CAN_WRITE:
+                                                <span>Chỉ ghi</span>
+                                                break;
+                                            case FolderPermission.BOTH:
+                                                <span>Ghi và đọc</span>
+                                                break;
+                                        }
+                                    }
+                                    <div class="note-error">
+                                        <span class="error" id=""></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="ITEM_ID" value="@Model.ThuMuc.ID" />
+                            <input type="hidden" name="IS_FOLDER" value="True" />
+                        }
+                        else
+                        {
+                            <div class="form-group row">
+                                <div class="col-sm-2">Tên tài liệu:</div>
+                                <div class="col-sm-4">
+                                    @Model.TaiLieu.TENTAILIEU
+                                    <div class="note-error">
+                                        <span class="error" id=""></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="ITEM_ID" value="@Model.TaiLieu.TAILIEU_ID" />
+                            <input type="hidden" name="IS_FOLDER" value="False" />
+                        }
+                    }
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Họ và tên:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Model.NguoiDung.HOTEN
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Quyền thao tác:</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <select name="PERMISSION" id="PERMISSION_EDIT" class="select3" style="width:100%">
+                                @foreach (var item in Model.ListFolderPermission)
+                                {
+                                    <option value="@item.Value" @(item.Selected ? "selected='selected'" : "")>@item.Text</option>
+                                }
+                            </select>
+                            <div class="note-error">
+                                <span class="error" id="PERMISSION_EDIT_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>Từ ngày:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" value="@(Model.ChiaSe.TUNGAY.HasValue ? Model.ChiaSe.TUNGAY.Value.ToString("dd/MM/yyyy") : "")" name="TUNGAY" id="TUNGAY1" class="form-control txt-picker" />
+                            <div class="note-error">
+                                <span class="error" id="TUNGAY1_ERROR"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <label>Đến ngày:</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" value="@(Model.ChiaSe.DENNGAY.HasValue ? Model.ChiaSe.DENNGAY.Value.ToString("dd/MM/yyyy") : "")" name="DENNGAY" id="DENNGAY1" class="form-control txt-picker" />
+                            <div class="note-error">
+                                <span class="error" id="DENNGAY1_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            Ghi chú:
+                        </div>
+                        <div class="col-sm-10">
+                            <textarea name="GHICHU" id="GHICHU1" class="form-control" rows="2">@Model.ChiaSe.GHICHU</textarea>
+                            <div class="note-error">
+                                <span class="error" id="GHICHU1_ERROR"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Lưu lại" id="btnSave1" class="btn btn-success" />
+                <button class="close-modal btn btn-default" id="btnClose1" type="button" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function SharingFile1(data) {
+        $("#SHARED_@Model.ChiaSe.ID").find("td:nth-child(3)").html($("#TUNGAY1").val());
+        $("#SHARED_@Model.ChiaSe.ID").find("td:nth-child(4)").html($("#DENNGAY1").val());
+        $("#SHARED_@Model.ChiaSe.ID").find("td:nth-child(5)").html($("#GHICHU1").val());
+        NotiSuccess(data.Message);
+        $("#btnClose1").click();
+    }
+    function SharingFile1(err) {
+        NotiError("Không thể thêm mới");
+    }
+    $("#TUNGAY1").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-0:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        minDate: new Date(),
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onSelect: function (date) {
+            $("#DENNGAY1").datepicker("option", "minDate", date);
+        }
+    });
+    $("#DENNGAY1").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-0:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        minDate: new Date(),
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onSelect: function (date) {
+            $("#TUNGAY1").datepicker("option", "maxDate", date);
+        }
+    });
+    $("#btnSave1").click(function () {
+        return true;
+    });
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                    $(".select3").select2();
+                });
+            });
+        });
+    });
+</script>

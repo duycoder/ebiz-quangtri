@@ -1,0 +1,354 @@
+﻿@using Web.Areas.WFSTEPArea.Models;
+@using Newtonsoft.Json;
+@model ConfigVM
+@{
+    var stepconfigid = Model.ConfigStep != null ? Model.ConfigStep.ID : 0;
+    var jsMainProcess = Html.Raw(JsonConvert.SerializeObject(Model.MainProcess));
+    var jsJoinProcess = Html.Raw(JsonConvert.SerializeObject(Model.JoinProcess));
+}
+<style>
+    .item-state {
+        display: inline;
+        border-radius: 15px;
+        background-color: #10ac84;
+        padding: 10px;
+        font-size: medium;
+        font-weight: bold;
+        color: white;
+        position: relative;
+        bottom: -15px;
+    }
+
+    .step-name {
+        font-size: small;
+        position: absolute;
+        color: #222f3e;
+        font-weight: bold;
+        text-align: center;
+        top: -20px;
+        left: 0px;
+        right: 0px;
+        margin: auto;
+    }
+
+    .minwidth {
+        min-width: 130px;
+    }
+
+    .xuly {
+        border: 1px solid #ddd;
+    }
+</style>
+<div class="modal-dialog" style="width:1000px;">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">Cấu hình - @Model.Step.NAME</h4>
+            </div>
+        </div>
+        <div class="modal-body" id="form-config">
+            <div class="row nomargin center" style=" margin-bottom:20px;">
+                <div class="item-state">
+                    @Model.Step.TrangThaiBatDau
+                </div>
+                <div style="display:inline; position:relative;">
+                    <span class="step-name">@Model.Step.NAME</span>
+                    <img height="50px" width="220px" src="~/img/transitarrow.png" />
+                </div>
+                <div class="item-state">
+                    @Model.Step.TrangThaiKetThuc
+                </div>
+            </div>
+            <div class="row well well-sm">
+                <div style="color:#222f3e; font-weight:bold;">Cấu hình thông báo</div>
+                <div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="On" @(Model.ConfigStep != null && Model.ConfigStep.IS_NOTI_EMAIL == true ? " checked " : "") id="sendMail" />Gửi Email thông báo</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="On" @(Model.ConfigStep != null && Model.ConfigStep.IS_NOTI_MESSAGE == true ? " checked " : "") id="sendTinNhan" />Gửi tin nhắn thông báo</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="On" @(Model.ConfigStep != null && Model.ConfigStep.IS_NOTI_SMS == true ? " checked " : "") id="sendsms" />Gửi SMS thông báo</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="On" @(Model.ConfigStep != null && Model.ConfigStep.IS_BACK_USER == true ? " checked " : "") id="isBackUser" />Trả lại người xử lý trước</label>
+                    </div>
+                </div>
+            </div>
+            
+                <div style="display: @(Model.ConfigStep != null ? Model.ConfigStep.IS_BACK_USER != true ? "block;" : "none":"block")" id="groupNgXuLy">
+                    <div class="checkbox">
+                        <label><input id="isXuLyChinh" type="checkbox" value="On" @(Model.MainProcess != null ? " checked " : " ") /> Người nhận xử lý</label>
+                    </div>
+                    <div class="row well well-sm" id="panelXuLyChinh" style="display:@(Model.MainProcess != null ? "block " : "none ");">
+                        <div style="color:#222f3e; font-weight:bold;">Cấu hình nguời nhận xử lý</div>
+                        <div>
+                            <table class=" table-hover table xuly">
+                                <thead>
+                                    <tr>
+                                        <th>Nhãn <span class="red">*</span></th>
+                                        <th>Chức vụ</th>
+                                        <th>Vai trò <span class="red">*</span></th>
+                                        <th>Phòng ban</th>
+                                        <th>Loại đơn vị</th>
+                                        <th class="width-50">Cùng phòng ban</th>
+                                        <th class="width-50">Cùng nhánh</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="form-group">
+                                                <input type="text" value="@(Model.MainProcess!=null?Model.MainProcess.LABEL:"")" id="Label_MainProCess" class="required form-control" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="minwidth">
+                                            @Html.DropDownList("CHUCVU", Model.DSChucVu, "Chọn chức vụ", new { @class = "txt-select2 width100" })
+                                        </td>
+                                        <td class="minwidth">
+                                            <div class="form-group">
+                                                @Html.DropDownList("VAITRO", Model.DsVaiTro, "Chọn vai trò", new { @class = " txt-select2 width100" })
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="minwidth">
+                                            @Html.DropDownList("PHONGBAN", Model.DSPhongBan, "Chọn phòng ban", new { @class = "txt-select2 width100" })
+                                        </td>
+                                        <td class="minwidth">
+                                            @Html.DropDownList("LOAIDONVI", Model.DSCap, "Chọn loại đơn vị", new { @class = "txt-select2 width100" })
+                                        </td>
+                                        <td class="width-50">
+                                            <input type="checkbox" id="main_phong" @(Model.MainProcess != null && Model.MainProcess.IS_CUNGPHONG == true ? " checked " : "") class="" />
+                                        </td>
+                                        <td class="width-50">
+                                            <input type="checkbox" id="main_nhanh" @(Model.MainProcess != null && Model.MainProcess.IS_CUNGNHANH == true ? " checked " : "") class="" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="checkbox">
+                        <label><input id="isThamGia" type="checkbox" value="On" @(Model.JoinProcess != null ? " checked " : " ") /> Người tham gia xử lý</label>
+                    </div>
+                    <div class="row well well-sm" id="panelThamGiaXuLy" style="display:@(Model.JoinProcess!=null? "Block " :"none ");">
+                        <div style="color:#222f3e; font-weight:bold;">Cấu hình nguời tham xử lý</div>
+                        <div>
+                            <table class=" table-hover table xuly">
+                                <thead>
+                                    <tr>
+                                        <th>Nhãn</th>
+                                        <th>Chức vụ</th>
+                                        <th>Vai trò</th>
+                                        <th>Phòng ban</th>
+                                        <th>Loại đơn vị</th>
+                                        <th class="width-50">Cùng phòng ban</th>
+                                        <th class="width-50">Cùng nhánh</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="form-group">
+                                                <input type="text" id="J_LABEL" value="@(Model.JoinProcess != null ? Model.JoinProcess.LABEL : "")" class="form-control required" />
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="minwidth">
+                                            @Html.DropDownList("J_CHUCVU", Model.DSChucVu, "Chọn chức vụ", new { @class = "txt-select2 width100" })
+                                        </td>
+                                        <td class="minwidth">
+                                            <div class="form-group">
+                                                @Html.DropDownList("J_VAITRO", Model.DsVaiTro, "Chọn vai trò", new { @class = " txt-select2 width100" })
+                                                <div class="note-error">
+                                                    <span class="error mes-note-error"></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="minwidth">
+                                            @Html.DropDownList("J_PHONGBAN", Model.DSPhongBan, "Chọn phòng ban", new { @class = "txt-select2 width100" })
+                                        </td>
+                                        <td class="minwidth">
+                                            @Html.DropDownList("J_LOAIDONVI", Model.DSCap, "Chọn loại đơn vị", new { @class = "txt-select2 width100" })
+                                        </td>
+                                        <td class="width-50">
+                                            <input type="checkbox" id="J_CungPhong" @(Model.JoinProcess != null && Model.JoinProcess.IS_CUNGPHONG == true ? " checked " : "") class="" />
+                                        </td>
+                                        <td class="width-50">
+                                            <input type="checkbox" id="J_CungNhanh" @(Model.JoinProcess != null && Model.JoinProcess.IS_CUNGNHANH == true ? " checked " : "") class="" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="button" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>
+
+            <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $("#isThamGia").click(function () {
+        if ($(this).prop("checked"))
+        {
+            $("#panelThamGiaXuLy").css("display","block");
+        }else {
+            $("#panelThamGiaXuLy").css("display","none");
+        }
+    })
+    $("#isXuLyChinh").click(function () {
+        if ($(this).prop("checked"))
+        {
+            $("#panelXuLyChinh").css("display","block");
+        }else {
+            $("#panelXuLyChinh").css("display","none");
+        }
+    })
+
+    $("#isBackUser").click(function () {
+        if ($(this).prop("checked"))
+        {
+            $("#groupNgXuLy").css("display","none");
+        }else {
+            $("#groupNgXuLy").css("display","block");
+        }
+    })
+    
+    var jsMainProcess=eval(@jsMainProcess);
+    var jsJoinProcess=eval(@jsJoinProcess);
+
+
+    console.log(jsMainProcess);
+    if (jsMainProcess!=null) {
+        if (jsMainProcess.CHUCVU_ID != null) {
+            $("#CHUCVU").val(jsMainProcess.CHUCVU_ID);
+        }
+
+        if (jsMainProcess.VAITRO_ID != null ){
+            $("#VAITRO").val(jsMainProcess.VAITRO_ID);
+        }
+        if (jsMainProcess.PHONGBAN_ID != null){
+            $("#PHONGBAN").val(jsMainProcess.PHONGBAN_ID);
+        }
+        if (jsMainProcess.LOAIDONVI_ID != null)
+        {
+            $("#LOAIDONVI").val(jsMainProcess.LOAIDONVI_ID);
+        }
+    }
+    if (jsJoinProcess!=null) {
+        if (jsJoinProcess.CHUCVU_ID != null) {
+            $("#J_CHUCVU").val(jsJoinProcess.CHUCVU_ID);
+        }
+
+        if (jsJoinProcess.VAITRO_ID != null ){
+            $("#J_VAITRO").val(jsJoinProcess.VAITRO_ID);
+        }
+        if (jsJoinProcess.PHONGBAN_ID != null){
+            $("#J_PHONGBAN").val(jsJoinProcess.PHONGBAN_ID);
+        }
+        if (jsJoinProcess.LOAIDONVI_ID != null)
+        {
+            $("#J_LOAIDONVI").val(jsJoinProcess.LOAIDONVI_ID);
+        }
+    }
+
+
+
+
+    function successAjaxCreate(rs) {
+        if (rs.Status) {
+
+            NotiSuccess("Cập nhật thành công");
+        } else {
+
+            NotiError(rs.Message);
+        }
+    }
+
+    function checkSubmid() {
+        var err = 0;
+
+        if ($("#isXuLyChinh").prop("checked")) {
+            err+=checkForm('panelXuLyChinh')?0:1;
+        }
+        if ($("#isThamGia").prop("checked")) {
+            err+=checkForm('panelThamGiaXuLy')?0:1;
+        }
+        if (!err) {
+            var conf ={'id':@stepconfigid,
+                'WF_STEP_ID':@Model.Step.ID,
+                'IS_NOTI_EMAIL':$("#sendMail").prop("checked"),
+                'IS_NOTI_MESSAGE':$("#sendTinNhan").prop("checked"),
+                'IS_NOTI_SMS':$("#sendsms").prop("checked"),
+
+            };
+
+            var mainprocess={
+                ID:(jsMainProcess!=null?jsMainProcess.ID:0),
+                IS_XULYCHINH:true,
+                VAITRO_ID:$("#VAITRO").val(),
+                CHUCVU_ID:$("#CHUCVU").val(),
+                LABEL:$("#Label_MainProCess").val(),
+                LOAIDONVI_ID:$("#LOAIDONVI").val(),
+                PHONGBAN_ID:$("#PHONGBAN").val(),
+                IS_CUNGPHONG:$("#main_phong").prop("checked"),
+                IS_CUNGNHANH:$("#main_nhanh").prop("checked"),
+                WF_STEP_ID: parseInt(@Model.Step.ID)
+            }
+
+            var joinprocess={
+                ID:(jsJoinProcess!=null?jsJoinProcess.ID:0),
+                IS_XULYCHINH:false,
+                VAITRO_ID:$("#J_VAITRO").val(),
+                CHUCVU_ID:$("#J_CHUCVU").val(),
+                LABEL:$("#J_LABEL").val(),
+                LOAIDONVI_ID:$("#J_LOAIDONVI").val(),
+                PHONGBAN_ID:$("#J_PHONGBAN").val(),
+                IS_CUNGPHONG:$("#J_CungPhong").prop("checked"),
+                IS_CUNGNHANH:$("#J_CungNhanh").prop("checked"),
+                WF_STEP_ID: parseInt(@Model.Step.ID)
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '/wfsteparea/wfstep/SaveConfig',
+                data: JSON.stringify({"config":conf,"isMain":$("#isXuLyChinh").prop("checked"),"isBack":$("#isBackUser").prop("checked"),"mainProcess":mainprocess,"isJoin":$("#isThamGia").prop("checked"),"joinProcess":joinprocess}),
+                dataType: "json", //change to your own, else read my note above on enabling the JsonValueProviderFactory in MVC
+                contentType: "Application/json",
+                success: successAjaxCreate,
+                error: failureAjax,
+            });
+
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                $(".txt-select2").select2({
+                    minimumResultsForSearch: Infinity
+                });
+            });
+        });
+    })
+</script>

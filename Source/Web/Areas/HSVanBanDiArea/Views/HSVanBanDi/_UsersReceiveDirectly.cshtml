@@ -1,0 +1,52 @@
+﻿@using Web.Areas.HSVanBanDiArea.Models;
+@model VanBanDiVM
+@{ 
+    int count = 1;
+}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td style="width:50px;">
+                <input type="checkbox" title="Chọn tất cả" onclick="checkAllUsers(this)" class="cbx--all-users"/>
+            </td>
+            <td>Cán bộ</td>
+            <td>Phòng ban</td>
+        </tr>
+    </thead>
+    <tbody id="reloaduser">
+        @foreach (var item in Model.GroupUsersInRole)
+        {
+            <tr>
+                <td>
+                    <input id="checkbox--user-receive-@item.USERID" class="cbx-users" type="checkbox" value="@item.USERID" name="checkbox" @(Model.GroupUserIdsReceiveDirectly.Contains(item.USERID) ? "checked" : string.Empty) onclick="checkUser(this)"/>
+                </td>
+                <td>
+                    <label class="control-label input-Name" for="checkbox--user-receive-@item.USERID">
+                        @item.HOVATEN
+                    </label>
+                </td>
+                <td>
+                    <label class="control-label dept-Name" for="checkbox--user-receive-@item.USERID">
+                        @item.DepartmentName
+                    </label>
+                </td>
+            </tr>
+            count++;
+        }
+    </tbody>
+</table>
+
+
+<script>
+    function checkAllUsers(obj){
+        var checked = $(obj).is(':checked');
+        $('.cbx-users').prop('checked', checked);
+    }
+
+    function checkUser(obj){
+        var checked = $(obj).is(':checked');
+        if(!checked){
+            $('.cbx--all-users').prop('checked', false);
+        }
+    }
+</script>

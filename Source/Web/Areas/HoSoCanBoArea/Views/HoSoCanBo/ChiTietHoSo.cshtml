@@ -1,0 +1,362 @@
+﻿@model Web.Areas.HoSoCanBoArea.Models.HoSoCanBoChiTietVM
+@{
+    ViewBag.Title = "ChiTietHoSo";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+
+    </div>
+</div>
+<div role="content">
+    <div class="jarviswidget-editbox">
+    </div>
+    <div class="widget-body col-sm-10" style="background-color: #fff !important;">
+        <div class="row" style="margin-left: 0px;padding-bottom: 10px">
+            <div id="div-docx" style="width:860px; margin:auto; margin-top:30px; border:1px solid #777; padding:70px;">
+                <meta charset="UTF-8">
+                <title>Test</title>
+                <meta name="Generator" content="PowerTools for Open XML">
+                <link href="~/css/readfiledocx.css" rel="stylesheet" />
+                <div>
+                    <p dir="ltr" class="pt-Normal">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont">Mẫu 2C-BNV/2008 ban hành kèm theo Quyết định số 02/2008/QĐ-BNV ngày 06/10/2008 của Bộ trưởng Bộ Nội vụ</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000000">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Cơ quan, đơn vị có thẩm quyền quản lý CBCC …… Số hiệu cán bộ, công chức: ……</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000000">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Cơ quan, đơn vị sử dụng CBCC ……………………</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000002">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000003">SƠ YẾU LÝ LỊCH CÁN BỘ, CÔNG CHỨC</span>
+                    </p>
+                    <div align="left">
+                        <table dir="ltr" class="pt-000004">
+                            <tbody>
+                                <tr>
+                                    <td class="pt-000005">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span xml:space="preserve" class="pt-000007"> </span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span xml:space="preserve" class="pt-000007"> </span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span class="pt-DefaultParagraphFont-000001">Ảnh màu</span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span class="pt-DefaultParagraphFont-000001">(4 x 6 cm)</span>
+                                        </p>
+                                    </td>
+                                    <td class="pt-000009">
+                                        <p dir="ltr" class="pt-Normal-000010">
+                                            <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000011">1) Họ và tên khai sinh (viết chữ in hoa): <b>@Model.ThongTinChung.HOTEN</b></span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000010">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000011">2) Tên gọi khác: @Model.ThongTinChung.TENGOIKHAC</span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000010">
+                                            <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000011">3) Sinh ngày: @string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYSINH), Giới tính (nam, nữ): @Model.ThongTinChung.STRGIOITINH</span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000010">
+                                            <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000011">4) Nơi sinh: Xã ……………, Huyện …………, Tỉnh </span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000010">
+                                            <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000011">5) Quê quán: Xã …….…… , Huyện …………, Tỉnh </span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">6) Dân tộc: @Model.ThongTinChung.STRDANTOC, 7) Tôn giáo: @Model.ThongTinChung.STRTONGIAO</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">8) Nơi đăng ký bộ khẩu thường trú: @Model.ThongTinChung.NOIDANGKYHOKHAUTHUONGTRU</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Số nhà, đường phố, thành phố, xóm, thôn, xã, huyện, tỉnh)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">9) Nơi ở hiện nay: @Model.ThongTinChung.NOIOHIENNAY</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Số nhà, đường phố, thành phố, xóm, thôn, xã, huyện, tỉnh)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">10) Nghề nghiệp khi được tuyển dụng: @Model.ThongTinChung.NGHENGHIEPKHIDUOCTUYENDUNG</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">11) Ngày tuyển dụng: @(Model.ThongTinChung.NGAYTRUNGTUYEN != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYTRUNGTUYEN) : "..........."), Cơ quan tuyển dụng: @Model.ThongTinChung.COQUANTUYENDUNG</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">12) Chức vụ (chức danh) hiện tại: @Model.ThongTinChung.STRCHUCVU</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Về chính quyền hoặc Đảng, đoàn thể, kể cả chức vụ kiêm nhiệm)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">13) Công việc chính được giao: @Model.ThongTinChung.CONGVIECCHINHDUOCGIAO</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">14) Ngạch công chức (viên chức): @Model.ThongTinChung.STRNGACH, Mã ngạch: @Model.ThongTinChung.MANGACH</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000001">Bậc lương:@Model.ThongTinChung.BACLUONG, Hệ số:@Model.ThongTinChung.HESO, Ngày hưởng:@(Model.ThongTinChung.NGAYHUONG != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYHUONG) : "..........."), </span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Phụ cấp chức vụ: @Model.ThongTinChung.PHUCAPCHUCVU, Phụ cấp khác: @Model.ThongTinChung.PHUCAPKHAC</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000012">15.1- Trình độ giáo dục phổ thông (đã tốt nghiệp lớp mấy/thuộc hệ nào): @Model.ThongTinChung.STRTRINHDOGIAODUC</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000012">15.2- Trình độ chuyên môn cao nhất: @Model.ThongTinChung.STRTRINHDOCHUYENMONCAONHAT</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(TSKH, TS, Ths, cử nhân, kỹ sư, cao đẳng, trung cấp, sơ cấp, chuyên ngành)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000012">15.3- Lý luận chính trị: @Model.ThongTinChung.STRLYLUANCHINHTRI 15.4-Quản lý nhà nước: @Model.ThongTinChung.STRQUANLYNHANUOC</span>
+                    </p>
+                    <div align="left">
+                        <table dir="ltr" class="pt-000004">
+                            <tbody>
+                                <tr>
+                                    <td class="pt-000013">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Cao cấp, trung cấp, sơ cấp và tương đương)</span>
+                                        </p>
+                                    </td>
+                                    <td class="pt-000014">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(chuyên viên cao cấp, chuyên viên chính, chuyên viên, cán sự,........)</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">15.5- Ngoại ngữ: @Model.ThongTinChung.STRNGOAINGU, 15.6-Tin học: @Model.ThongTinChung.STRTINHOC</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000001">(Tên ngoại ngữ + Trình độ A, B, C, D......)         </span>
+                        <span lang="pt-BR" class="pt-DefaultParagraphFont-000001">(Trình độ A, B, C,.......)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="pt-BR" class="pt-DefaultParagraphFont-000001">16) Ngày vào Đảng Cộng sản Việt Nam:@(Model.ThongTinChung.NGAYVAODANG != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYVAODANG) : "..........."), Ngày chính thức:@(Model.ThongTinChung.NGAYCHINHTHUC != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYCHINHTHUC) : "...........")</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="pt-BR" xml:space="preserve" class="pt-DefaultParagraphFont-000012">17) Ngày tham gia tổ chức chính trị - xã hội: @(Model.ThongTinChung.NGAYTHAMGIATCCTXH != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYTHAMGIATCCTXH) : "...........")</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Ngày tham gia tổ chức: Đoàn, Hội,..... và làm việc gì trong tổ chức đó)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000012">18) Ngày nhập ngũ:@(Model.ThongTinChung.NGAYNHAPNGU != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYNHAPNGU) : "..........."), Ngày xuất ngũ: @(Model.ThongTinChung.NGAYXUATNGU != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYXUATNGU) : "...........") Quân hàm cao nhất: @Model.ThongTinChung.STRQUANHAMCAONHAT</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">19) Danh hiệu được phong tặng cao nhất: @Model.ThongTinChung.DANHHIEUDUOCPHONG </span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Anh hùng lao động, anh hùng lực lượng vũ trang; nhà giáo, thày thuốc, nghệ sĩ nhân dân và ưu tú, …)</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">20) Sở trường công tác: @Model.ThongTinChung.SOTRUONGCONGTAC</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">21) Khen thưởng: @Model.ThongTinChung.KHENTHUONG, 22) Kỷ luật: @Model.ThongTinChung.KYLUAT </span>
+                    </p>
+                    <div align="left">
+                        <table dir="ltr" class="pt-000004">
+                            <tbody>
+                                <tr>
+                                    <td class="pt-000015">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Hình thức cao nhất, năm nào)</span>
+                                        </p>
+                                    </td>
+                                    <td class="pt-000016">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(về đảng, chính quyền, đoàn thể hình thức cao nhất, năm nào)</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">23) Tình trạng sức khoẻ: @Model.ThongTinChung.STRSUCKHOE, Chiều cao: @Model.ThongTinChung.CHIEUCAO, Cân nặng:@Model.ThongTinChung.CANNANG kg, Nhóm máu:@Model.ThongTinChung.STRNHOMMAU</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">24) Là thương binh hạng:  @Model.ThongTinChung.THUONGBINHHANG, Là con gia đình chính sách:  @Model.ThongTinChung.STRGIADINHCHINHSACH</span>
+                    </p>
+                    <div align="left">
+                        <table dir="ltr" class="pt-000004">
+                            <tbody>
+                                <tr>
+                                    <td class="pt-000017">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span xml:space="preserve" class="pt-000007"> </span>
+                                        </p>
+                                    </td>
+                                    <td class="pt-000018">
+                                        <p dir="ltr" class="pt-Normal-000006">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Con thương binh, con liệt sĩ, người nhiễm chất độc da cam Dioxin)</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000019">25) Số chứng minh nhân dân:  @Model.ThongTinChung.CMTND</span>
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000001">Ngày cấp: @(Model.ThongTinChung.NGAYCAP != null ? string.Format("{0:dd/MM/yyyy}", Model.ThongTinChung.NGAYCAP) : "...........") </span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000012">26) Số sổ BHXH: @Model.ThongTinChung.SOSOBHXH</span>
+                    </p>
+                    @Html.Partial("~/Areas/HoSoCanBoArea/Views/HoSoCanBo/_DaoTaoBoiDuong.cshtml", Model)
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont">Ghi chú: </span>
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Hình thức đào tạo: Chính quy, tại chức, chuyên tu, bồi dưỡng ..../ Văn bằng: TSKH, TS, Ths, Cử nhân, Kỹ sư ............</span>
+                    </p>
+                    @*<p dir="ltr" class="pt-Normal-000030">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">28) Tóm tắt quá trình công tác</span>
+                        <a href="javascript:createThongTinCongTac()">
+                            <i class="fa fa-plus"></i>Thêm mới
+                        </a>
+                    </p>*@
+                    @Html.Partial("~/Areas/HoSoCanBoArea/Views/HoSoCanBo/_HoSoCanBoCongTac.cshtml", Model)                   
+                 
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000001">29) Đặc điểm lịch sử bản thân: </span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">- Khai rõ: bị bắt, bị tù (từ ngày tháng năm nào đến ngày tháng năm nào, ở đâu), đã khai báo cho ai, những vấn đề gì? Bản thân có làm việc trong chế độ cũ (cơ quan, đơn vị nào, địa điểm, chức danh, chức vụ, thời gian làm việc ....)</span>
+
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010"><i>@Model.ThongTinChung.DACDIEMLICHSU_BIBAT</i></p>
+
+                    <p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont-000001">- Tham gia hoặc có quan hệ với các tổ chức chính trị, kinh tế, xã hội nào ở nước ngoài (làm gì, tổ chức nào, đặt trụ sở ở đâu .........?): </span>
+
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010"><i>@Model.ThongTinChung.DACDIEMLICHSU_THAMGIA</i></p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">- Có thân nhân (Cha, Mẹ, Vợ, Chồng, con, anh chị em ruột) ở nước ngoài (làm gì, địa chỉ ........)?</span>
+
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010"><i>@Model.ThongTinChung.DACDIEMLICHSU_THANNHAN</i></p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">30) Quan hệ gia đình</span>
+                    </p>
+                    @Html.Partial("~/Areas/HoSoCanBoArea/Views/HoSoCanBo/_HoSoCanBoQuanHeBanThan.cshtml", Model)
+                    
+                    @*<p dir="ltr" class="pt-Normal-000030">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">a) Về bản thân: Cha, Mẹ, Vợ (hoặc chồng), các con, anh chị em ruột</span>
+                        <a href="javascript:createThongTinGiaDinhBanThan()">
+                            <i class="fa fa-plus"></i>Thêm mới
+                        </a>
+                    </p>*@   
+                    @Html.Partial("~/Areas/HoSoCanBoArea/Views/HoSoCanBo/_HoSoCanBoQuanHeKetHon.cshtml", Model)            
+                 
+                    @Html.Partial("~/Areas/HoSoCanBoArea/Views/HoSoCanBo/_QuaTrinhLuongCanBo.cshtml", Model)
+                   
+                
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">32) Nhận xét, đánh giá của cơ quan, đơn vị quản lý và sử dụng cán bộ, công chức</span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                        <i>@Model.ThongTinChung.NHANXET</i>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000010">
+                    </p><p dir="ltr" class="pt-Normal-000050">
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">………………</span>
+                        <span lang="en-GB" class="pt-DefaultParagraphFont">. Ngày</span>
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">…</span>
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont"> tháng</span>
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">…</span>
+                        <span lang="en-GB" xml:space="preserve" class="pt-DefaultParagraphFont"> năm </span>
+                        <span lang="en-GB" class="pt-DefaultParagraphFont-000001">……</span>
+                    </p>
+                    <div align="left">
+                        <table dir="ltr" class="pt-000004">
+                            <tbody>
+                                <tr>
+                                    <td class="pt-000051">
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000052">Người khai</span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">Tôi xin cam đoan những lời khai trên đây là đúng sự thật</span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000001">(Ký tên, ghi rõ họ tên)</span>
+                                        </p>
+                                    </td>
+                                    <td class="pt-000053">
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont-000052">Thủ trưởng cơ quan, đơn vị quản lý và sử dụng CBCC</span>
+                                        </p>
+                                        <p dir="ltr" class="pt-Normal-000008">
+                                            <span lang="en-GB" class="pt-DefaultParagraphFont">(Ký tên, đóng dấu)</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p dir="ltr" class="pt-Normal-000000">
+                        <span xml:space="preserve" class="pt-000007"> </span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000054">
+                        <span xml:space="preserve" class="pt-000055"> </span>
+                    </p>
+                    <p dir="ltr" class="pt-Normal-000054">
+                        <span xml:space="preserve" class="pt-000055"> </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    function createThongTinCongTac() {
+
+    }
+    function createThongTinGiaDinhBanThan() {
+
+    }
+    function createThongTinGiaDinhDoiTac() {
+
+    }
+    function createThongTinLuong() {
+
+    }
+</script>

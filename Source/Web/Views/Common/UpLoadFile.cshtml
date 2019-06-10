@@ -1,0 +1,498 @@
+﻿@using Model.Entities
+@model List<TAILIEUDINHKEM>
+@using Web.FwCore
+@{
+    var is_detail = false;
+    var is_multi = true;
+    string itemType = string.Empty;
+
+    if (ViewData["ITEM_TYPE"] != null)
+    {
+        itemType = ViewData["ITEM_TYPE"].ToString();
+    }
+
+    if (ViewData["detail"] != null)
+    {
+        is_detail = int.Parse(ViewData["detail"].ToString()) == 1;
+    }
+    if (ViewData["is_multi"] != null)
+    {
+        is_multi = int.Parse(ViewData["is_multi"].ToString()) == 1;
+    }
+    string id = "UpLoadFile";
+    if (ViewData["id"] != null)
+    {
+        id = ViewData["id"].ToString();
+    }
+    var allowviewpdf = true;
+    if (ViewData["allowviewpdf"] != null)
+    {
+        allowviewpdf = ViewData["allowviewpdf"].ToString() == "1";
+    }
+    var qtriHethong = SessionManager.GetValue("QUANTRIHETHONG");
+
+    var allowoveride = false;
+    if (ViewData["allowoveride"] != null)
+    {
+        allowoveride = ViewData["allowoveride"].ToString() == "1";
+    }
+}
+<style type="text/css">
+    .webGrid > thead > tr > th {
+        color: #275b89;
+        padding: 0px 10px !important;
+    }
+
+    .webGrid > tbody > tr > td {
+        /*color: #275b89;*/
+        padding: 5px 5px !important;
+    }
+
+    .webGrid {
+        background-color: white;
+    }
+
+    .e-input {
+        width: 223px;
+    }
+
+    /*.ChooseFile:hover {
+        cursor: pointer !important;
+    }*/
+
+    input[type=file] {
+        overflow: hidden;
+        display: inline-block;
+        white-space: nowrap;
+        width: 100% !important;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        border: none !important;
+    }
+
+    .BIEUMAU_ADD {
+        background: url('/Content/themes/base/images/BIEUMAU_ADD.png') no-repeat;
+        display: block;
+        width: 32px;
+        height: 32px;
+        margin: 0 auto;
+    }
+
+    #block--file-content img {
+        width: 100%;
+        height: auto;
+    }
+
+    #block--file-content object {
+        width: 100%;
+        height: auto;
+    }
+
+    #block--file-content {
+        margin: 10px 0 0 0;
+        display: none;
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    #confirmButtons .btn-default {
+        margin-left: 10px;
+    }
+
+    #FileDinhKemThayThe {
+        border-radius: 5px !important;
+        padding: 3px 6px;
+        border-color: #95afc0 !important;
+        border: 1px solid #95afc0 !important;
+    }
+</style>
+
+<div class="jarviswidget" style="padding: 0px;border: none">
+    <header role="heading">
+        <span class="widget-icon"><i class="fa fa-paperclip txt-color-red"></i></span>
+        <h2 class="hidden-xs hidden-sm" style="text-transform: uppercase">
+            Tài liệu đính kèm
+        </h2>
+        <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+    </header>
+
+    <table class="webGrid table-bordered files-table" style="width:100% !important">
+        <thead>
+            <tr class="head">
+                <th style="width:233px;height:40px" scope="col" class="center">Tên tài liệu</th>
+                <th style="width:42%" scope="col" class="center">@(is_detail ? "Tải tài liệu" : "Chọn tài liệu")</th>
+                @if (is_detail == false)
+                {
+
+                }
+                else if (qtriHethong != null && qtriHethong.Equals("True"))
+                {
+                    <th class="center">Thêm biểu mẫu</th>
+                }
+                @if (!is_detail && is_multi)
+                {
+                    <th scope="col" style="width:4%" class="center">
+                        <center>
+                            <a href="javascript:void(0)" class="btnAddFiles" onclick="addAttachmentRow(this)" title="Thêm tài liệu" id="btnAdd_@id" style="cursor:pointer;"><i class="glyphicon glyphicon-plus"></i></a>
+                        </center>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody id='@(string.IsNullOrEmpty(id) ? "UpLoadFile" : id)'>
+            @if (Model != null && Model.Count > 0)
+            {
+                var i = 1;
+                foreach (var item in Model)
+                {
+                    <tr id="filesave_@i">
+                        <td style="text-align:left;">
+                            <span style="margin-left: 30px"><strong>@item.TENTAILIEU</strong></span>
+                        </td>
+                        <td class="center">
+
+                            @if (true == allowoveride)
+                            {
+                                <a class="btn btn-default" onclick="ChangeFile(@item.TAILIEU_ID, @item.ITEM_ID, '@itemType')" href="javascript:void(0)">
+                                    <i class="glyphicon glyphicon-upload "></i>Xem các phiên bản
+                                </a>
+                            }
+                            <a class="btn btn-default" href="javascript:void(0)" onclick="DowloadFile(@item.TAILIEU_ID)"><i class="glyphicon glyphicon-save"></i>Tải tài liệu</a>
+                            <a class="btn btn-default" href="javascript:void(0)" onclick="previewExistedFile(@item.TAILIEU_ID)"><i class="glyphicon glyphicon-zoom-out"></i>Xem nội dung</a>
+                        </td>
+
+                        @if (qtriHethong != null && qtriHethong.Equals("True"))
+                        {
+                            <td class="center"><a title="Thêm mới biểu mẫu" class="BIEUMAU_ADD" onclick="AddBieuMau(@item.TAILIEU_ID)"></a></td>
+                        }
+                        @if (is_detail == false && is_multi == true)
+                        {
+                            <td class="center">
+                                <a title="Xóa tài liệu" href="javascript:XoaTaiLieuDaLuu('@item.TAILIEU_ID', '@i')" data-id="filesave_@i"><i class="red glyphicon glyphicon-remove"></i></a>
+                            </td>
+                        }
+                    </tr>
+                    i++;
+                }
+            }
+            @if (is_detail == false)
+            {
+                <tr id="@(id)_file_1">
+                    <td>
+                        <input type="text" maxlength="500" class="form-control" placeholder="Nhập tên tài liệu" name="filename" />
+                    </td>
+                    <td style="text-align:left">
+                        <input type="file" class="form-control" id="filebase_1" value="Chọn tài liệu" name="filebase" />
+                        <span id="file_null_1" style="color:red;display:none">Vui lòng kiểm tra định dạng file hoặc dung lượng file cho phép</span>
+                        <input type="hidden" id="SO_FILE_CURRENT" value="1," />
+                    </td>
+
+                    @if (is_multi == true)
+                    {
+                        <td class="center">
+                            <a title="Xóa tài liệu" href="javascript:XoaTaiLieu(1)" onclick="XoaTaiLieu(1)" data-id="file_1"><i class="red glyphicon glyphicon-remove"></i></a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="block--file-content">
+</div>
+
+<div class="modal fade" id="CreateLoaiBieuMau" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"></div>
+@if (is_detail == false)
+{
+    <script type="text/javascript">
+        var count = 1;
+        var temp = $(".btnAddFiles").length;
+        if (temp > 1) {
+            var cnt = 0;
+            $(".btnAddFiles").each(function () {
+                cnt++;
+                $(this).attr("data-id", cnt);
+                if (cnt > 1) {
+                    var bodyId = $(this).closest("table").find("tbody").attr("id");
+                    $(this).closest("table").find("tbody").attr("id", bodyId + "_" + cnt);
+                }
+            });
+        }
+        function addAttachmentRow(row) {
+            count += 1;
+            if ($(row).attr("data-id") > 1) {
+                $("#" + '@id' + "_" + $(row).attr("data-id")).append(CreateFile(count));
+            } else {
+                $("#" + '@id').append(CreateFile(count));
+            }
+
+        }
+        function XoaTaiLieuDaLuu(id, stt) {
+            var file_id = "filesave_" + stt;
+            $.confirm({
+                'title': 'Xác nhận xóa',
+                'message': 'Bạn có chắc chắn muốn xóa không, tài liệu này sẽ không thể phục hồi?',
+                'buttons': {
+                    'Xóa': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            //Call ajax to delete TAILIEU in TAILIEUDINHKEM Table
+                            //DeleteFile
+                            $.ajax({
+                                type: "POST",
+                                url: '/Common/DeleteFile',
+                                cache: false,
+                                data: {
+                                    id: id
+                                },
+                                success: function (data) {
+                                    if (data == "1") {
+                                        $("#" + file_id).remove();
+                                        NotiSuccess("Xóa tài liệu thành công!");
+                                    }
+                                    else {
+                                        NotiError("Có lỗi trong quá trình xóa tài liệu, vui lòng thử lại!");
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    'Không xóa': {
+                        'class': 'btn-default',
+                        'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                    }
+                }
+            });
+
+        };
+        function XoaTaiLieu(id) {
+            var file_id = 'UpLoadFile' + "_file_" + id;
+            var filename = $("#" + file_id + " input[name='filename']").val();
+            var fileupload = $("#" + file_id + " input[name='filebase']").val();
+            if (filename.length > 0 || fileupload.length > 0) {
+                $.confirm({
+                    'title': 'Xác nhận xóa',
+                    'message': 'Bạn có chắc chắn muốn xóa tài liệu này?',
+                    'buttons': {
+                        'Xóa': {
+                            'class': 'btn-confirm-yes btn-primary',
+                            'action': function () {
+                                $("#" + file_id).remove();
+                            }
+                        },
+                        'Không xóa': {
+                            'class': 'btn-default',
+                            'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                        }
+                    }
+                });
+            } else {
+                $("#" + file_id).remove();
+            }
+        };
+        function CreateFile(count) {
+            var html_element = "";
+            html_element += "<tr id='UpLoadFile_file_" + count + "'><td ><input type='text' id='name_" + count + "' class='form-control filename' maxlength='500' name='filename' placeholder='Nhập tên tài liệu' /></td>";
+            html_element += "<td style='text-align:left'><input class='file form-control' type='file' name='filebase' id='file_" + count + "'/> <span id='file_null_" + count + "' style='color:red;display:none'>Vui lòng kiểm tra định dạng file hoặc dung lượng file cho phép</span></td>";
+            //html_element += "<td class='center'><a class='btn btn-default' onclick='previewFile(this)' href='javascript:void(0)'>";
+            //html_element += '<i class="glyphicon glyphicon-eye-open"></i>';
+            //html_element += ' </a><a class="btn btn-default" onclick="copyContent(this)" href="javascript:void(0)"><i class="glyphicon glyphicon-print "></i></a></td>';
+            html_element += "<td style='width:4%' class='center'><a href='javascript:XoaTaiLieu(" + count + ");'  title='Xóa file' data-id='file_" + count + "'><i class='red glyphicon glyphicon-remove'></i></td>";
+            html_element += "</tr>";
+            $("#SO_FILE_CURRENT").val($("#SO_FILE_CURRENT").val() + count + ",");
+            return html_element;
+        }
+    </script>
+}
+<script type="text/javascript">
+    function ChangeFile(TAILIEU_ID, ITEM_ID, ITEM_TYPE) {
+        var url = "/Common/EditDocAttachment?attachmentId="+TAILIEU_ID+"&itemId="+ITEM_ID+"&itemType="+ITEM_TYPE;
+        $.get(url, function(result){
+            $('#block--edit-file').html(result);
+            $('#block--edit-file').modal('show');
+        });
+
+        //$('#change-and-show-history').modal('show');
+    }
+    function AddBieuMau(TAILIEU_ID) {
+        $.ajax({
+            url: '/Common/CreateBieuMau/',
+            type: 'post',
+            cache: false,
+            data: {
+                ID: TAILIEU_ID
+            },
+            success: function (data) {
+                $("#CreateLoaiBieuMau").html(data);
+                $("#CreateLoaiBieuMau").modal("show");
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+    function DowloadFile(ID) {
+        $.ajax({
+            type: "POST",
+            url: '/Common/CheckkingFile/',
+            data: {
+                ID: ID
+            },
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //alert(data);
+                if (data == "Co") {
+                    location.href = "/Common/DownloadFile?ID=" + ID;
+                } else {
+                    $.confirm({
+                        'title': 'Không tìm thấy tài liệu',
+                        'message': 'Xin lỗi không thể tìm thấy tài liệu mà bạn đang yêu cầu.',
+                        'buttons': {
+                            'Đóng': {
+                                'class': 'btn-confirm-yes btn-primary',
+                                'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    function previewExistedFile(ID) {
+        $.ajax({
+            url: '/Common/PreviewExistedFile',
+            type: 'post',
+            data: {
+                ID: ID
+            },
+            success: function (result) {
+                $("#viewContentFile .modal-body").html(result);
+                $("#viewContentFile").modal();
+            }, error: function () {
+                NotiError('Lỗi dữ liệu file đính kèm');
+            }
+        });
+    }
+    function previewFile(obj) {
+        var submitFile = $(obj).closest('td').parent('tr').find('input[type=file]');
+        if (submitFile[0].files[0] == null) {
+            NotiError('Vui lòng chọn file')
+            return false;
+        }
+        var formData = new FormData();
+        formData.append("file", submitFile[0].files[0]);
+        $.ajax({
+            url: '/Common/PreviewFile',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            dataType: false,
+            processData: false,
+            success: function (result) {
+                if (result.html !== null && result.html !== '') {
+                    var fileContentEle = $('#block--file-content');
+                    if (fileContentEle.length > 0) {
+                        $(fileContentEle).html(result.html);
+                        if ($(fileContentEle).is(':visible') == false) {
+                            $(fileContentEle).show();
+                        }
+                    }
+
+                } else {
+                    NotiError('Không thể hiển thị tài liệu đính kèm');
+                }
+            }, error: function () {
+                NotiError('Lỗi dữ liệu file đính kèm')
+            }
+        });
+    }
+    function copyContent(obj) {
+        var submitFile = $(obj).closest('td').parent('tr').find('input[type=file]');
+        if (submitFile[0].files[0] == null) {
+            NotiError('Vui lòng chọn file')
+            return false;
+        }
+        var formData = new FormData();
+        formData.append("file", submitFile[0].files[0]);
+        $.ajax({
+            url: '/Common/CopyContentFile',
+            type: 'post',
+            data: formData,
+            contentType: false,
+            dataType: false,
+            processData: false,
+            success: function (result) {
+                console.log(result);
+                var CoQuanBanHanh = result.resultObj.CoQuanBanHanh;
+                var SoHieuVanBan = result.resultObj.SoHieuVanBan;
+                var LOAIVANBAN = result.resultObj.LoaiVanBan;
+                var TRICHYEU = result.resultObj.TrichYeu;
+
+                if ($("#frmCreateVanBanDi").length > 0) {
+                    $("#TRICHYEU").val(TRICHYEU);
+                    $("#LOAIVANBAN_ID").val(LOAIVANBAN);
+                    $("#LOAIVANBAN_ID").change();
+                } else {
+                    $("#SOKYHIEU").val(SoHieuVanBan);
+                    $("#COQUANBANHANH_ID").val(CoQuanBanHanh);
+                    $("#COQUANBANHANH_ID").change();
+                    //$("#COQUANBANHANH_ID").multipleSelect("setSelects", [CoQuanBanHanh]);
+                    //$("#LOAIVANBAN_ID").multipleSelect("setSelects", [LOAIVANBAN]);
+                    $("#LOAIVANBAN_ID").val(LOAIVANBAN);
+                    $("#LOAIVANBAN_ID").change();
+                    $("#TRICHYEU").val(TRICHYEU);
+                }
+
+            }, error: function () {
+                NotiError('Lỗi dữ liệu file đính kèm')
+            }
+        });
+    }
+    function PreviewFile(id) {
+        $.ajax({
+            url: '/Common/Preview',
+            type: 'post',
+            cache: false,
+            data: {
+                id: id
+            },
+            success: function (data) {
+                $("#CreateLoaiBieuMau").html(data);
+                $("#CreateLoaiBieuMau").modal("show");
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+    function CheckFile(id) {
+        $.ajax({
+            url: '/Common/CheckFile',
+            type: 'post',
+            cache: false,
+            data: {
+                id: id
+            },
+            success: function (data) {
+                $("#CheckDaoVan").html("");
+                $("#CheckDaoVan").html(data);
+                $("#CheckDaoVan").modal("show");
+            },
+            error: function (xhr) {
+                CommonJS.alert(xhr.responseText);
+            }
+        });
+    }
+</script>

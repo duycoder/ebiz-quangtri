@@ -1,0 +1,242 @@
+﻿@using Web.Areas.ChatArea.Models
+@model ChatIndexViewModel
+@{
+    ViewBag.Title = "Trao đổi - thảo luận";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style type="text/css">
+
+    .overview {
+    position: absolute;
+    bottom: 34px;
+}
+
+        .bg-white {
+            background-color: #fff;
+        }
+
+        .friend-list {
+            list-style: none;
+            max-height: 500px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        }
+
+            .friend-list li {
+                border-bottom: 1px solid #eee;
+            }
+
+                .friend-list li a img {
+                    float: left;
+                    width: 30px;
+                    height: 30px;
+                        margin-right: 15px;
+                }
+
+                .friend-list li a {
+                    position: relative;
+                    display: block;
+                    padding: 5px 10px;
+                    transition: all .2s ease;
+                    -webkit-transition: all .2s ease;
+                    -moz-transition: all .2s ease;
+                    -ms-transition: all .2s ease;
+                    -o-transition: all .2s ease;
+                }
+
+                .friend-list li.active a {
+                    background-color: #f1f5fc;
+                }
+
+                .friend-list li:hover a {
+                    background-color: #f1f5fc;
+                }
+
+                .friend-list li a .friend-name,
+                .friend-list li a .friend-name:hover {
+                    color: #777;
+                    margin-top:5px;
+                }
+
+                .friend-list li a .last-message {
+                    width: 65%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                .friend-list li a .time {
+                    position: absolute;
+                    top: 10px;
+                    right: 8px;
+                }
+
+        small, .small {
+            font-size: 85%;
+        }
+
+        .friend-list li a .chat-alert {
+                position: absolute;
+        right: 8px;
+        top: 5px;
+        font-size: 11px;
+        padding: 3px 5px;
+        width: 20px;
+        border-radius: 50%;
+        background: orange;
+        color: #fff;
+        text-align: center;
+        }
+        .friend-list li a .text-null {
+            padding:0px;
+        }
+
+        .chat-message {
+        height: 510px;
+        background: #f9f9f9;
+        }
+
+        img {
+            max-width: 100%;
+        }
+        .text-muted {
+        color: #777;
+    }.img-circle {
+        border-radius: 50%;
+    }
+
+</style>
+
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+    
+</div>
+<div id="content">
+    <div class="jarviswidget">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                SMART CHAT
+            </h2>
+        </header>
+        <div class="widget-t-body no-padding">
+            <div class="left-all-page" id="menu-middle-left">
+                <input type="hidden" value="1" id="isChatPanel" />
+                <div class="tbl-sub-menu" id="nhapsolieu" style="width: 100%; float:left; border-right:1px solid #ddd;">
+                    <div class="container bootstrap snippet">
+                        <div class="row" style="max-height:550px;min-height:550px;margin:0px;">
+                            <div class="col-md-4 bg-white" style="float:left;width:25%;height: 550px;padding:0px;">
+                                <!-- member list -->
+                                <h3 class="group-tittle mt10"><span>Trao đổi gần đây</span></h3>
+                                <ul class="friend-list">
+                                    @if (Model.ListChat != null && Model.ListChat.Count > 0)
+                                    {
+                                        var i = 0;
+                                        foreach (var item in Model.ListChat)
+                                        {
+                                            if (i == 0)
+                                            {
+                                                <li class="active" data-id="@i" data-user="@item.TOUSER">
+                                                    <a id="userfirst" data-fu="@item.FROMUSER" data-tu="@item.TOUSER" data-ffu="@item.FROMFULLNAME" data-ftu="@item.TOFULLNAME" href="javascript:LoadChatBox('@i','@item.FROMUSER', '@item.TOUSER', '@item.FROMFULLNAME', '@item.TOFULLNAME')" class="clearfix">
+                                                        <img src="http://bootdey.com/img/Content/user_1.jpg" alt="" class="img-circle">
+                                                        <div class="friend-name">
+                                                            <strong>@item.TOFULLNAME</strong>
+                                                        </div>
+                                                        
+                                                        <small class="chat-alert text-null" data-id="@i"></small>
+                                                    </a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li data-id="@i" data-user="@item.TOUSER">
+                                                    <a href="javascript:LoadChatBox('@i','@item.FROMUSER', '@item.TOUSER', '@item.FROMFULLNAME', '@item.TOFULLNAME')" class="clearfix">
+                                                        <img src="http://bootdey.com/img/Content/user_2.jpg" alt="" class="img-circle">
+                                                        <div class="friend-name">
+                                                            <strong>@item.TOFULLNAME</strong>
+                                                        </div>
+                                                        
+                                                        <small class="chat-alert text-null" data-id="@i"></small>
+                                                    </a>
+                                                </li>
+                                            }
+                                            i++;
+                                        }
+                                    }
+                                </ul>
+                            </div>
+
+                            <!-- selected chat -->
+                            <div class="col-md-8 bg-white" style="float:left;width:75%;height: 550px;padding:0px;border: solid 1px #ddd;">
+                                <div class="chat-content" id="pnlChatContent">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+    
+
+
+
+    <script>
+        function LoadChatBox(i, fromUser, toUser, fromFullName, toFullName) {
+            $.ajax({
+                type: "POST",
+                url: '/ChatArea/Chat/ChatContent',
+                cache: false,
+                data: {
+                    fromUser: fromUser,
+                    toUser: toUser,
+                    fromFullName: fromFullName,
+                    toFullName: toFullName
+                },
+                success: function (datachat) {
+                    $("#pnlChatContent").html(datachat);
+                    //$("#pnlChatContent").find("input[class='c-input']").focus();
+                    $(".friend-list li").each(function () {
+                        $(this).removeClass("active");
+                    });
+                    $(".friend-list li[data-id='" + i + "']").addClass("active");
+                    $(".chat-alert[data-id='" + i + "']").addClass("text-null");
+                    $(".chat-alert[data-id='" + i + "']").html("");
+
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        //var tday = new Array("Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy");
+        //function GetClock() {
+        //    var d = new Date();
+        //    var nday = d.getDay(), nmonth = d.getMonth(), ndate = d.getDate(), nyear = d.getYear();
+        //    if (nyear < 1000) nyear += 1900;
+        //    var d = new Date();
+        //    var nhour = d.getHours(), nmin = d.getMinutes(), nsec = d.getSeconds(), ap;
+        //    var _nmonth = parseInt(nmonth) + 1;
+        //    //if (nhour == 0) { ap = " AM"; nhour = 12; }
+        //    //else if (nhour < 12) { ap = " AM"; }
+        //    //else if (nhour == 12) { ap = " PM"; }
+        //    //else if (nhour > 12) { ap = " PM"; nhour -= 12; }
+
+        //    if (nmin <= 9) nmin = "0" + nmin;
+        //    if (nsec <= 9) nsec = "0" + nsec;
+        //    document.getElementById('servertime').innerHTML = "" + tday[nday] + ", " + /*tmonth[nmonth]*/ ndate + "/" + _nmonth + "/" + nyear + " | " + nhour + ":" + nmin + ":" + nsec /*+ ap*/ + "";
+        //}
+
+        //window.onload = function () {
+        //    GetClock();
+        //    setInterval(GetClock, 1000);
+        //}
+    </script>

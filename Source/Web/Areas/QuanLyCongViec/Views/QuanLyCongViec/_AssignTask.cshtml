@@ -1,0 +1,159 @@
+﻿@model Web.Areas.QuanLyCongViec.Models.AssignTask
+<style>
+    .panel {
+        margin-bottom: 5px !important;
+    }
+
+    #box-nguoithamgia input[type=checkbox] {
+        margin-right: 3px;
+    }
+</style>
+<form method="post" action="/QuanLyCongViec/QuanLyCongViec/AssignTask" id="AssignTaskForm">
+    <input type="hidden" name="ASSIGNTASK_TASKID" value="@Model.TASKID" />
+    <input type="hidden" name="ASSIGNTASK_SUBTASKID" value="@Model.SUBTASKID" />
+    
+    <div class="container-fluid">
+        @if (Model.AllowAssignDiffDept)
+        {
+            <div class="row">
+                <div class="col-sm-12" style="text-align: center; padding-bottom: 15px;">
+                    @if (Model.IsCapPhongBan)
+                    {
+                        <label class="radio-inline">
+                            <input type="radio" name="change-giaoviec" checked="checked" value="1">Giao việc cho cán bộ trong phòng
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="change-giaoviec" value="2">Giao việc chéo
+                        </label>
+                    }
+                    else
+                    {
+                        <label class="radio-inline">
+                            <input type="radio" name="change-giaoviec" checked="checked" value="1">Phòng ban trong đơn vị
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="change-giaoviec" value="2">Giao việc chéo
+                        </label>
+                    }
+                    
+                </div>
+            </div>
+        }
+        <div class="row" style="max-height: 500px; overflow: scroll">
+@if (true != Model.IsAddMoreMember)
+{
+    <div class="col-sm-6" id="box-nguoixulychinh">
+        <div class="alert alert-success fade in">
+            <i class="fa-fw fa fa-check"></i>
+            <strong>Người xử lý chính</strong>
+            <input type="text" placeholder="Tìm người xử lý chính" class="form-control" onkeyup="searchMainProcess(event)">
+        </div>
+        @foreach (var Dept in Model.LstDept)
+                {
+                    var LstDeptUser = Model.LstUser.Where(x => x.DM_PHONGBAN_ID == Dept.ID).ToList();
+                    if (LstDeptUser.Count > 0)
+                    {
+                <div class="panel panel-default panel-info-main-process panel-root" id="panel-@Dept.ID">
+                    <div class="panel-heading">@Dept.NAME</div>
+                    <div class="panel-body">
+                        @foreach (var tmpUser in LstDeptUser)
+                        {
+                            <div class="radio-btn radio-xulychinh">
+                                <input type="radio" value="@tmpUser.ID" id="XULYCHINH-@tmpUser.ID" name="NGUOIXULYCHINH">
+                                <label for="XULYCHINH-@tmpUser.ID" class="hoten-nguoixulychinh">@tmpUser.HOTEN</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+        }
+        @if (Model.AllowAssignDiffDept)
+        {
+            foreach (var AddDept in Model.LstAddDept)
+            {
+                var LstDeptUser = Model.LstUser.Where(x => x.DM_PHONGBAN_ID == AddDept.ID).ToList();
+                if (LstDeptUser.Count > 0)
+                {
+                    <div class="panel panel-default panel-info-main-process panel-add" style="display: none">
+                        <div class="panel-heading">@AddDept.NAME</div>
+                        <div class="panel-body">
+                            @foreach (var tmpUser in LstDeptUser)
+                            {
+                                <div class="radio-btn radio-xulychinh">
+                                    <input type="radio" value="@tmpUser.ID" id="XULYCHINH-@tmpUser.ID" name="NGUOIXULYCHINH">
+                                    <label for="XULYCHINH-@tmpUser.ID" class="hoten-nguoixulychinh">@tmpUser.HOTEN</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+}
+            
+            <div class="col-sm-@((true == Model.IsAddMoreMember)?"12":"6")" id="box-nguoithamgia">
+                <div class="alert alert-success fade in">
+                    <i class="fa-fw fa fa-check"></i>
+                    <strong>Người tham gia xử lý</strong>
+                    <input type="text" placeholder="Tìm người tham gia xử lý" class="form-control" onkeyup="searchSupportProcess(event)" />
+                </div>
+                @foreach (var Dept in Model.LstDept)
+                {
+                    var LstDeptUser = Model.LstUser.Where(x => x.DM_PHONGBAN_ID == Dept.ID).ToList();
+                    if (LstDeptUser.Count > 0)
+                    {
+                        <div class="panel panel-default panel-info-support-process panel-root">
+                            <div class="panel-heading">@Dept.NAME</div>
+                            <div class="panel-body">
+                                @foreach (var tmpUser in LstDeptUser)
+                                {
+                                    <div class="radio-btn radio-thamgia">
+                                        <input type="checkbox" value="@tmpUser.ID" id="THAMGIA-@tmpUser.ID" name="NGUOITHAMGIAXULY">
+                                        <label for="THAMGIA-@tmpUser.ID" class="hoten-nguoithamgia">@tmpUser.HOTEN</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                }
+            @if (Model.AllowAssignDiffDept)
+            {
+                foreach (var Dept in Model.LstAddDept)
+                {
+                    var LstDeptUser = Model.LstUser.Where(x => x.DM_PHONGBAN_ID == Dept.ID).ToList();
+                    if (LstDeptUser.Count > 0)
+                    {
+                        <div class="panel panel-default panel-info-support-process panel-add" style="display: none">
+                            <div class="panel-heading">@Dept.NAME</div>
+                            <div class="panel-body">
+                                @foreach (var tmpUser in LstDeptUser)
+                                {
+                                    <div class="radio-btn radio-thamgia">
+                                        <input type="checkbox" value="@tmpUser.ID" id="THAMGIA-@tmpUser.ID" name="NGUOITHAMGIAXULY">
+                                        <label for="THAMGIA-@tmpUser.ID" class="hoten-nguoithamgia">@tmpUser.HOTEN</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            }
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        $('input[type=radio][name=change-giaoviec]').change(function () {
+            if (this.value == '1') {
+                $('.panel-add').hide();
+            }
+            else if (this.value == '2') {
+                $('.panel-add').show();
+            }
+        });
+    });
+</script>

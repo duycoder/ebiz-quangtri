@@ -1,0 +1,121 @@
+﻿@model Web.Areas.THUMUCLUUTRUArea.Models.ThuMucLuuTruModel
+<style>
+    .row-block {
+        margin: 5px 0px;
+    }
+
+    .txt-label {
+        padding-top: 7px;
+    }
+
+    .width100 {
+        width: 100% !important;
+    }
+</style>
+<div id="collapseDiv" class="panel-collapse collapse" aria-expanded="false" role="tabpanel">
+    <div class="well">
+        @using (Ajax.BeginForm("searchData", "THUMUCLUUTRU",
+            new AjaxOptions()
+            {
+                HttpMethod = "POST",
+                OnFailure = "failure1",
+                OnSuccess = "searchSuccess",
+            }, new { }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row row-block">
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Tên thư mục:</div>
+                    <div class="col-md-4">
+                        <input name="TEN_THUMUC" class="form-control" />
+                    </div>
+                    <div class="col-md-2 txt-label">Tên tài liệu</div>
+                    <div class="col-md-4">
+                        <input name="TEN_TAILIEU" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2 txt-label">Phạm vi truy cập:</div>
+                    <div class="col-md-4">
+                        <select name="ACCESS_MODIFIER" id="ACCESS_MODIFIER1" class="select3" style="width:100%">
+                            <option value="">Tất cả</option>
+                            @foreach (var item in Model.ListAccessModifier)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2 txt-label">Thao tác</div>
+                    <div class="col-md-4">
+                        <select name="PERMISSION" id="PERMISSION1" class="select3" style="width:100%">
+                            <option value="">Tất cả</option>
+                            @foreach (var item in Model.ListFolderPermission)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-12">
+                    <div class="col-md-2">
+                        Tìm kiếm theo:
+                    </div>
+                    <div class="col-md-4">
+                        <select name="FIND_BY" id="FIND_BY" class="select3" style="width:100%">
+                            @*<option value="">Tất cả</option>*@
+                            <option value="1">Theo thư mục</option>
+                            <option value="2">Theo tài liệu</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12 center" style=" margin-top:20px;">
+                    <button id="btnSearch" type="submit" class="btn btn-labeled btn-primary">
+                        <span class="btn-label">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        Tìm kiếm
+                    </button>
+                    <a aria-expanded="false" href="#collapseDiv" data-toggle="collapse" role="button" class="btn btn-labeled btn-danger">
+                        <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>
+                        Đóng
+                    </a>
+                </div>
+                <input type="hidden" name="FOLDER_ID" id="SEARCH_FOLDER_ID" />
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $("#btnSearch").click(function () {
+        $(".hinet-table tbody").html("");
+        $(".hinet-table tfoot").html("");
+        return true;
+    });
+    function failure1(data) {
+        console.log(data);
+    }
+    function searchSuccess(rs) {
+        $("#tbl-thumucluutru").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: rs.TotalPage,
+            recordCount: rs.Count,
+            listItem: rs.ListItem,
+        });
+    }
+    function pagefunctionSearch() {
+        $("#collapseDiv .select3").select2();
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", pagefunctionSearch)
+            });
+        });
+    })
+
+
+</script>

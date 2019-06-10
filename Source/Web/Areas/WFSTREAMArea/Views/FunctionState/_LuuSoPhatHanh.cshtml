@@ -1,0 +1,502 @@
+﻿@using Web.Areas.HSVanBanDiArea.Models;
+@model VanBanDiVM
+<link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
+<div class="modal-dialog" style="width: 55%">
+    @using (Ajax.BeginForm("SavePhatHanhVanBan", "FunctionState", new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "createattributeForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ID" value="@Model.VanBan.ID" />
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="text-align: center">Phát hành văn bản trình ký</h4>
+            </div>
+            <div class="modal-body" style="text-align: left; overflow-x: hidden">
+                <div class="row" style="padding-left: 15px; padding-right: 15px;">
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="LOAIVANBAN_ID" class="lbl control-label">
+                                    Sổ văn bản đi <span class="text-danger">*</span>
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.DropDownList("SOVANBAN_ID", Model.LstSoVanBanDi, "--- Chọn sổ văn bản ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="SOTHEOSO" class="lbl control-label">
+                                    Số theo sổ <span class="text-danger">*</span>
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input maxlength="50" type="text" name="SOTHEOSO" id="SOTHEOSO" class="form-control" value="@Model.VanBan.SOTHEOSO" />
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row hide" id="SOTHEOSO_INFO_ROW">
+                        <div class="form-group">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-4"></div>
+
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-4">
+                                <p id="SOTHEOSO_INFO" class="text-info"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">
+                                    Số hiệu:<span class="red">*</span>
+                                </label>
+                            </div>
+                            <div class="col-sm-10">
+                                <input maxlength="50" type="text" name="SOHIEU" id="SOHIEU" class="form-control" value="@Model.VanBan.SOHIEU" />
+                                <div class="note-error">
+                                    <span class="red error" id="SOHIEU_ERROR"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">
+                                    Trích yếu:<span class="red">*</span>
+                                </label>
+                            </div>
+                            <div class="col-sm-10">
+                                <textarea name="TRICHYEU" id="TRICHYEU" class="form-control" style="height: 90px">@Model.VanBan.TRICHYEU</textarea>
+                                <div class="note-error">
+                                    <span class="red error" id="TRICHYEU_ERROR"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">
+                                    Người ký:
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @(Model.NguoiKy != null ? Model.NguoiKy.HOTEN : "")
+                                <div class="note-error">
+                                    <span class="red error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">
+                                    <b>Chức vụ:</b>
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Model.VanBan.CHUCVU
+                                <div class="note-error">
+                                    <span class="red error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">Ngày ban hành:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" name="NGAYBANHANH" id="NGAYBANHANH" />
+                                <div class="note-error">
+                                    <span class="red error"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">Ngày có hiệu lực:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" name="NGAY_HIEULUC" id="NGAY_HIEULUC" />
+                                <div class="note-error">
+                                    <span class="red error"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label class="lbl control-label">Ngày hết hiệu lực:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" name="NGAYHET_HIEULUC" id="NGAYHET_HIEULUC" />
+                                <div class="note-error">
+                                    <span class="red error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="ChooseDeptId">
+                        @{
+                            <table class="table" style="border: 1px solid #ddd">
+                                <thead style="background:  #fafafa !important;text-transform: uppercase">
+                                    <tr>
+                                        <th>Đơn vị/ phòng ban nhận văn bản</th>
+                                        <th style="float: right;border-bottom: none"><button type="button" onclick="choosePhongban()" class="btn btn-default">Chọn</button></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="DONVINHAN_BODY">
+                                    @{
+                                        foreach (var item in Model.ListDonVi)
+                                        {
+                                            <tr>
+                                                <td colspan="2">
+                                                    <input type="hidden" name="department-choose" value="@item.ID">@item.CODE - @item.NAME
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                    <div class="col-sm-12" style="padding:0" id="block--recipients" data-publish="1">
+                        <table class="table table-bordered">
+                            <thead style="background:  #fafafa !important;text-transform: uppercase">
+                                <tr>
+                                    <th>
+                                        NGƯỜI NHẬN ĐÍCH DANH VĂN BẢN
+                                        <button type="button" class="btn btn-default pull-right" id="button--choose-users">Chọn</button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.LstReceiveDirectly.Any())
+                                {
+                                    foreach (var item in Model.LstReceiveDirectly)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" name="USERS_RECEIVE_SPECIAL" value="@item.Value">@item.Text
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (Model.ListTaiLieu.Any())
+                    {
+                        <div class="form-group" style="margin-top: 10px;">
+                            <div class="col-sm-12" style="padding: 0px;">
+                                @Html.Partial("../Common/UploadFile", Model.ListTaiLieu, new ViewDataDictionary() { { "detail", 1 } })
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="phatHanhVanBan(@Model.VanBan.ID)">Phát hành</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+        @Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary { { "UserIdsReceiveDirectly", Model.GroupUserIdsReceiveDirectly } })
+    }
+</div>
+<style>
+    .form-horizontal .form-group {
+        margin-bottom: 0px;
+    }
+
+    #ChooseDeptId {
+        margin-top: 10px;
+    }
+
+    #dialogChonPhongBan {
+        text-align: left !important;
+    }
+
+    #ChooseDeptId {
+        text-align: left !important;
+    }
+
+    .custom-label {
+        text-align: right;
+        font-weight: bold;
+    }
+</style>
+<div id="dialogChonPhongBan" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog" style="width:80%">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="onCloseChonPhongBan()">&times;</button>
+                <h4 class="modal-title">Chọn phòng ban/ đơn vị</h4>
+            </div>
+            <div class="modal-body" style="max-height: 500px; overflow-y: scroll" id="TreeChonDonViPartial">
+                @Html.Partial("~/Areas/HSVanBanDiArea/Views/Shared/_ChonDonVi.cshtml", Model.TreeDonVi)
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="chooseDepartment()">Lưu</button>
+                <button type="button" class="btn btn-default" onclick="CloseModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal--choose-nguoi-nhan" class="modal fade" data-keyboard="false" data-backdrop="static">
+
+</div>
+
+<input type="hidden" id="DONVINHAN_ID" value="@Model.VanBan.DONVINHAN_INTERNAL_ID" />
+<script>
+    $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
+        $(".loading-ajax").hide();
+    });
+    $(document).ajaxStart(function () {
+        $(".loading-ajax").html("Đang xử lý");
+        $(".loading-ajax").show();
+    });
+    $(document).ajaxStop(function () {
+        $(".loading-ajax").hide();
+    });
+    function CloseModal() {
+        $("#dialogChonPhongBan").modal("hide");
+    }
+
+    $("#NGAYBANHANH").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYBANHANH").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#NGAY_HIEULUC").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAYHET_HIEULUC").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#NGAYHET_HIEULUC").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#NGAY_HIEULUC").datepicker('option', 'maxDate', date);
+        }
+    });
+
+    $('#SOVANBAN_ID').on('change', function () {
+        var value = $(this).val();
+        var name = $(this).find('option:selected').text();
+        if (value !== '' && value !== '0') {
+            $.ajax({
+                url: '/Common/GetSoDiTheoSo',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ 'idSoVanBan': value, 'isVanBanDi': true }),
+                contentType: 'application/json',
+                success: function (rs) {
+                    $('#SOTHEOSO').val(rs.numbSoDiTheoSo);
+                    $('#SOHIEU').val(rs.numbSoDiTheoSo + '/' +'@Model.CodeDocumentType' +'/' + '@Model.CodePublishDepartment');
+                    if (rs.numbSoDiChuaCo.length > 0) {
+                        $('#SOTHEOSO_INFO_ROW').removeClass('hide');
+                        //setting modal
+                        $('#modal--block-sovanban .modal-header h3').text("Các số chưa được vào sổ văn bản: \'" + name + "\'");
+
+                        if (rs.numbSoDiChuaCo.length <= 5) {
+                            $('#SOTHEOSO_INFO').html(name + " còn thiếu các số: " + rs.numbSoDiChuaCo.toString());
+                        } else {
+                            for (var i = 0; i < rs.numbSoDiChuaCo.length; i++) {
+                                var numbValue = rs.numbSoDiChuaCo[i];
+                                var html = '<tr>';
+                                html += "<td><input id='radio" + (numbValue) + "' type='radio' name='radio--sovanban' value='" + (numbValue)+"'/></td>";
+                                html += "<td><label for='radio" + (numbValue)+"' style='display:block;'>" + (i + 1) + "</label></td>";
+                                html += "<td><label for='radio" + (numbValue) + "' style='display:block;'><b>" + numbValue + "</b></label></td>";
+                                html += '</tr>'
+                                $('#table--sovanban tbody').append(html);
+                            }
+                            //setting data table
+                            if ( ! $.fn.DataTable.isDataTable( '#table--sovanban' ) ) {
+                                $('#table--sovanban').DataTable({
+                                    paging: true,
+                                    searching: true,
+                                    //pageLength: 5,
+                                    "language": {
+                                        "decimal": "",
+                                        "emptyTable": "Không có dữ liệu",
+                                        "info": "Hiển thị _START_ đến _END_ của _TOTAL_ đối tượng",
+                                        "infoEmpty": "Hiển thị 0 đến 0 của 0 đối tượng",
+                                        "infoFiltered": "(lọc từ _MAX_ tổng đối tượng)",
+                                        "infoPostFix": "",
+                                        "thousands": ",",
+                                        "lengthMenu": "Hiển thị _MENU_ đối tượng",
+                                        "loadingRecords": "Đang tải...",
+                                        "processing": "Đang xử lý...",
+                                        "search": "Tìm kiếm:",
+                                        "zeroRecords": "Không có kết quả phù hợp",
+                                        "paginate": {
+                                            "first": "Đầu",
+                                            "last": "Cuối",
+                                            "next": "Tiếp",
+                                            "previous": "Trước"
+                                        },
+                                        "aria": {
+                                            "sortAscending": ": kích hoạt sắp xếp tăng dần",
+                                            "sortDescending": ": kích hoạt sắp xếp giảm dần"
+                                        }
+                                    }
+                                });
+                            }
+
+
+                            $('#SOTHEOSO_INFO').html(name + " còn thiếu các số: " + rs.numbSoDiChuaCo.splice(0, 5).toString() + '...&nbsp;<a data-toggle="modal" href="#modal--block-sovanban">Xem tất cả</a>');
+                        }
+                    } else {
+                        $('#SOTHEOSO_INFO').text('');
+                        $('#SOTHEOSO_INFO_ROW').addClass('hide');
+                    }
+                }, error: function (err) {
+                    NotifErr('Có lỗi xảy ra');
+                }
+            })
+        } else {
+            $('#SOTHEOSO, #SOHIEU').val('');
+            $('#SOTHEOSO_INFO').text('');
+            $('#SOTHEOSO_INFO_ROW').addClass('hide');
+        }
+    });
+
+    function chooseDepartment() {
+        //var lstItem = $("#TreeChonDonViPartial input[type=checkbox]:checked.dept-doji").not( ".deptlabel" );
+        var lstItem = $("#TreeChonDonViPartial input[type=checkbox]:checked.dept-doji");
+        $("#dialogChonPhongBan").modal("hide");
+        if (lstItem.length > 0) {
+            var html = '';
+            for (var i = 0; i < lstItem.length; i++) {
+                html += '<tr><td colspan="2">'
+                    + '<input type="hidden" name="department-choose" value="' + lstItem[i]["value"] + '" />'
+                    + $("#" + lstItem[i]["id"]).parent().find('.input-Name').html() + '</td></tr>';
+            }
+            $("#DONVINHAN_BODY").html(html);
+        } else {
+            $("#DONVINHAN_BODY").html("");
+        }
+    }
+    function choosePhongban() {
+        $("#dialogChonPhongBan").modal();
+    }
+
+    function onCloseChonPhongBan() {
+        $("#dialogChonPhongBan").modal('hide');
+    }
+    function phatHanhVanBan(id) {        
+        if (submitForm() == 0) {
+            $.confirm({
+                'title': 'Xác nhận phát hành văn bản',
+                'message': 'Bạn có chắc chắn muốn phát hành văn bản này ?',
+                'buttons': {
+                    'Đồng ý': {
+                        'class': 'btn-confirm-yes btn-primary',
+                        'action': function () {
+                            $("#createattributeForm").submit();
+                        }
+                    },
+                    'Hủy bỏ': {
+                        'class': 'btn-danger',
+                        'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                    }
+                }
+            });
+        }
+    }
+    function submitForm() {
+        var SOHIEU = $("#SOHIEU").val();
+        var TRICHYEU = $("#TRICHYEU").val();
+        var NGUOIKY = $("#NGUOIKY").val();
+        var CHUCVU = $("#CHUCVU").val();
+        var NGAY_HIEULUC = $("#NGAY_HIEULUC").val();
+        var NGAYHET_HIEULUC = $("#NGAYHET_HIEULUC").val();
+        var error = 0;
+        if (SOHIEU == "" || SOHIEU.trim().length == 0) {
+            $("#SOHIEU_ERROR").html("Bạn chưa nhập số hiệu văn bản");
+            error++;
+        } else {
+            $("#SOHIEU_ERROR").html("");
+        }
+        if (TRICHYEU == "" || TRICHYEU.trim().length == 0) {
+            $("#TRICHYEU_ERROR").html("Bạn chưa nhập số hiệu văn bản");
+            error++;
+        } else {
+            $("#TRICHYEU_ERROR").html("");
+        }
+        return error;
+    }
+    $(document).ready(function () {
+        //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/Content/select/js/bootstrap-select.js", function () {
+                    loadScript("/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                        loadScript("/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                            loadScript("/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                                loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                    loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js", function () {
+                                        $(".selectpicker1").selectpicker();
+                                        if($('#button--choose-users').length > 0){
+                                            $('#button--choose-users').on('click', function(){
+                                                $('#modal--recipients').modal('show');
+                                            })
+                                        }
+                                    })
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    //});
+    function successAjaxCreate(rs) {
+        if (rs.Type == "SUCCESS") {
+            NotiSuccess(rs.Message);
+            location.reload();
+        } else {
+            NotiError(rs.Message);
+        }
+    }
+    function failureAjax(err) {
+        console.log(err);
+    }
+</script>

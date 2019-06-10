@@ -1,0 +1,384 @@
+﻿@using Web.Areas.THUMUCLUUTRUArea.Models
+@model ThuMucLuuTruModel
+@using (Ajax.BeginForm("SaveUploadFile", "ThuMucLuuTru", new AjaxOptions
+{
+    HttpMethod = "POST"
+}, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Upload nhiều file (bằng cách chọn từng file)</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" value="@ViewData["FOLDER_ID"]" name="FOLDER_ID" id="FOLDER_ID" />
+                <input type="hidden" name="TAILIEU_ID" value="0" />
+                <div class="form-group">
+                    <div class="col-sm-2 no-padding">
+                        <label>Đường dẫn:</label>
+                    </div>
+                    <div class="col-sm-10" id="DUONGDAN">
+                    </div>
+                </div>
+                <div class="form-group col-sm-12">&nbsp;</div>
+                <table class="table table-bordered tblUploadFile">
+                    <thead>
+                        <tr class="head">
+                            <th scope="col">Mã tài liệu</th>
+                            <th scope="col">Tên tài liệu</th>
+                            <th scope="col">Chọn tài liệu</th>
+                            <th scope="col" style="width:20px">
+                                <a href="javascript:void(0)" id="btnAdd"><i class="glyphicon glyphicon-plus"></i></a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="UpLoadFile">
+                        <tr id="file_1">
+                            <td>
+                                <input type="text" maxlength="50" class="form-control" id="filecode_1" placeholder="Nhập mã tài liệu" name="filecode" />
+                                @*<span id="CODENULL_1" style="color:red;display:none">Vui lòng nhập mã tài liệu</span>
+                                    <span id="CODEHTML_1" style="color:red;display:none">Mã tài liệu chỉ được chứa chữ và số</span>
+                                    <span id="CODEERROR_1" style="color:red;display:none">Mã tài liệu đã tồn tại</span>*@
+                            </td>
+                            <td>
+                                <input type="text" maxlength="500" class="form-control" placeholder="Nhập tên tài liệu" name="filename" id="FILENAME_1" />
+                            </td>
+                            <td style="text-align:left">
+                                <input type="file" value="Chọn tài liệu" name="filebase" id="filebase_1" />
+                                <span style="color:red;display:none" id="FILE_ERROR_1">Định dạng không hỗ trợ hoặc vượt dung lượng cho phép</span>
+                            </td>
+                            <td class="center">
+                                <a title="Xóa tài liệu" href="javascript:XoaTaiLieu(1)" data-id="file_1"><i class="glyphicon glyphicon-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label style="font-weight:bold">Dung lượng tối đa:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        @(Model.FileSize / 1048576) Mb
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label style="font-weight:bold">Định dạng cho phép:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        @Model.Extension
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label style="font-weight:bold">Dung lượng lưu trữ:</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="progress" style="margin-bottom:0px !important">
+                            @{
+                                float percent = ((float)((float)Model.DungLuong.CONLAI.Value / Model.DungLuong.DUNGLUONG.Value)) * 100;
+                            }
+                            <div class="progress-bar bg-info" style="width:@(percent.ToString().Replace(',','.'))%">@(percent)%</div>
+                        </div>
+                        <div style="font-size:15px;font-style:italic !important">Còn @Model.DungLuong.CONLAI.Value (Mb) trên tổng số @Model.DungLuong.DUNGLUONG.Value (Mb)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" value="1," id="FILE_CURRENT_COUNT" />
+                <input type="submit" value="Lưu lại" id="btnUpload" class="btn btn-success" />
+                <input type="button" value="Đóng" data-dismiss="modal" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <input type="hidden" value="@Model.Extension" id="EXTENSION" />
+}
+<script src="~/Scripts/jquerychosen/chosen.jquery.min.js"></script>
+<link href="~/Scripts/jquerychosen/chosen.min.css" rel="stylesheet" />
+<script>
+       $(".select-chosen").chosen({ width: "233px" });
+    function KiemTra(Macode, FOLDER_ID) {
+        var exist = false;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CheckCodeFile", "ThuMucLuuTru")',
+            data: {
+                MATAILIEU: Macode,
+                FOLDER_ID: FOLDER_ID
+            },
+            cache: false,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.length > 0) {
+                    exist = true;
+                } else {
+                    exist = false;
+                }
+            }, error: function (xrt) {
+                alert(xrt.responseText);
+            }
+        });
+        return exist;
+    }
+    $(function () {
+        $(document).on('click', '.folder,.folder_root', function () {
+            return false;
+        });
+        var parent = $("#FOLDER_ID").val();
+        //if ($("#URLPath").val() != "") {
+        //    $("#DUONGDAN").html($("#URLPath").html());
+        //} else {
+        //    GetPathUrl(parent);
+        //}
+        GetFullPath(parent);
+        $('#Uploadfile_TM').on('hidden.bs.modal', function () {
+            $("#LuaChonDanhMuc").modal("hide");
+            $("#Uploadfile_TM").html("");
+        });
+        $("#btnUpload").click(function () {
+            var lstFile = $("#FILE_CURRENT_COUNT").val().split(',');
+            //var fSize = $("#filebase_1")[0].files[0].size;
+            var size = 0;
+            var maxsize = $("#FILESIZE").val();
+            var is_Existed = false;
+            for (var i = 0; i < lstFile.length - 1; i++) {
+                if (document.getElementById('filebase_' + lstFile[i]) != null) {
+                    if ($("#filebase_" + lstFile[i]).val()) {
+                        if ($("#filecode_" + lstFile[i]).val().trim().length > 0) {
+                            if (!/[a-z0-9]+/i.test($("#filecode_" + lstFile[i]).val().trim())) {
+                                $("#filecode_" + lstFile[i]).focus();
+                                $("#CODEHTML_" + lstFile[i]).show();
+                                return false;
+                            } else {
+                                $("#CODEHTML_").hide();
+                            }
+                            if (KiemTra($("#filecode_" + lstFile[i]).val().trim(), $("#FOLDER_ID").val())) {
+                                $("#filecode_" + lstFile[i]).focus();
+                                $("#CODEERROR_" + lstFile[i]).show();
+                                is_Existed = true;
+                                return false;
+                            } else {
+                                $("#CODEERROR_" + lstFile[i]).hide();
+                                is_Existed = false;
+                            }
+                        }
+                        var fSize = $("#filebase_" + lstFile[i])[0].files[0].size;
+                        var fType = $("#filebase_" + lstFile[i]).val();
+                        fType = "." + fType.substr((fType.lastIndexOf('.') + 1));
+                        fType = fType.toLowerCase();
+                        var extension = $("#EXTENSION").val().split(',');
+                        var acceptex = jQuery.inArray(fType, extension) != '-1';
+                        size += fSize;
+                        if (fSize > maxsize || !acceptex) {
+                            $("#FILE_ERROR_" + lstFile[i]).show();
+                            return false;
+                        } else {
+                            $("#FILE_ERROR_" + lstFile[i]).hide();
+                        }
+                    }
+                }
+            }
+            var inputs = $("input[name='filecode']");
+            inputs.filter(function (i, el) {
+                var value = inputs.not(this).filter(function () {
+                    if (el.value != "") {
+                        return this.value === el.value;
+                    } else {
+                        return false;
+                    }
+
+                }).length !== 0;
+                if (value == true) {
+                    $(el).addClass('red');
+                    is_Existed = true;
+                }
+            });
+            if (is_Existed) {
+                alert("Mã tài liệu khi thêm mới không thể trùng nhau!");
+                return false;
+            }
+            //if (!CheckStorage(size / 1048576)) {
+            //    $.confirm({
+            //        'title': 'Không thể tải lên tài liệu',
+            //        'message': 'Dung lượng tài liệu bạn tải lên đang vượt quá dung lượng được cấp',
+            //        'buttons': {
+            //            'Đóng': {
+            //                'class': 'btn-info',
+            //                'action': function () { }
+            //            }
+            //        }
+            //    });
+            //    return false;
+            //}
+            return true;
+        });
+    });
+    var count = 1;
+    $(function () {
+        $("#btnAdd").click(function () {
+            count += 1;
+            $("#UpLoadFile").append(CreateFile(count));
+        });
+    });
+    function OnClose() {
+        $("#Uploadfile_TM").modal('hide');
+    }
+    $("form").ajaxForm({
+        beforeSend: function () {
+            $("#loading").show();
+            $("#btnUpload").prop('disabled', true);
+            $("#btnClose").prop('disabled', true);
+        },
+        uploadProgress: function () {
+
+        },
+        success: function (data) {
+            LoadDataByID($("#FOLDER_ID").val());
+            $("#CreateThuMuc").modal("hide");
+            $("#CreateThuMuc").html("");
+            $("#loading").hide();
+            NotiSuccess(data);
+        },
+        complete: function () {
+            $(".loading").hide();
+            $("#CreateThuMuc").modal('hide');
+            $("#CreateThuMuc").html("");
+        }, error: function (data) {
+            NotiError(data);
+        }
+    });
+    function XoaTaiLieu(id) {
+        var file_id = "file_" + id;
+        var filename = $("#" + file_id + " input[name='filename']").val();
+        var fileupload = $("#" + file_id + " input[name='filebase']").val();
+        if (filename.length > 0 || fileupload.length > 0) {
+            $.confirm({
+                'title': 'Xác nhận xóa',
+                'message': 'Bạn có chắc chắn muốn xóa tài liệu này?',
+                'buttons': {
+                    'Xóa': {
+                        'class': 'btn-confirm-yes',
+                        'action': function () {
+                            $("#" + file_id).remove();
+                            if ($("#UpLoadFile tr").length == 0) {
+                                $("#FILE_CURRENT_COUNT").val("");
+                                count = 0;
+                                $("#UpLoadFile").append(CreateFile(count));
+                            }
+                        }
+                    },
+                    'Không xóa': {
+                        'class': 'btn-info',
+                        'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                    }
+                }
+            });
+        } else {
+            $("#" + file_id).remove();
+        }
+        var rowCount = $("#UpLoadFile tr").length;
+        if (rowCount == 0) {
+            $("#FILE_CURRENT_COUNT").val("");
+            count = 0;
+            $("#UpLoadFile").append(CreateFile(count));
+        }
+
+    };
+    function CreateFile(count) {
+        $("#FILE_CURRENT_COUNT").val($("#FILE_CURRENT_COUNT").val() + count + ",");
+        return '<tr id="file_' + count + '"> ' +
+            '<td><input id="filecode_' + count + '" placeholder="Nhập mã tài liệu" maxlength="50" class="form-control" name="filecode" type="text"  />' +
+            '<span style="color:red;display:none" id="CODEERROR_' + count + '">Mã tài liệu đã tồn tại</span>' +
+            '<span style="color:red;display:none" id="CODENULL_' + count + '">Vui lòng nhập mã tài liệu</span>' +
+            '<span style="color:red;display:none" id="CODEHTML_' + count + '">Mã tài liệu chỉ được chứa chữ và số</span></td>' +
+            '<span style="color:red;display:none" id="CODEEXIST_' + count + '">Mã tài liệu này đã tồn tại</span>' +
+            '<td><input id="filename_' + count + '" placeholder="Nhập tên tài liệu" maxlength="500" class="form-control" name="filename" type="text"  /></td>' +
+                '<td style="text-align:left"><input type=\"file\" name=\"filebase\" id=\"filebase_' + count + '\" value=\"Chọn tài liệu\" />' +
+        '<span style="color:red;display:none" id="FILE_ERROR_' + count + '">Định dạng không hỗ trợ hoặc vượt dung lượng cho phép</span></td>' +
+            '<td class="center"><a title="Xóa tài liệu" href="javascript:XoaTaiLieu(' + count + ')" class="remove"><i class="glyphicon glyphicon-trash"></i></a></td></tr>';
+    }
+    //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+        loadScript("/Scripts/autoNumeric.min.js", function () {
+            loadScript("/js/plugin/select2/select2.min.js", function () {
+                $(".select2").select2();
+            });
+        //});
+    });
+</script>
+<style>
+    .tblUploadFile th {
+        text-align: center !important;
+    }
+
+    .choosefile {
+        float: left;
+    }
+
+    .choosefile {
+        cursor: pointer !important;
+    }
+
+    .Path, .FolderName {
+        overflow: hidden;
+        display: inline-block;
+        float: left;
+        white-space: nowrap;
+        width: 150px !important;
+        text-overflow: ellipsis;
+    }
+
+    .red {
+        border-color: red;
+    }
+
+    #loading {
+        position: fixed;
+        width: 200px;
+        height: 100px;
+        background: #000 url('/Content/Images/loadajax.gif') no-repeat 50% 4px;
+        bottom: 50%;
+        color: #fff;
+        text-align: center;
+        line-height: 166px;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0.7;
+        border-radius: 5px;
+        filter: alpha(opacity=70);
+        font-size: 12px;
+        text-shadow: none;
+        display: none;
+    }
+
+    .webGrid #UpLoadFile td:nth-child(3) input {
+        overflow: hidden;
+        display: inline-block;
+        white-space: nowrap;
+        width: 250px !important;
+        text-overflow: ellipsis;
+    }
+
+    .tblUploadFile th:first-child {
+        display: block !important;
+    }
+
+    table.webGrid tfoot a {
+        width: auto !important;
+    }
+
+    .tblUploadFile tr td {
+        padding: 7px 0px !important;
+    }
+
+    table.webGrid tfoot td {
+        border: none;
+        text-align: left;
+    }
+
+    #UpLoadFile td .form-control {
+        width: 98% !important;
+    }
+</style>

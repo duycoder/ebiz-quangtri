@@ -1,0 +1,102 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@model EditVM
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Xác nhận đặt phòng</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="/QLPHONGHOPArea/QLPHONGHOP/ConfirmDatPhong" method="post" id="ConfirmPhong">
+                    <div class="form-group">
+                        <label for="noidung"><strong>Nội dung xác nhận </strong><span>*</span></label>
+                        <input type="hidden" name="ID_XACNHAN" value="@Model.GetEdit.ID" id="ID_XN" />
+                        <textarea rows="5" class="required selectpicker1" id="Noidung_Xacnhan" name="Noidung_Xacnhan"></textarea>
+                        <div class="note-error">
+                            <span class="error mes-note-error"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="gui-datphong"><button type="button" id="btnConfirmPhong" class="btn btn-default" title="Xã nhận phòng">Xác nhận</button></div>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" title="Thoát">Thoát</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+    var pageFunction = function () {
+        $(".selectpicker1").selectpicker();
+    }
+    $(document).ready(function () {
+        loadScript("/ckeditor/ckeditor.js", function () {
+            loadScript("/Content/select/js/bootstrap-select.js", pageFunction);
+        });
+
+    });
+
+    $("#btnConfirmPhong").click(function () {
+        var is_submit = onSubmit();
+        if (is_submit) {
+            $.ajax({
+                url: '/QLPHONGHOPArea/QLPHONGHOP/ConfirmDatPhong',
+                type: 'post',
+                cache: false,
+                data: {
+                    "Noidung_Xacnhan": $("#Noidung_Xacnhan").val(),
+                    "IDPhong": $("#ID_XN").val(),
+                },
+                success: function (data) {
+                    if (data.Status == true) {
+                        $.confirm({
+                            'title': 'Xác nhận Đặt phòng',
+                            'message': 'Bạn có chắc chắn muốn xác nhận đặt lịch phòng này?',
+                            'buttons': {
+                                'Đồng ý': {
+                                    'class': 'btn-confirm-yes btn-primary',
+                                    'action': function () {
+                                        $("#Modal_ConfirmPhongHop").hide();
+                                        NotiSuccess("Xác nhận Thành công!");
+                                        setTimeout(location.reload(), 2000);
+                                    }
+                                },
+                                'Hủy bỏ': {
+                                    'class': 'btn-default',
+                                    'action': function () { }
+                                }
+                            }
+                        });
+                    } else {
+                        NotiError(data.Message);
+                    }
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+        } else {
+            return false;
+        }
+    });
+
+    function onSubmit() {
+        var err = 0;
+        var require = requiredFieldForFormId("ConfirmPhong");
+        if (!require) {
+            err++;
+        }
+        if (err == 0) {
+            return true;
+        } else {
+            NotiError("Có lỗi. Vui lòng kiểm tra lại");
+            return false;
+        }
+    }
+</script>

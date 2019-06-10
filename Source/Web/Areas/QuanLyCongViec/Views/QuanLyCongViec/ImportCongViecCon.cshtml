@@ -1,0 +1,383 @@
+﻿@using Web.Areas.QuanLyCongViec.Models;
+@model ImportCongViecViewModel
+@{
+    ViewBag.Title = "Import công việc con";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .no-padding .dataTables_wrapper table, .no-padding > table {
+        border: 1px solid #ddd !important;
+    }
+</style>
+
+<div id="ribbon" style="background: #57889c">
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb"></ol>
+    </div>
+
+    <div class="col-md-6 col-sm-6 nopadding">
+        <a class="btn btn-default pull-right" href="/QuanLyCongViec/QuanLyCongViec/Detail/@Model.taskId">
+            <i class="fa fa-reply"></i>&nbsp;Quay lại
+        </a>
+    </div>
+</div>
+
+<div id="content">
+    <div class="well well-sm block">
+        <div class="header">
+            Biểu mẫu import
+        </div>
+
+        <div class="body">
+            <span>Bạn vui lòng tải biểu mẫu tại đây để cập nhật</span>
+            <a href="@Model.importTemplatePath">
+                <i class="fa fa-download" aria-hidden="true"></i>&nbsp;Tải xuống
+            </a>
+        </div>
+    </div>
+
+    <div class="well well-sm-block">
+        <div class="header">
+            Import dữ liệu
+        </div>
+        @using (Ajax.BeginForm("UploadImportSubTasks", "QuanLyCongViec", new { @area = "QuanLyCongViec" }, new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnFailure = "failureImportSubTask",
+            OnSuccess = "successImportSubTask"
+        }, new { id = "form--upload-subtask", @enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken();
+
+            <div class="form-inline">
+                <input type="hidden" />
+                <div class="form-group">
+                    <input type="hidden" name="CONGVIEC_ID" value="@Model.taskId" />
+                    <input type="file" name="fileImport" class="form-control required" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    <button type="button" class="btn btn-primary" id="btnSave">Nhập dữ liệu</button>
+                    <div class="note-error">
+                        <span class="error mes-note-error"></span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="jarviswidget" id="block--valid-data">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Dữ liệu đúng
+            </h2>
+        </header>
+
+        <div class="widget-t-body no-padding">
+            <div class="hntbl-cover">
+                <table id="table--valid-data" class="hinet-table table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="width-30"><input class="checkBoxControl" type="checkbox" /></th>
+                            <th>
+                                Tên công việc
+                            </th>
+                            <th>
+                                Độ ưu tiên
+                            </th>
+                            <th>
+                                Mức độ quan trọng
+                            </th>
+                            <th>
+                                Hạn hoàn thành
+                            </th>
+                            <th>
+                                Yêu cầu lập kế hoạch
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <div class="center">
+                    <a href="javascript:void(0)" id="btnImport" class="btn btn-info">Cập nhật</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="block--invalid-data" class="jarviswidget">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Dữ liệu sai
+            </h2>
+        </header>
+
+        <div class="widget-t-body no-padding">
+            <div class="hntbl-cover">
+                <table id="table--invalid-data" class="hinet-table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th class="width-30"><input class="checkBoxControl" type="checkbox" /></th>
+                            <th>
+                                Tên công việc
+                            </th>
+                            <th>
+                                Độ ưu tiên
+                            </th>
+                            <th>
+                                Mức độ quan trọng
+                            </th>
+                            <th>
+                                Hạn hoàn thành
+                            </th>
+                            <th>
+                                Yêu cầu lập kế hoạch
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <div class="center">
+                    <a href="javascript:void(0)" id="btnExport" class="btn btn-primary">Tải dữ liệu lỗi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var errorDataColumns = [
+        {
+            "sClass": "center",
+            "mData": function (data, type, dataToSet) {
+                return '<input class="global_checkbox" ' + ' type="checkbox" name="ids" value="' + data[1] + '" />';
+            },
+            "orderable": false
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[1]) + '">' + "<span class='data-label'>" + getValueDisplay(data[1]+"</span>");
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[2]) + '">' + "<span class='data-label'>" + getValueDisplay(data[2] + "</span>");
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[3]) + '">' + "<span class='data-label'>" + getValueDisplay(data[3] + "</span>");
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[4]) + '">' + "<span class='data-label'>" + getValueDisplay(data[4] + "</span>");
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data[5]) + '">' + "<span class='data-label'>" + getValueDisplay(data[5] + "</span>");
+                return str;
+            },
+        },
+    ]
+    var validDataColumns = [
+        {
+            "sClass": "center",
+            "mData": function (data, type, dataToSet) {
+                return '<input class="global_checkbox" ' + ' type="checkbox" name="ids" value="' + data.ID + '" />';
+            },
+            "orderable": false
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data.NOIDUNG) + '">' + getValueDisplay(data.NOIDUNG);
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data.MUCDOUUTIEN) + '">' + getValueDisplay(data.TEN_MUCDOUUTIEN);
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data.DOKHAN) + '">' + getValueDisplay(data.TEN_DOKHAN);
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data.HANHOANTHANH_TEXT) + '">' + getValueDisplay(data.HANHOANTHANH_TEXT);
+                return str;
+            },
+        },
+        {
+            "mData": function (data, type, dataToSet) {
+                var str = '<input class="data-column" type="hidden" value="' + getValueDisplay(data.IS_HASPLAN) + '">' + getValueDisplay(data.TEXT_IS_HASPLAN);
+                return str;
+            },
+        },
+    ]
+
+    $(document).ready(function () {
+        loadScript("/js/plugin/datatables/jquery.dataTables.min.js", function () {
+            loadScript("/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                loadScript("/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                    loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                        loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js", function () {
+                            loadScript("/Scripts/Common.js", setup)
+                        })
+                    });
+                });
+            });
+        });
+
+        $('#btnSave').on('click', function () {
+            $('#form--upload-subtask').submit();
+        })
+
+        $('#form--upload-subtask').on('submit', function (event) {
+            event.preventDefault();
+            var dataString;
+            var action = $('#form--upload-subtask').attr('action');
+            var enctype = $('#form--upload-subtask').attr('enctype');
+
+            if (enctype == 'multipart/form-data') {
+                dataString = new FormData($('#form--upload-subtask').get(0));
+                $.ajax({
+                    type: "POST",
+                    url: action,
+                    data: dataString,
+                    dataType: "json",
+                    contentType: false,
+                    processData: false,
+                    success: successImportSubTask,
+                    error: failureImportSubTask
+                })
+            }
+            else {
+                return false;
+            }
+        })
+
+        $('.checkBoxControl').on('change', function () {
+
+            var checked = $(this).is(':checked');
+            var table = $(this).parents('table').first();
+
+            table.find('input:checkbox.global_checkbox').each(function () {
+                $(this).prop('checked', checked);
+            })
+        })
+
+        $('#btnImport').on('click', function () {
+            var items = [];
+
+            $('#table--valid-data input:checkbox.global_checkbox:checked').each(function () {
+                var row = $(this).parents('tr').first();
+                var obj = [];
+
+                row.find("td input[type=hidden]").each(function () {
+                    obj.push($(this).val())
+                });
+                items.push(obj);
+            });
+
+            if (items.length > 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/QuanLyCongViec/QuanLyCongViec/SaveImportSubTasks',
+                    data: JSON.stringify({ "data": items, "taskId": @Model.taskId }),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (result) {
+                        if (result.Status) {
+                            NotiSuccess('Import dữ liệu thành công');
+
+                            setTimeout(function () {
+                                window.location = "/QuanLyCongViec/QuanLyCongViec/Detail/@Model.taskId";
+                            }, 1000);
+                        } else {
+                            NotiError(result.Message);
+                        }
+                    }, error: failureAjax
+                });
+            }
+        });
+
+        $('#btnExport').on('click', function () {
+            var items = [];
+            $('#table--invalid-data tbody input:checkbox.global_checkbox:checked').each(function () {
+                var row = $(this).parents('tr').first();
+                var data = [];
+
+                row.find('td span.data-label').each(function () {
+                    data.push($(this).text())
+                })
+
+                items.push(data);
+            });
+
+            $.ajax({
+                type: "POST",
+                url: '/QuanLyCongViec/QuanLyCongViec/ExportErrorSubTasks',
+                data: JSON.stringify(items),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (result) {
+                    if (result.Status) {
+                        NotiSuccess("Export dữ liệu thành công");
+                        var win = window.open(result.PathStore, '_blank');
+                        if (win) {
+                            //win.focus();
+                        } else {
+                            alert('Hãy cho phép website mở popup');
+                        }
+                    } else {
+                        NotiError(result.Message);
+                    }
+                }, error: failureAjax
+            });
+        })
+    })
+
+    function setup() {
+        showPagingData('table--valid-data', null, validDataColumns);
+        showPagingData('table--invalid-data', null, errorDataColumns);
+    }
+
+    function showData(result) {
+        showPagingData('table--valid-data', result.ListData, validDataColumns);
+        showPagingData('table--invalid-data', result.ListFalse, errorDataColumns);
+    }
+
+    function showPagingData(tableId, data, configColumns) {
+        $('#' + tableId).DataTable({
+            "data": data,
+            "bDestroy": true,
+            "lengthMenu": [[20, 50, 100, -1], [20, 50, 100, "Tất cả"]],
+            "iDisplayLength": 20,
+            "paging": true,
+            "order": [[0, 'none'], [1, 'asc']],
+            "fnDrawCallback": function (oSettings) {
+                runAllCharts()
+            },
+            "aoColumns": configColumns
+        });
+    }
+
+    function failureImportSubTask(result) {
+        NotiError(result.Message);
+    }
+
+    function successImportSubTask(result) {
+        if (result.Status) {
+            showData(result);
+        } else {
+            NotiError(result.Message);
+        }
+    }
+</script>

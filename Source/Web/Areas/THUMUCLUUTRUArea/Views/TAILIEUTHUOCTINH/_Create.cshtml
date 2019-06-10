@@ -1,0 +1,110 @@
+﻿@model Web.Areas.THUMUCLUUTRUArea.Models.TaiLieuThuocTinhModel
+<div class="modal-dialog">
+    @using (Ajax.BeginForm("SaveItem", "TAILIEUTHUOCTINH", new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "createattributeForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">@(Model.ThuocTinh.ID > 0 ? "Cập nhật thuộc tính" : "Thêm mới thuộc tính")</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" name="ID" value="@Model.ThuocTinh.ID" />
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Loại tài liệu: <span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            <select name="DANHMUC_ID" id="DANHMUC_ID" class="txt-select2 requiredDropDownList" style="width:100%">
+                                @{
+                                    foreach (var item in Model.ListLoaiTaiLieu)
+                                    {
+                                        <option @(Model.ThuocTinh.DANHMUC_ID == item.ID ? "selected='selected'" : "") value="@item.ID">@item.TEXT</option>
+                                    }
+                                }
+                            </select>
+                            <div class="note-error">
+                                <span class="error mes-note-error" id="errDANHMUC_ID"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Tên thuộc tính: <span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="text" value="@Model.ThuocTinh.TEN_THUOCTINH" class="form-control required" placeholder="" name="TEN_THUOCTINH" id="TEN_THUOCTINH">
+                            <div class="note-error">
+                                <span class="error mes-note-error" id="errTEN_THUOCTINH"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Mô tả:</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" placeholder="" name="MOTA" id="MOTA">@Model.ThuocTinh.MOTA</textarea>
+                            <div class="note-error">
+                                <span class="error mes-note-error" id="errMOTA"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Trạng thái<span class="red">*</span></label>
+                        <div class="col-sm-8">
+                            <select name="TRANGTHAI" id="TRANGTHAI" class="txt-select2 requiredDropDownList" style="width:233px">
+                                <option @((Model.ThuocTinh.TRANGTHAI.HasValue && Model.ThuocTinh.TRANGTHAI.Value) || (!Model.ThuocTinh.TRANGTHAI.HasValue) ? "selected='selected'" : "") value="True">Sử dụng</option>
+                                <option @(Model.ThuocTinh.TRANGTHAI.HasValue && !Model.ThuocTinh.TRANGTHAI.Value ? "selected='selected'" : "") value="False">Không sử dụng</option>
+                            </select>
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="submit" class="btn btn-primary" onclick="checkSubmid()">Hoàn thành</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    function checkSubmid() {
+        var err = checkForm('createattributeForm');
+        if (err) {
+            return true;
+            //$("#createattributeForm").submit();
+        } else {
+            NotiError("Vui lòng kiểm tra lại thông tin nhập");
+        }
+        return false;
+    }
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            loadScript("/Scripts/autoNumeric.min.js", function () {
+                loadScript("/js/plugin/select2/select2.min.js", function () {
+                    $("#createattributeForm .txt-select2").select2();
+                });
+            });
+        });
+    });
+    function successAjaxCreate(rs) {
+        if (rs.Type == "SUCCESS") {
+            reloadData();
+            $("#modal_create").modal("hide");
+            $("#modal_create").empty();
+            NotiSuccess(rs.Message);
+        } else {
+            NotiError(rs.Message);
+        }
+    }
+    function failureAjax(err) {
+        console.log(err);
+    }
+</script>

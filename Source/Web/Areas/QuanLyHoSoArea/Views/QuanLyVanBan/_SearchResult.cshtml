@@ -1,0 +1,273 @@
+﻿@using Web.Areas.QuanLyHoSoArea.Models;
+@using Newtonsoft.Json;
+@using System.Web.Script.Serialization;
+@using PagedList.Mvc;
+@using PagedList;
+@model QuanLyVanBanIndexViewModel
+
+<style>
+    .hide-vb {
+        display: none
+    }
+
+
+    tr.no-boder td {
+        border: 0 !important;
+    }
+
+    .table tr td {
+        border-bottom: 1px solid #eee;
+    }
+
+    .table tr th {
+        font-size: 14px;
+    }
+
+    .table thead th {
+        font-weight: bold;
+    }
+
+    .pagination-container {
+        text-align: center;
+    }
+
+    /*.pagination > li > a, .pagination > li > span {
+        border-radius: 50% !important;
+    }*/
+</style>
+@*<strong>Danh sách hồ sơ (@Model.Source.Count)</strong>*@
+@{
+    if (Model.Source.Count > 0)
+    {
+        <span>Hiển thị <strong>1 - @Model.Source.Count</strong> trong tổng số <strong>@Model.Source.TotalItemCount</strong> hồ sơ</span>
+    }
+    else
+    {
+        <span>Hiển thị <strong>0</strong> hồ sơ</span>
+    }
+}
+
+
+<table class="table table-bordred table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>
+                <img src="\Content\Images/attach-3.png" title="Tài liệu đính kèm" />
+            </th>
+            <th width="10%">
+                Số ký hiệu
+            </th>
+            <th width="15%">
+                Ngày ban hành
+            </th>
+            <th width="20%">
+                Cơ quan ban hành
+            </th>
+            <th width="40%">Trích yếu</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.Source.Count > 0)
+            {
+                foreach (var item in Model.Source)
+                {
+                    <tr id="HOSO_ID_@item.HOSO_ID">
+                        <td colspan="8">
+                            <span id="more@(item.HOSO_ID)"><i class="fa fa-plus-square-o" aria-hidden="true"></i></span> &nbsp;<a href="javascript:MoreHoSo(@item.HOSO_ID,@item.TotalVanBan)" style="color:#337ab7; font-weight:bold; text-decoration:none">@item.HOSO_NAME</a>
+                            <small id="totalVB@(item.HOSO_ID)">(số văn bản @item.TotalVanBan)</small>
+                            <div style="width:100px; float:right">
+                                <button style="padding: 2px 6px; height:25px; min-width:10px; min-height:10px" class="btn btn-primary" title="Thêm mới văn bản" onclick="FormVanBan(0,@item.HOSO_ID)" data-title="Edit" data-toggle="modal" data-target="#edit"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                <button style="padding: 2px 6px; height:25px; min-width:10px; min-height:10px" class="btn btn-success" title="Kết xuất văn bản" onclick="exportExcel(@item.HOSO_ID,@item.TotalVanBan)" data-title="Edit" data-toggle="modal" data-target="#edit"><i class="fa fa-file-excel-o" aria-hidden="true"></i></button>
+                                <button style="padding: 2px 6px; height:25px; min-width:10px; min-height:10px" class="btn btn-danger" title="Chi tiết văn bản" onclick="MoreHoSo(@item.HOSO_ID,@item.TotalVanBan)" data-title="Edit" data-toggle="modal" data-target="#edit"><i class="fa fa-search-plus" aria-hidden="true"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    var stt = 0;
+                    foreach (var VanBan in item.ListVanBan)
+                    {
+                        stt++;
+                        <tr class="hide-vb no-boder" data-hoso="@(item.HOSO_ID)" id="vanBanId@(VanBan.VANBAN_ID)">
+                            <td>@stt</td>
+                            <td>
+                                @if (VanBan.TAILIEU_ID.HasValue)
+                                {
+                                    <a href="javascript:void(0)" onclick="DowloadFile(@VanBan.TAILIEU_ID)" title="@VanBan.TAILIEU_NAME">
+                                        <img src="\Content\Images/attach-3.png" title="Tài liệu đính kèm" />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>&nbsp;</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="javascript:DetailVanBan(@VanBan.VANBAN_ID)" title="@VanBan.SO_KYHIEU">
+                                    @VanBan.SO_KYHIEU
+                                </a>
+                            </td>
+                            <td>@string.Format("{0:dd/MM/yyyy}", VanBan.NGAYBANHANH)</td>
+                            <td>@VanBan.COQUAN_BANHANH_NAME</td>
+                            <td>@VanBan.TRICHYEU_VANBAN</td>
+                            <td>
+                                <button style="padding: 2px 6px; height:25px; min-width:10px; min-height:10px" class="btn btn-primary" title="Chỉnh sửa" onclick="FormVanBan(@VanBan.VANBAN_ID,@VanBan.HOSO_ID)" data-title="Edit" data-toggle="modal" data-target="#edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                            </td>
+                            <td>
+                                <button style="padding: 2px 6px; height:25px; min-width:10px; min-height:10px" class="btn btn-danger" title="Xóa" onclick="DeleteVanBan(@VanBan.VANBAN_ID,@VanBan.HOSO_ID)" data-title="Delete" data-toggle="modal" data-target="#delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                            </td>
+                        </tr>
+
+                    }
+                }
+
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-danger">Chưa có dữ liệu</td>
+                </tr>
+
+            }
+        }
+    </tbody>
+</table>
+@if (Model.Source.TotalItemCount > Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["DefaultPageSize"]))
+{
+    <div class="pagingBox">
+        <input id="HiddenPageSize" name="PageSize" type="hidden" />
+        <input id="HiddenPage" name="Page" type="hidden" />
+        <span class="selectBoxes display_none_mobile" style="display:none">
+            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "5", 5 }, { "10", 10 }, { "15", 15 }, { "20", 20 } }, "Key", "Value", Convert.ToString(ViewBag.PageSize)), new { id = "pagesizelist" })
+        </span>
+        <div class="pagerecord display_none_mobile">
+
+
+            @*Page @(Model.Source.PageCount < Model.Source.PageNumber ? 0 : Model.Source.PageNumber) of @Model.Source.PageCount*@
+        </div>
+
+        @Html.PagedListPager(Model.Source, page => Url.Action("VanBanSorting", "QuanLyVanBan",
+                                                                                                                                         new
+                                                                                                                                         {
+                                                                                                                                             pageNumber = page,
+                                                                                                                                             sortExpression = ViewBag.CurrentSort,
+                                                                                                                                             currentFilter = ViewBag.CurrentFilter,
+                                                                                                                                             pageSize = ViewBag.PageSize
+                                                                                                                                         }),
+                                                                                                                                          PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                                                                                                                                          {
+                                                                                                                                              Display = PagedListDisplayMode.IfNeeded,
+                                                                                                                                              MaximumPageNumbersToDisplay = 5
+                                                                                                                                          },
+                                                                                                                                           new AjaxOptions
+                                                                                                                                           {
+                                                                                                                                               InsertionMode = InsertionMode.Replace,
+                                                                                                                                               HttpMethod = "Get",
+                                                                                                                                               UpdateTargetId = "HoSoGrid",
+                                                                                                                                               LoadingElementId = "divProcessing"
+                                                                                                                                           }))
+    </div>
+
+    <div id="divProcessing" class="processingButton" style="display: none;">
+        <img width="31" height="31" alt="" class="LoadingImage" src="~/Images/ajax-loader.gif" />
+    </div>
+}
+<div class="modal" id="FormVanBan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"></div>
+
+<script>
+    function exportExcel(id, count) {
+        if (count == 0) {
+            CommonJS.showNotifyError("Không có văn bản nào !");
+            return false;
+        }
+        window.location.href = "/QuanLyHoSoArea/QuanLyVanBan/ExportExcel/" + id;
+    }
+    function DetailVanBan(id) {
+           $.ajax({
+            type: "GET",
+            data: { id: id },
+            cache: false,
+            url: "@Url.Action("Detail")",
+            success: function (response) {
+                $("#FormVanBan").html(response);
+                $("#FormVanBan").modal("show");
+            }
+        });
+    }
+    function DeleteVanBan(id,hoSoId) {
+        if (confirm("Dữ liệu xóa sẽ không khôi phục lại được?")) {
+            $.ajax({
+            type: "POST",
+            data: { id: id },
+            cache: false,
+            url: "@Url.Action("DeleteVanBan")",
+                success: function (response) {
+                    $("#vanBanId" + id).remove();
+                    var count = 0;
+                    $("tr[data-hoso=" + hoSoId + "]").each(function () {
+                        count++;
+                        $(this).find("td:first").text(count);
+                    });
+                    $("#totalVB" + hoSoId).text("(số văn bản " + count + ")");
+                    CommonJS.showNotifySuccess("Xóa văn bản thành công!");
+            }
+        });
+        }
+    }
+    function FormVanBan(id, hoSoId)
+    {
+
+        $.ajax({
+            type: "GET",
+            data: { id: id, HoSoID: hoSoId },
+            cache: false,
+            url: "@Url.Action("FormVanBan")",
+            success: function (response) {
+                $("#FormVanBan").html(response);
+                $("#FormVanBan").modal("show");
+            }
+        });
+    }
+    function MoreHoSo(id, count) {
+        if (count == 0) {
+            CommonJS.showNotifyError("Không có văn bản nào !");
+            return false;
+        }
+        $("tr[data-hoso=" + id + "]").toggleClass("hide-vb");
+        if ($("tr[data-hoso=" + id + "]").hasClass("hide-vb")) {
+            $("#more" + id).html('<i class="fa fa-plus-square-o" aria-hidden="true"></i>');
+        } else {
+            $("#more" + id).html('<i class="fa fa-minus-square-o" aria-hidden="true"></i>');
+        }
+    }
+    function DowloadFile(ID) {
+        $.ajax({
+            type: "POST",
+            url: '/Common/CheckkingFile/',
+            data: {
+                ID: ID
+            },
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+                //alert(data);
+                if (data == "Co") {
+                    location.href = "/Common/DownloadFile?ID=" + ID;
+                } else {
+                    $.confirm({
+                        'title': 'Không tìm thấy tài liệu',
+                        'message': 'Xin lỗi không thể tìm thấy tài liệu mà bạn đang yêu cầu.',
+                        'buttons': {
+                            'Đóng': {
+                                'class': 'btn-warning',
+                                'action': function () { } // Nothing to do in this case. You can as well omit the action property.
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+</script>

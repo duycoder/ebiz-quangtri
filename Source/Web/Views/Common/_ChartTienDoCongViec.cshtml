@@ -1,0 +1,146 @@
+﻿@using Web.Models
+@model TienDoCongViecModel
+<style>
+    #chartByAge {
+        margin: 10px auto;
+    }
+
+    #block--search-age-chart .form-control {
+        width: 100% !important;
+    }
+
+    #search-tien-do input {
+        height: 28px;
+        margin-top: 4px;
+        background: #eff0f0;
+        border: 0px;
+    }
+    
+</style>
+<script src="~/js/plugin/zingchart/zingchart.min.js"></script>
+<article class="col-xs-12 col-sm-9 col-md-9 col-lg-9 sortable-grid ui-sortable left" style="padding:5px !important">
+    <div class="jarviswidget " role="widget">
+        <header role="heading" style="margin-left: 10px;margin-right: 10px;margin-top: 10px;">
+            <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
+            <h2 class="group-tittle mt10">Báo cáo thống kê tiến độ và chất lượng công việc</h2>
+            <div class="col-sm-5 no-padding" style="margin-bottom:-10px" id="search-tien-do">
+                <div class="col-sm-3 no-padding" style="text-align:right"><label for="TUNGAY">Từ ngày &nbsp;</label></div>
+                <div class="col-sm-3 no-padding">
+                    <input class="datepicker form-control" id="TUNGAY" />
+                </div>
+                <div class="col-sm-3 no-padding" style="text-align:right"> <label>Đến ngày &nbsp;</label></div>
+                <div class="col-sm-3 no-padding">
+                    <input class="datepicker form-control" id="DENNGAY" />
+                </div>
+            </div>
+            <div style="text-align:right;padding-right:4px">
+                <button class="btn btn-primary" id="btnSearchChart" style="margin-bottom:6px" type="button">Tìm kiếm</button>
+                @*<span class="icon-hover"><i class="fa fa-print fa-2x" style="margin-right:5px"></i></span>
+                    <span class="icon-hover" id="process-download"><i class="fa fa-download fa-2x"></i></span>*@
+            </div>
+        </header>
+        <div role="content" style="background-color:#eff0f0 !important; border: 0px; padding: 10px;">
+            <div class="widget-body" id="widget-body">
+                @Html.Partial("_TienDoCV", Model)
+            </div>
+        </div>
+    </div>
+</article>
+<img src="" id="output_image">
+<script>
+
+    $("#TUNGAY").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#DENNGAY").datepicker('option', 'minDate', date);
+        }
+    });
+    $("#DENNGAY").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true, yearRange: "-10:+20",
+        showWeek: false, weekHeader: "Tuần",
+        language: 'vi',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        onClose: function (date) {
+            $("#TUNGAY").datepicker('option', 'maxDate', date);
+        }
+    });
+    $(function () {
+        $("#btnSearchChart").click(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ChartTienDoCongViec")',
+                cache: false,
+                data: {
+                    from: $("#TUNGAY").val(), to: $("#DENNGAY").val(), type: "1212"
+                },
+                beforeSend: function () {
+                    $(".loading").show();
+                },
+                success: function (data) {
+                    $("#widget-body").html(data);
+                }, complete: function () {
+                    $(".loading").hide();
+                }
+            });
+        });
+    });
+
+</script>
+<style>
+    .icon-hover:hover {
+        cursor: pointer;
+    }
+
+    .col-sm-3 > label {
+        margin-bottom: 0px;
+    }
+
+    .color-white .col-sm-7 label {
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .statistics {
+        max-width: 100%;
+        max-height: 100%;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+
+    .bottom-10 {
+        margin-bottom: 10px;
+    }
+
+    .color-white .col-sm-7 label {
+        font-weight: bold;
+    }
+
+    .color-white {
+        background-color: #FFFFFF;
+    }
+
+        .color-white .col-sm-5, .color-white .col-sm-7 {
+            height: 100%;
+        }
+
+    .middle-statis .col-sm-5, .middle-statis .col-sm-7 {
+        height: 100%;
+    }
+</style>

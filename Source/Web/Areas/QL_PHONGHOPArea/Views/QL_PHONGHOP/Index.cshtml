@@ -1,0 +1,234 @@
+﻿@{
+    ViewBag.Title = "Quản lý Đối Tác";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@using Model.Entities;
+@using Newtonsoft.Json;
+@using Business.CommonBusiness;
+@using Business.CommonModel.DS_PHONGHOP;
+@model PageListResultBO<QL_PHONG_BO>
+@{
+    var lstData = Html.Raw(JsonConvert.SerializeObject(Model.ListItem));
+
+}
+
+<link href="~/Content/hinet-table.css" rel="stylesheet" />
+<style>
+
+</style>
+
+<div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
+    <div class="col-md-6 col-sm-6">
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
+    </div>
+    <!-- end breadcrumb -->
+
+    <div class="col-md-6 col-sm-6">
+        <a class="btn btn-default pull-right" href="javascript:ActionCreate()">
+            <i class="fa fa-plus"></i> <span>Thêm mới</span>
+        </a>
+        <a href="#collapseDivPhong" class="btn btn-default pull-right" aria-controls="collapsePanel" data-toggle="collapse" role="button" style="float: right; margin-right:5px;">
+            <span class=" glyphicon glyphicon-search"> </span>Tìm kiếm
+        </a>
+    </div>
+</div>
+<div id="content">
+
+
+    @Html.Partial("SearchPartial", Model)
+
+
+    <div class="jarviswidget" id="wid-id-0">
+        <header role="heading">
+            <h2 class="group-tittle mt10">
+                Quản lý danh sách phòng họp
+            </h2>
+
+        </header>
+        <div class="widge-t-body no-padding">
+
+            <div id="tbl-PHQT" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped  table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Stt</th>
+
+                            <th>Tên phòng</th>
+                            <th>Mã phòng</th>
+                            <th>Số chỗ ngồi</th>
+                            <th>Mô tả</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="modal_createPhongH" class="modal fade modal-news" role="dialog">
+
+</div>
+
+<div id="modal_editPhongH" class="modal fade modal-news" role="dialog">
+
+</div>
+
+<script>
+
+    var lstData = eval(@lstData);
+    function ActionCreate()
+    {
+        AjaxCall("/QL_PHONGHOPArea/QL_PHONGHOP/Create",'get',null,function (rs) {
+            $("#modal_createPhongH").html(rs);
+            $("#modal_createPhongH").modal("show");
+
+        })
+    }
+
+    function EditAction(id)
+    {
+        AjaxCall("/QL_PHONGHOPArea/QL_PHONGHOP/Edit/"+id,'get',null,function (rs) {
+            $("#modal_editPhongH").html(rs);
+            $("#modal_editPhongH").modal("show");
+
+        })
+    }
+
+    function pagefunction(){
+
+        var conf = [
+            {
+                tdClass: "center",
+                isSort: false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return;
+                }
+            },
+             {
+                 isSort: true,
+                 nameModel: "TENPHONG",
+                 content: function (data) {
+                     return data.TENPHONG
+                 }
+             },
+              {
+                  isSort: true,
+                  nameModel: "MAPHONG",
+                  content: function (data) {
+                      return data.MAPHONG
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "SOCHONGOI",
+                  content: function (data) {
+                      return data.SOCHONGOI
+                  }
+              },
+              {
+                  isSort: true,
+                  nameModel: "MOTA",
+                  content: function (data) {
+                      return data.MOTA
+                  }
+              },
+               {
+                   isSort: false,
+                   nameModel: "",
+                   tdClass: 'center',
+                   content: function (data) {
+                       var result = "<div class='btn-group'>";
+
+                       result += "<a href='javascript:void(0)' onclick='EditAction(" + data.ID + ")'   title = 'Chỉnh sửa'><i class='glyphicon glyphicon-edit'> </i></a> ";
+                       result += "<a href='javascript:void(0)' onclick='DeleteFunction(" + data.ID + ")'  title = 'Xóa'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>";
+                       result += "</div>";
+                       return result;
+                   }
+               },
+
+        ];
+
+
+        var getdatafunc=function(page,sortQuery,pageSize){
+            $.ajax({
+                url: '/QL_PHONGHOPArea/QL_PHONGHOP/getData',
+                type: 'post',
+                cache: false,
+                data:{"indexPage":page,"sortQuery":sortQuery,"pageSize":pageSize},
+                success: function (data) {
+                    $("#tbl-PHQT").hinetTable("data",{
+                        pageSize:pageSize!=-1?pageSize:data.Count,
+                        pageIndex:page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,});
+                },
+                error: function (err) {
+                    CommonJS.alert(xhr.responseText);
+                }
+            });
+
+        }
+
+        var tblData=$("#tbl-PHQT").hinetTable("init",{
+            pageSizeList:{size:[20,50,100,-1],label:['20','50','100','Tất cả']},
+            pagecount: @Model.TotalPage,
+            recordCount: @Model.Count,
+            getData:getdatafunc,
+            listItem:lstData,
+            config:conf
+        });
+
+    }
+    function DeleteFunction(id) {
+
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa phòng này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+
+                        $.ajax({
+                            url: '/QL_PHONGHOPArea/QL_PHONGHOP/delete',
+                            data: { 'id': id },
+                            type: 'post',
+                            success: function (rs) {
+                                if (rs.Status) {
+                                    NotiSuccess("Xóa phòng thành công");
+                                    location.reload();
+                                } else {
+                                    NotiError(rs.Message);
+                                }
+                            },
+                            error: function () {
+                                NotiError("Không thực hiện được thao tác");
+
+                            }
+                        })
+
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+                }
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery-hinet-table.js",pagefunction);
+    })
+
+
+</script>

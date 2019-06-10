@@ -1,0 +1,26 @@
+﻿@model List<string>
+@{
+    ViewBag.Title = "Gram File";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    int times = Model.Count();
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Gram Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < times; i++)
+        {
+            <tr>
+                <td>@i</td>
+                <td>
+                   @Model[i]
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

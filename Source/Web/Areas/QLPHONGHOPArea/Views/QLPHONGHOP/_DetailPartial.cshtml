@@ -1,0 +1,112 @@
+﻿@using Web.Areas.QLPHONGHOPArea.Models;
+@model DetailVM
+
+<div class="modal-dialog">
+    <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Thông tin chi tiết phòng đặt</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <form action="/QLPHONGHOPArea/QLPHONGHOP/Detail" method="get" id="cTietPhongDat">
+                <div class="form-horizontal">
+                    <input type="hidden" value="@Model.DetailPhong.ID" name="ID" />
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4 pd0 title-detail">
+                                <span><strong>Phòng đặt:</strong></span>
+                            </div>
+                            <div class="col-sm-8 pdr-0 content-detail">
+                                <span class="tenphong">@Model.DetailPhong.TenPhong</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4 pd0 title-detail">
+                                <span><strong>Ngày đặt:</strong></span>
+                            </div>
+                            <div class="col-sm-8 pdr-0 content-detail">
+                                <span>@string.Format("{0:dd/MM/yyyy}", Model.DetailPhong.NGAYDAT)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4 pd0 title-detail">
+                                <span><strong>Giờ đặt:</strong></span>
+                            </div>
+                            <div class="col-sm-8 pdr-0 content-detail">
+                                <span>@Model.DetailPhong.GIOBATDAU giờ @Model.DetailPhong.PHUTBATDAU phút - @Model.DetailPhong.GIOKETTHUC giờ @Model.DetailPhong.PHUTKETTHUC phút</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="col-sm-4 pd0 title-detail">
+                                <span><strong>Tên người đặt:</strong> </span>
+                            </div>
+                            <div class="col-sm-8 pdr-0 content-detail">
+                                <span>@Model.DetailPhong.TenNguoiDung</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="url">
+                                <div class="col-sm-4 pd0 title-detail">
+                                    <span><strong>Người chủ trì: </strong></span>
+                                    </div>
+                                <div class="col-sm-8 pdr-0 content-detail">
+                                    @Model.DetailPhong.NguoiChuTri
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="url">
+                                <div class="col-sm-4 pd0 title-detail">
+                                    <span><strong>Thành phần tham dự: </strong></span>
+                                    </div>
+                                <div class="col-sm-8 pdr-0 content-detail">
+                                    @Model.DetailPhong.THANHPHANTHAMDU
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="url">
+                                <div class="col-sm-4 pd0 title-detail">
+                                    <span><strong>Mục đích cuộc họp: </strong></span>
+                                    </div>
+                                <div class="col-sm-8 pdr-0 content-detail">
+                                    @Model.DetailPhong.MUCDICH
+                                </div>
+                                </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer center">
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Modal footer -->
+
+
+    </div>
+</div>

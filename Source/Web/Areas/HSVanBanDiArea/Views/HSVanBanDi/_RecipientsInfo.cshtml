@@ -1,0 +1,88 @@
+﻿@model Web.Areas.HSVanBanDiArea.Models.ThongTinVanBanDiVM
+@{
+    int count = 0;
+}
+<div class="modal-dialog" role="document" style="width:50%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">
+                THÔNG TIN GỬI VĂN BẢN NỘI BỘ
+            </h5>
+        </div>
+        <div class="modal-body">
+            <fieldset>
+                <div class="row">
+                    <section class="col col-lg-12">
+                        <div class="row">
+                            <table class="table table-bordered table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th colspan="3">DANH SÁCH CÁN BỘ TIẾP NHẬN</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="width:20%">
+                                            STT
+                                        </th>
+                                        <th style="width:40%">
+                                            Họ tên
+                                        </th>
+                                        <th style="width:40%">
+                                            Trạng thái tiếp nhận
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.GroupUsersReceiveInternal.Any())
+                                    {
+                                        foreach (var item in Model.GroupUsersReceiveInternal)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <center>
+                                                        @(++count)
+                                                    </center>
+                                                </td>
+                                                <td>
+                                                    @item.HOTEN
+                                                </td>
+                                                <td>
+                                                    @if (Model.GroupUsersRead.Any(x => x.ID == item.ID))
+                                                    {
+                                                        <b class="text-info">
+                                                            <i class="fa fa-eye"></i>&nbsp;Đã đọc
+                                                        </b>
+                                                    }
+                                                    else
+                                                    {
+                                                        <b class="text-danger">
+                                                            <i class="fa fa-eye-slash"></i>&nbsp;Chưa đọc
+                                                        </b>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="3">
+                                                <center>
+                                                    <span class="text-danger">
+                                                        Chưa có cán bộ tiếp nhận
+                                                    </span>
+                                                </center>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </fieldset>
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">Đóng</a>
+        </div>
+    </div>
+</div>

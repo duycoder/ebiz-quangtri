@@ -1,0 +1,106 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models
+@model LichCongTacByDayViewModel
+
+<style type="text/css">
+    #table--calendar-user tr th, #table--calendar-user tr td {
+        border: 1px solid #000;
+    }
+
+    #table--calendar-user tr th {
+        text-transform: uppercase;
+        font-weight: bold;
+        background-color: #fff;
+    }
+
+    #table--calendar-user thead > tr:first-child th {
+        background: #118ACB;
+        color: #fff;
+        border: 1px solid #118ACB;
+    }
+
+    #table--calendar-user .content--duplicate {
+        background-color: #E46D5C !important;
+        color: #fff !important;
+    }
+
+    #table--calendar-user .date--duplicate {
+        background-color: #ff0033 !important;
+        color: #fff !important;
+    }
+
+    #table--calendar-user .time-title {
+        font-size: 15px;
+    }
+</style>
+
+<div class="modal-dialog" role="document" style="width:70%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h3 class=" modal-title">
+                @Model.title
+            </h3>
+        </div>
+        <div class="modal-body">
+            <table class="table table-striped table-bordered" id="table--calendar-user">
+                <thead>
+                    <tr>
+                        <th style="width:10%">Thời gian</th>
+                        <th style="width:60%">Nội dung</th>
+                        <th style="width:20%">Địa điểm</th>
+                        <th style="width:10%">Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.groupDateEntities)
+                    {
+                        <tr class="time-title">
+                            <th colspan="5" class="@(item.date == Model.startDate ? "date--duplicate": "")">
+                                <b>
+                                    @(item.title)
+                                </b>
+                            </th>
+                        </tr>
+
+                        foreach (var child in item.groupOfCalendars)
+                        {
+                            <tr class="@(item.date == Model.startDate ? "content--duplicate": "")">
+                                <td>
+                                    <b>
+                                        @(child.GIO_CONGTAC.ToString("D2") + "h" + child.PHUT_CONGTAC.ToString("D2"))
+                                    </b>
+                                </td>
+                                <td>
+                                    @child.TIEUDE
+                                </td>
+                                <td>
+                                    @child.DIADIEM
+                                </td>
+                                <td>
+                                    @child.GHICHU
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                    @if (Model.groupDateEntities.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4">
+                                <center>
+                                    <span class="text-info">
+                                        Hiện tại không có lịch công tác nào trong tuần!
+                                    </span>
+                                </center>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn">Đóng</button>
+        </div>
+    </div>
+</div>

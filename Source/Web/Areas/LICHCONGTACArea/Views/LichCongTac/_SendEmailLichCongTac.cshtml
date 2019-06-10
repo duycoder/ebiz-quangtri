@@ -1,0 +1,120 @@
+﻿@using Web.Areas.LICHCONGTACArea.Models;
+@model LichCongTacEmailViewModel
+@using (Ajax.BeginForm("SendEmail", "LichCongTac", new AjaxOptions()
+{
+    HttpMethod = "POST",
+    OnSuccess = "sendEmailSuccess",
+    OnFailure = "sendEmailFailure"
+}, new { @id = "form--send-email", @area = "LichCongTacArea" }))
+{
+    <div class="modal-dialog" role="document" style="width:50%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">GỬI EMAIL THÔNG BÁO LỊCH CÔNG TÁC TRONG TUẦN</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label for="LANHDAO_ID" class="lbl control-label">
+                                Người nhận:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.DropDownList("LANHDAO_ID", Model.groupOfUsers, "--- Chọn người nhận ---", new { @class = "requiredDropDownList txt-select2", @style = "width:100%", @multiple = "multiple" })
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label for="TIEUDE" class="lbl control-label">
+                                Tiêu đề:&nbsp;<span class="text-danger">*</span>
+                            </label>
+                        </div>
+
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control required checkHTMLInjection" id="TIEUDE" name="TIEUDE" placeholder="Nhập tiêu đề" />
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <span class="text-info">
+                                <i>(*) Nội dung email sẽ được tự động lấy ra từ dữ liệu lịch công tác trong tuần của người nhận</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="btn--send-email">Gửi</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+}
+<script>
+    $(function(){
+        loadScript("/js/plugin/select2/select2.min.js", function(){
+            $('#LANHDAO_ID').select2();
+        });
+
+        $('#btn--send-email').on('click',function(){
+            var formName = 'form--send-email';
+            var isValidRequiredField = requiredFieldForFormId(formName);
+            var isValidSelectField = RequireDropDownlist(formName);
+
+            if (!isValidRequiredField || !isValidSelectField) {
+                return false;
+            }else{
+                $('#'+formName).submit();
+                $('#modal--lichcongtac-email').modal('hide');
+            }
+        });
+    });
+
+    function sendEmailSuccess(result){
+        NotiSuccess('Gửi email thành công');
+    }
+
+    function sendEmailFailure(result){
+        NotiError('Gửi email không thành công');
+    }
+</script>
+
+@*$.confirm({
+        'title': 'Xác nhận gửi email',
+        'message': 'Bạn có chắc chắn muốn gửi email lịch công tác của tuần này?',
+        'buttons': {
+            'Đồng ý': {
+                'class': 'btn-confirm-yes btn-primary',
+                'action': function () {
+                    $.post('@Url.Action("SendEmailToNotifyCalendar")', null, function(rs){
+                        if(rs.Status){
+                            NotiSuccess('Đã gửi email thông báo lịch công tác tuần');
+                        }else{
+                            NotiError('Gửi email không thành công');
+                        }
+                    });
+                }
+            },
+            'Hủy bỏ': {
+                'class': 'btn-default',
+                'action': function () { }
+            }
+        }
+    });*@
