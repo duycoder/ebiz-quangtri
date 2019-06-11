@@ -1579,7 +1579,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     TAILIEUDINHKEMBusiness.repository.Save();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = false;
             }
