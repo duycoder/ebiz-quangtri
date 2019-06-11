@@ -13,6 +13,7 @@ using PagedList;
 using Business.CommonModel.DMCHUCNANG;
 using System.Collections;
 using System.Web.Mvc;
+using CommonHelper;
 
 namespace Business.Business
 {
@@ -25,7 +26,7 @@ namespace Business.Business
         }
         public List<DM_NGUOIDUNG_BO> GetByPhongBan(int id)
         {
-            var result = (from nguoiDung in this.context.DM_NGUOIDUNG                          
+            var result = (from nguoiDung in this.context.DM_NGUOIDUNG
                           where nguoiDung.DM_PHONGBAN_ID == id && nguoiDung.IS_ACTIVE == true
                           select new DM_NGUOIDUNG_BO
                           {
@@ -49,10 +50,10 @@ namespace Business.Business
                          where tbl.PARENT_ID == depid
                          select tbl.ID;
             var LstDept = result.ToList();
-            if(LstDept.Count > 0)
+            if (LstDept.Count > 0)
             {
                 LstFinal.AddRange(LstDept);
-                foreach(var item in LstDept)
+                foreach (var item in LstDept)
                 {
                     LstFinal.AddRange(GetRecursiveDept(item));
                 }
@@ -112,7 +113,7 @@ namespace Business.Business
                                  select tbl.ID;
                     var LstDept = result.ToList();
                     LstFinal.AddRange(LstDept);
-                    foreach(var item in LstDept)
+                    foreach (var item in LstDept)
                     {
                         LstFinal.AddRange(GetRecursiveDept(item));
                     }
@@ -1131,12 +1132,12 @@ namespace Business.Business
                 {
                     resultmodel.DeptParentID = DeptObj.PARENT_ID;
                     var LstDepId = this.context.CCTC_THANHPHAN.Where(x => x.PARENT_ID == DeptObj.PARENT_ID).Select(x => x.ID).ToList();
-                    if(LstDepId.Count > 0)
+                    if (LstDepId.Count > 0)
                     {
                         LstDepIds.AddRange(LstDepId);
                     }
                 }
-                
+
             }
             #region lay danh sach nguoi dung de chat
             var listUserBO = this.repository.All().Where(o => o.ID != id && LstDepIds.Contains(o.DM_PHONGBAN_ID.Value))
@@ -1267,7 +1268,7 @@ namespace Business.Business
             IQueryable<int> listSameParentDeptIds = this.context.CCTC_THANHPHAN
                 .Where(x => x.PARENT_ID == deptparentId).Select(x => x.ID);
             List<SelectListItem> result = (from user in this.context.DM_NGUOIDUNG.Where(x => x.IS_ACTIVE != false)
-                                           .Where(x => x.DM_PHONGBAN_ID != null && listSameParentDeptIds.Contains(x.DM_PHONGBAN_ID.Value))                                           
+                                           .Where(x => x.DM_PHONGBAN_ID != null && listSameParentDeptIds.Contains(x.DM_PHONGBAN_ID.Value))
                                            select new SelectListItem()
                                            {
 
@@ -1397,7 +1398,16 @@ namespace Business.Business
         }
         public List<SelectListItem> GetDanhSachByListIds(List<long> LstIds)
         {
-            return this.repository.All().Where(x => x.IS_ACTIVE == true && LstIds.Contains(x.ID)).Select(x => new SelectListItem { Text = x.HOTEN, Value = x.ID.ToString() }).ToList();
+            if (LstIds != null)
+            {
+                return this.repository.All().Where(x => x.IS_ACTIVE == true && LstIds.Contains(x.ID)).Select(x =>
+                new SelectListItem
+                {
+                    Text = x.HOTEN,
+                    Value = x.ID.ToString()
+                }).ToList();
+            }
+            return new List<SelectListItem>();
         }
         public List<SelectListItem> GetDropDow(List<long> listSelected = null)
         {
@@ -1583,35 +1593,39 @@ namespace Business.Business
         /// @description: lấy danh sách người dùng của phòng ban
         /// </summary>
         /// <returns></returns>
-        public List<NguoiDungPhongBanBO> GetUsersOfDepartments()
+        public List<NguoiDungPhongBanBO> GetUsersOfDepartments(int deptId = 0)
         {
-            IQueryable<NguoiDungPhongBanBO> queryResult = (from user in this.context.DM_NGUOIDUNG
-                                                           join department in this.context.CCTC_THANHPHAN
-                                                           on user.DM_PHONGBAN_ID equals department.ID
-                                                           into jUserDept
-                                                           from jDept in jUserDept
-                                                           group new { user, jDept } by jDept into gDept
-                                                           select new NguoiDungPhongBanBO
-                                                           {
-                                                               PhongBan = gDept.Key,
-                                                               LstNguoiDung = (from nd in gDept.Select(x => x.user)
-                                                                               join tblChucVu in this.context.DM_DANHMUC_DATA on nd.CHUCVU_ID
-                                                                               equals tblChucVu.ID into jchucvu
-                                                                               from chucvu in jchucvu.DefaultIfEmpty()
-                                                                               select new DM_NGUOIDUNG_BO
-                                                                               {
-                                                                                   ID = nd.ID,
-                                                                                   ANH_DAIDIEN = nd.ANH_DAIDIEN,
-                                                                                   DIACHI = nd.DIACHI,
-                                                                                   DIENTHOAI = nd.DIENTHOAI,
-                                                                                   DM_PHONGBAN_ID = nd.DM_PHONGBAN_ID,
-                                                                                   EMAIL = nd.EMAIL,
-                                                                                   HOTEN = nd.HOTEN,
-                                                                                   NGAYSINH = nd.NGAYSINH,
-                                                                                   TENDANGNHAP = nd.TENDANGNHAP,
-                                                                                   ChucVu = chucvu != null ? chucvu.TEXT : "Không có chức vụ"
-                                                                               }).ToList()
-                                                           }).OrderBy(x => x.PhongBan.NAME);
+            var queryResult = (from user in this.context.DM_NGUOIDUNG
+                               join department in this.context.CCTC_THANHPHAN
+                               .Where(x => (deptId > 0 ? (x.ID == deptId) : true))
+                               on user.DM_PHONGBAN_ID equals department.ID
+                               into jUserDept
+                               from jDept in jUserDept
+                               group new { user, jDept } by jDept into gDept
+                               orderby gDept.Key.NAME
+                               select new NguoiDungPhongBanBO
+                               {
+                                   PhongBan = gDept.Key,
+                                   LstNguoiDung = (from nd in gDept.Select(x => x.user)
+                                                   join tblChucVu in this.context.DM_DANHMUC_DATA on nd.CHUCVU_ID
+                                                   equals tblChucVu.ID into jchucvu
+                                                   from chucvu in jchucvu.DefaultIfEmpty()
+                                                   orderby nd.HOTEN
+                                                   select new DM_NGUOIDUNG_BO
+                                                   {
+                                                       ID = nd.ID,
+                                                       ANH_DAIDIEN = nd.ANH_DAIDIEN,
+                                                       DIACHI = nd.DIACHI,
+                                                       DIENTHOAI = nd.DIENTHOAI,
+                                                       DM_PHONGBAN_ID = nd.DM_PHONGBAN_ID,
+                                                       EMAIL = nd.EMAIL,
+                                                       HOTEN = nd.HOTEN,
+                                                       NGAYSINH = nd.NGAYSINH,
+                                                       TENDANGNHAP = nd.TENDANGNHAP,
+                                                       ChucVu = chucvu != null ? chucvu.TEXT : "Không có chức vụ"
+                                                   }).ToList()
+                               }).ToList();
+
             List<NguoiDungPhongBanBO> result = queryResult.ToList();
             return result;
         }
@@ -1622,7 +1636,6 @@ namespace Business.Business
             {
                 try
                 {
-
                     repository.Context.DM_NGUOIDUNG.AddRange(lstObj);
                     repository.Context.SaveChanges();
                     transaction.Commit();
@@ -1632,6 +1645,51 @@ namespace Business.Business
                     result.Status = false;
                     result.Message = "Không import được dữ liệu";
                     transaction.Rollback();
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: tìm kiếm người dùng theo nhóm người nhận văn bản
+        /// @since: 11/06/2019
+        /// </summary>
+        /// <param name="recipientGroupId"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public List<DM_NGUOIDUNG_BO> GetUsersByRecipient(int recipientGroupId, string name)
+        {
+            List<DM_NGUOIDUNG_BO> result = new List<DM_NGUOIDUNG_BO>();
+            QL_NGUOINHAN_VANBAN recipientGroup = this.context.QL_NGUOINHAN_VANBAN.Find(recipientGroupId) ?? new QL_NGUOINHAN_VANBAN();
+            if (recipientGroup.NGUOINHAN_IDS != null)
+            {
+                List<long> groupUserIds = recipientGroup.NGUOINHAN_IDS.ToListLong(',');
+                result = (from user in this.context.DM_NGUOIDUNG
+                          join dept in this.context.CCTC_THANHPHAN
+                          on user.DM_PHONGBAN_ID equals dept.ID
+                          into groupDeptUser
+                          from gDeptUser in groupDeptUser.DefaultIfEmpty()
+
+                          join position in this.context.DM_DANHMUC_DATA
+                          on user.CHUCVU_ID equals position.ID
+                          into groupPositionUser
+                          from gPositionUser in groupPositionUser.DefaultIfEmpty()
+
+                          select new DM_NGUOIDUNG_BO()
+                          {
+                              ID = user.ID,
+                              HOTEN = user.HOTEN,
+                              DM_PHONGBAN_ID = gDeptUser.ID,
+                              TenPhongBan = gDeptUser.NAME,
+                              ChucVu = gPositionUser.TEXT,
+                          })
+                          .Where(x => groupUserIds.Contains(x.ID))
+                          .ToList();
+                if (!string.IsNullOrEmpty(name))
+                {
+                    name = name.Trim().ToLower();
+                    result = result.Where(x => x.HOTEN != null && x.HOTEN.Trim().ToLower().Contains(name)).ToList();
                 }
             }
             return result;

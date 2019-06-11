@@ -26,24 +26,67 @@ namespace Business.Business
         }
 
         /// <summary>
+        /// @author:duynn
+        /// @since: 11/06/2019
+        /// @description: kiểm tra trùng tên
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool CheckExistedName(string name, int id)
+        {
+            return this.repository.All()
+                .Any(x => x.TEN_NHOM == name && x.ID != id);
+            //if(user.ListVaiTro.Any(x=>x.MA_VAITRO == "QLHT"))
+            //{
+            //    return this.repository.All()
+            //        .Where(x=> x.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID || x.IS_DEFAULT == true)
+            //        .Where(x => x.TEN_NHOM == name && x.ID != id).Any();
+            //}
+            //else
+            //{
+            //    return this.repository.All()
+            //        .Where(x => x.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID)
+            //        .Where(x => x.TEN_NHOM == name && x.ID != id).Any();
+            //}
+        }
+
+        /// <summary>
         /// @author: duynn
+        /// @description: danh sách người nhận văn bản
         /// </summary>
         /// <param name="searchModel"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public PageListResultBO<QL_NGUOINHAN_VANBAN_BO> GetDataByPage(QL_NGUOINHAN_VANBAN_SEARCH_BO searchModel, int pageIndex = 1, int pageSize = 20)
+        public PageListResultBO<QL_NGUOINHAN_VANBAN_BO> GetDataByPage(
+            QL_NGUOINHAN_VANBAN_SEARCH_BO searchModel, UserInfoBO user, int pageIndex = 1, int pageSize = 20)
         {
-            IQueryable<QL_NGUOINHAN_VANBAN_BO> queryResult = (from recipient in this.context.QL_NGUOINHAN_VANBAN
-                                                             where recipient.IS_DELETE != true
-                                                             
-                                                         select new QL_NGUOINHAN_VANBAN_BO()
-                                                         {
-                                                             ID = recipient.ID,
-                                                             TEN_NHOM = recipient.TEN_NHOM,
-                                                             NGUOINHAN_IDS = recipient.NGUOINHAN_IDS,
-                                                             DM_PHONGBAN_ID = recipient.DM_PHONGBAN_ID
-                                                         });
+            var queryUsers = this.context.DM_NGUOIDUNG;
+            var queryResult = (from recipient in this.context.QL_NGUOINHAN_VANBAN
+                               join dept in this.context.CCTC_THANHPHAN
+                               on recipient.DM_PHONGBAN_ID equals dept.ID
+                               into groupDeptRecipients
+                               from gDeptRecipients in groupDeptRecipients.DefaultIfEmpty()
+                               where recipient.IS_DELETE != true
+                               select new QL_NGUOINHAN_VANBAN_BO()
+                               {
+                                   ID = recipient.ID,
+                                   TEN_NHOM = recipient.TEN_NHOM,
+                                   NGUOINHAN_IDS = recipient.NGUOINHAN_IDS,
+                                   IS_DEFAULT = recipient.IS_DEFAULT,
+                                   DM_PHONGBAN_ID = recipient.DM_PHONGBAN_ID,
+                                   TEN_PHONGBAN = gDeptRecipients.NAME,
+                               });
+
+            //if (user.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT"))
+            //{
+            //    queryResult = queryResult.Where(x => x.IS_DEFAULT == true || x.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID);
+            //}
+            //else
+            //{
+            //    queryResult = queryResult.Where(x => x.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID);
+            //}
             if (searchModel != null)
             {
                 if (searchModel.QueryDeptId.HasValue)
@@ -53,7 +96,7 @@ namespace Business.Business
                 if (string.IsNullOrEmpty(searchModel.QueryName) == false)
                 {
                     searchModel.QueryName = searchModel.QueryName.Trim().ToLower();
-                    queryResult = queryResult.Where(x => string.IsNullOrEmpty(x.TEN_NHOM) == false && x.TEN_NHOM.Trim().ToLower().Contains(searchModel.QueryName));
+                    queryResult = queryResult.Where(x => x.TEN_NHOM != null && x.TEN_NHOM.Trim().ToLower().Contains(searchModel.QueryName));
                 }
 
                 if (!string.IsNullOrEmpty(searchModel.sortQuery))
@@ -64,12 +107,12 @@ namespace Business.Business
                 {
                     queryResult = queryResult.OrderByDescending(x => x.ID);
                 }
-
             }
             else
             {
                 queryResult = queryResult.OrderByDescending(x => x.ID);
             }
+
             var result = new PageListResultBO<QL_NGUOINHAN_VANBAN_BO>();
             if (pageSize == -1)
             {
@@ -85,12 +128,12 @@ namespace Business.Business
                 result.TotalPage = pagedListData.PageCount;
                 result.ListItem = pagedListData.ToList();
             }
-            foreach(var item in result.ListItem)
+            foreach (var item in result.ListItem)
             {
                 if (!string.IsNullOrEmpty(item.NGUOINHAN_IDS))
                 {
                     List<long> userIds = item.NGUOINHAN_IDS.ToListLong(',');
-                    IQueryable<DM_NGUOIDUNG> users = this.context.DM_NGUOIDUNG.Where(x => userIds.Contains(x.ID));
+                    IQueryable<DM_NGUOIDUNG> users = queryUsers.Where(x => userIds.Contains(x.ID));
                     item.Members = string.Join("<br/>", users.Select(x => x.HOTEN).ToArray());
                 }
             }
@@ -110,12 +153,12 @@ namespace Business.Business
             IQueryable<QL_NGUOINHAN_VANBAN> recipientGroups = this.context.QL_NGUOINHAN_VANBAN
                 .Where(x => x.DM_PHONGBAN_ID == deptId && x.IS_DELETE != true);
 
-            foreach(var item in recipientGroups)
+            foreach (var item in recipientGroups)
             {
                 QL_NGUOINHAN_VANBAN_BO itemResult = new QL_NGUOINHAN_VANBAN_BO();
                 itemResult.ID = item.ID;
                 itemResult.TEN_NHOM = item.TEN_NHOM;
-                if(string.IsNullOrEmpty(item.NGUOINHAN_IDS) == false)
+                if (string.IsNullOrEmpty(item.NGUOINHAN_IDS) == false)
                 {
                     List<long> userIds = item.NGUOINHAN_IDS.ToListLong(',');
                     itemResult.Users = this.context.DM_NGUOIDUNG.Where(x => userIds.Contains(x.ID)).ToList();

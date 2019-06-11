@@ -168,16 +168,15 @@
                         <td>
                             <ul class="list-group">
 
-                                <li>
-                                    <a class="btn btn-primary btn-sm" id="btn--send-depts">
-                                        <i class="fa fa-arrow-right"></i>&nbsp;Gửi đơn vị khác
-                                    </a>
-                                </li>
-
                                 @if (Model.CanSendOthers)
                                 {
-
+                                    <li>
+                                        <a class="btn btn-primary btn-sm" id="btn--send-depts">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;Gửi đơn vị khác
+                                        </a>
+                                    </li>
                                 }
+
                                 @{
                                     foreach (var item in Model.ListDonVi)
                                     {
@@ -201,6 +200,7 @@
                                         </a>
                                     </li>
                                 }
+
                                 @{
                                     foreach (var item in Model.GroupUsersReceiveDirectly)
                                     {
@@ -439,9 +439,9 @@
     }
 </div>
 
-@Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary {
+@*@Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary {
     {"VANBANDI_ID", Model.VanBanTrinhKy.ID }
-})
+})*@
 
 <style>
     #tbl_view_vanbanden td:nth-child(2n+1) {

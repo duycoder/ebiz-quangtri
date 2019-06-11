@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -455,6 +456,7 @@
     <Compile Include="Models\ElasticModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\RecipientDocViewModel.cs" />
     <Compile Include="Models\SmartSearch.cs" />
     <Compile Include="Models\TienDoCongViecModel.cs" />
     <Compile Include="Models\VanBanChartVM.cs" />
@@ -3698,6 +3700,7 @@
     <Content Include="Views\Common\_showDetailTaiLieu.cshtml" />
     <Content Include="Views\Common\_EditDocAttachment.cshtml" />
     <Content Include="Views\Common\_RecipientListOfDoc.cshtml" />
+    <Content Include="Views\Common\_Recipient.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Abbyy\" />

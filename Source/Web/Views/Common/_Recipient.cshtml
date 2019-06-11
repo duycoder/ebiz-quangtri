@@ -1,0 +1,96 @@
+﻿@using Business.CommonModel.DMNguoiDung;
+@model IEnumerable<DM_NGUOIDUNG_BO>
+
+<div class="well">
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Họ tên</th>
+                <th>Phòng ban</th>
+                <th>Chức vụ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var user in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox"
+                                   value="@user.ID"
+                                   data-hoten="@user.HOTEN"
+                                   data-phongban="@user.TenPhongBan"
+                                   data-chucvu="@user.ChucVu" />
+                        </td>
+                        <td>
+                            @user.HOTEN
+                        </td>
+                        <td>
+                            @user.TenPhongBan
+                        </td>
+                        <td>
+                            @user.ChucVu
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4">
+                        <center>
+                            <span class="text-danger">KHÔNG CÓ DỮ LIỆU</span>
+                        </center>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <center>
+        <button type="button" class="btn btn-primary" onclick="onSelectRecipients()">
+            <i class="fa fa-check"></i>&nbsp;Chọn
+        </button>
+    </center>
+</div>
+
+<script>
+    /**
+     * xóa danh sách ngừi dùng đã chọn
+     **/
+    function onRemoveChosenRecipient(obj) {
+        var $row = $(obj).parents('tr').first();
+        $row.remove();
+    }
+
+    /**
+     * chọn người dùng từ kết quả tìm được đưa sang danh sách gửi nhận đích danh
+     * */
+    function onSelectRecipients() {
+        var checkboxes = $('#modal--recipients-search-result').find('input:checked');
+        if (checkboxes && checkboxes.length > 0) {
+            for (var i = 0; i < checkboxes.length; i++) {
+                var $checkbox = $(checkboxes[i]);
+
+                var value = $checkbox.val();
+                //tìm kiếm bên trên hàng kết quả đã có chưa
+                var existed = $('#modal--recipients-chosen-users')
+                    .find('input[type=hidden][value="' + value + '"]').length > 0;
+                if (existed) {
+                    continue;
+                }
+
+                var newHtmlRow = "<tr>";
+                newHtmlRow += "<input type='hidden' value='" + value + "' data-hoten='" + $checkbox.data('hoten')+"'/>"
+                newHtmlRow += "<td>" + $checkbox.data('hoten') + "</td>";
+                newHtmlRow += "<td>" + $checkbox.data('phongban') + "</td>";
+                newHtmlRow += "<td>" + $checkbox.data('chucvu') + "</td>";
+                newHtmlRow += "<td><button type='button' onclick='onRemoveChosenRecipient(this)' class='btn btn-danger' title='Xóa người nhận'><i class='fa fa-times'></i></button></td>";
+                newHtmlRow += "</tr>";
+                $('#modal--recipients-chosen-users tbody').append(newHtmlRow);
+            }
+        }
+    }
+</script>

@@ -37,6 +37,7 @@ namespace Web.Controllers
         private SYS_TINNHANBusiness SYS_TINNHANBusiness;
         private HSCV_VANBANDIBusiness HSCV_VANBANDIBusiness;
         private HSCV_VANBANDENBusiness HSCV_VANBANDENBusiness;
+        private QL_NGUOINHAN_VANBANBusiness QL_NGUOINHAN_VANBANBusiness;
         private int MaxPerpage = int.Parse(WebConfigurationManager.AppSettings["MaxPerpage"]);
         private string PROGRAMECMD = WebConfigurationManager.AppSettings["PROGRAMECMD"];
         private string CHUKYSO = WebConfigurationManager.AppSettings["CHUKYSO"];
@@ -1242,5 +1243,49 @@ namespace Web.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: danh sách nhóm người dùng nhận văn bản
+        /// @since:11/06/2019
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public PartialViewResult GetRecipientOfDocument()
+        {
+            QL_NGUOINHAN_VANBANBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
+            RecipientDocViewModel viewModel = new RecipientDocViewModel()
+            {
+                GroupRecipients = QL_NGUOINHAN_VANBANBusiness.repository.All()
+                .Where(x => x.IS_DEFAULT == true || x.DM_PHONGBAN_ID == currentUser.DM_PHONGBAN_ID)
+                .Select(x => new SelectListItem()
+                {
+                    Value = x.ID.ToString(),
+                    Text = x.TEN_NHOM.ToString()
+                })
+            };
+            return PartialView("_RecipientListOfDoc", viewModel);
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: tìm kiếm người nhận văn bản
+        /// @since: 11/06/2019
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public PartialViewResult SearchRecipientOfDocument(FormCollection form)
+        {
+            DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+            QL_NGUOINHAN_VANBANBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
+
+            string queryName = form["RECIPIENT_HOTEN"]?.Trim();
+            int queryGroup = form["RECIPIENT_GROUP"].ToIntOrZero();
+
+            var users = DM_NGUOIDUNGBusiness.GetUsersByRecipient(queryGroup, queryName);
+            return PartialView("_Recipient", users);
+        }
+
     }
 }

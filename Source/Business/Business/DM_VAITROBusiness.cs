@@ -43,6 +43,16 @@ namespace Business.Business
             }
         }
 
+        /// <summary>
+        /// @author:duynn
+        /// @description: lấy vai trò
+        /// </summary>
+        /// <param name="code">mã vai trò</param>
+        /// <returns></returns>
+        public DM_VAITRO GetRoleByCode(string code)
+        {
+            return this.repository.AllNoTracking.FirstOrDefault(x => x.MA_VAITRO == code);
+        }
 
         public JsonResultBO checkExistCode(string code, long id = 0)
         {

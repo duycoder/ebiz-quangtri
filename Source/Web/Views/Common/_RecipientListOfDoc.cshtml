@@ -1,276 +1,144 @@
-﻿@using CommonHelper
-@using Business.CommonModel.QLNGUOINHANVANBAN
-@model List<QL_NGUOINHAN_VANBAN_BO>
+﻿@using Web.Models;
+@model RecipientDocViewModel
 @{
-    List<long> groupUserIdsReceiveDirectly = new List<long>();
-    if (ViewData["UserIdsReceiveDirectly"] != null)
-    {
-        groupUserIdsReceiveDirectly = ViewData["UserIdsReceiveDirectly"] as List<long>;
-    }
 
-    int VANBANDI_ID = 0;
-    if (ViewData["VANBANDI_ID"] != null)
-    {
-        VANBANDI_ID = int.Parse(ViewData["VANBANDI_ID"].ToString());
-    }
 }
-<style type="text/css">
-    .row-name {
-        background-color: #16a085 !important;
-        color: white;
-        text-align: left;
+<style>
+    .row-block {
+        margin: 5px 0px;
     }
 </style>
-<div class="modal fade" id="modal--recipients" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-    <div class="modal-dialog" id="modal--recipient-doc">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" onclick="onCloseRecipientsModal()">&times</button>
-                <div class="center">
-                    <h4 class="modal-title">
-                        DANH SÁCH NGƯỜI NHẬN VĂN BẢN
-                    </h4>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="row nomargin">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <div class="col-sm-12">
-                                    <input type="text" class="form-control" placeholder="Tìm kiếm ..." id="input--search-recipients" />
-                                </div>
-                                <div class="col-sm-12">
-                                    <table class="hinet-table table table-bordered table-hover table-striped" id="table--recipients-doc">
-                                        @foreach (var item in Model)
-                                        {
-                                            <tr class="row-name">
-                                                <td colspan="2">
-                                                    <strong>
-                                                        <input style="margin-right:3px;" type="checkbox" data-id="@item.ID" onchange="onChangeAllRecipients(this)" />&nbsp;@item.TEN_NHOM.ToUpper()
-                                                    </strong>
-                                                </td>
-                                            </tr>
 
-                                            foreach (var user in item.Users)
-                                            {
-                                                <tr>
-                                                    <td class="width-30">
-                                                        <input onchange="onChangeRecipient(this)" @(groupUserIdsReceiveDirectly.Contains(user.ID) ? "checked" : "") data-group-id="@item.ID" type="checkbox" name="USERS_RECEIVE_SPECIAL" class="checkbox--recipient" value="@user.ID" id="checkbox--recipient-@user.ID" />
-                                                    </td>
-                                                    <td class="cell--user-name" data-user-name="@user.HOTEN">
-                                                        <strong>
-                                                            @user.HOTEN
-                                                        </strong>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        }
-                                    </table>
+
+<div class="modal-dialog" id="modal--recipient-doc" style="width:1000px;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">
+                    DANH SÁCH NGƯỜI NHẬN VĂN BẢN
+                </h4>
+            </div>
+        </div>
+
+        <div class="modal-body">
+            <div class="panel panel-default">
+                <div class="panel-body" style="padding:0">
+                    <fieldset class="col-md-6">
+                        <legend style="margin:0">Tìm kiếm</legend>
+
+                        <!--Phần tìm kiếm-->
+                        <div class="well">
+                            <div class="row row-block">
+                                <label class="col-sm-4 control-label" for="RECIPIENT_HOTEN">
+                                    Họ tên
+                                </label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="RECIPIENT_HOTEN" id="RECIPIENT_HOTEN" />
                                 </div>
                             </div>
+
+                            <div class="row row-block">
+                                <label class="col-sm-4 control-label" for="RECIPIENT_GROUP">
+                                    Nhóm người nhận
+                                </label>
+                                <div class="col-sm-8">
+                                    @Html.DropDownList("RECIPIENT_GROUP", Model.GroupRecipients, "--- Chọn ---", new { @class = "txt-select2", style = "width:100%" })
+                                </div>
+                            </div>
+
+                            <div class="row row-block">
+                                <center>
+                                    <button id="btnSearch" type="button" class="btn btn-sm btn-labeled btn-primary" onclick="onSearchRecipient()">
+                                        <span class="btn-label">
+                                            <i class="glyphicon glyphicon-search"></i>
+                                        </span>
+                                        Tìm kiếm
+                                    </button>
+                                </center>
+                            </div>
+
                         </div>
-                    </div>
+                        <!--Phần kết quả tìm kiếm-->
+                        <div id="modal--recipients-search-result">
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="col-md-6">
+                        <legend style="margin:0">Danh sách người nhận</legend>
+                        <table class="table table-bordered table-condensed" id="modal--recipients-chosen-users">
+                            <thead>
+                                <tr>
+                                    <th>Họ tên</th>
+                                    <th>Phòng ban</th>
+                                    <th>Chức vụ</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </fieldset>
+                    <div class="clearfix"></div>
                 </div>
             </div>
+        </div>
 
-            <div class="modal-footer center">
-                <a class="btn btn-default" id="button--choose-recipients">
-                    Chọn
-                </a>
-            </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" onclick="onChooseRecipients()">
+                <i class="fa fa-check"></i>&nbsp;Cập nhật
+            </button>
         </div>
     </div>
 </div>
-
-<div id="modal--other-recipients" class="modal fade">
-    @using (Ajax.BeginForm("SendVanBanPhatHanhToCaNhan", "HSVanBanDi", new { @area = "HSVanBanDiArea" }, new AjaxOptions
-    {
-        HttpMethod = "POST",
-        OnFailure = "failureAjax",
-        OnSuccess = "successSendVanBanPhatHanhCaNhan"
-    }, new { @id = "formSendVanBanPhatHanhCaNhan" }))
-    {
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times</button>
-                    <div class="center">
-                        <h4 class="modal-title">
-                            DANH SÁCH NGƯỜI NHẬN VĂN BẢN
-                        </h4>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="VANBANDI_ID" value="@VANBANDI_ID" />
-                    <div class="row nomargin">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <div class="col-sm-12">
-                                        <input type="text" class="form-control" placeholder="Tìm kiếm ..." id="input--search--other-recipients" />
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <table class="hinet-table table table-bordered table-hover table-striped" id="table--other-recipients-doc">
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr class="row-name">
-                                                    <td colspan="2">
-                                                        <strong>
-                                                            <input style="margin-right:3px;" type="checkbox" data-id="@item.ID" onchange="onChangeOtherRecipient(this)" />&nbsp;@item.TEN_NHOM.ToUpper()
-                                                        </strong>
-                                                    </td>
-                                                </tr>
-
-                                                foreach (var user in item.Users)
-                                                {
-                                                    <tr>
-                                                        <td class="width-30">
-                                                            <input onchange="onChangeOtherRecipient(this)" data-group-id="@item.ID" type="checkbox" name="USERS_RECEIVE_SPECIAL" class="checkbox--other-recipient" value="@user.ID" id="checkbox--other-recipient-@user.ID" />
-                                                        </td>
-                                                        <td class="cell--user-name" data-user-name="@user.HOTEN">
-                                                            <strong>
-                                                                @user.HOTEN
-                                                            </strong>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            }
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer center">
-                    <a class="btn btn-default" id="button--send-recipients">
-                        GỬI
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
-</div>
-
-
 <script>
-    function onCloseRecipientsModal(){
-        $('#modal--recipients').modal('hide');
-    }
-    function onChangeAllRecipients(obj){
-        var checked = $(obj).is(':checked');
-        var id = $(obj).data('id');
-        $('.checkbox--recipient[data-group-id='+id+']').prop('checked', checked);
-    }
+    /**
+     * cài đặt plugin
+     */
+    loadScript("/js/plugin/select2/select2.min.js", function () {
+        $("#modal--recipients .txt-select2").select2();
+    });
 
-    function onChangeOtherRecipient(obj){
-        var checked = $(obj).is(':checked');
-        var id = $(obj).data('id');
-        $('.checkbox--other-recipient[data-group-id='+id+']').prop('checked', checked);
-    }
-
-    $(function(){
-        $('#input--search-recipients').on('keypress', function(e){
-            if(e.which === 13){
-                var value = $(this).val().trim();
-                value = generate_slugable(value);
-                $('#table--recipients-doc td.cell--user-name').each(function(){
-                    var cell = $(this);
-                    var row = $(this).parents('tr');
-                    var name = generate_slugable($(cell).data('user-name'));
-
-                    if(name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
-                        row.show();
-                    }else{
-                        row.hide();
-                    }
-                });
-                return false;
-            }
-        });
-
-
-        $('#input--search--other-recipients').on('keypress', function(e){
-            if(e.which === 13){
-                var value = $(this).val().trim();
-                value = generate_slugable(value);
-                $('#table--other-recipients-doc td.cell--user-name').each(function(){
-                    var cell = $(this);
-                    var row = $(this).parents('tr');
-                    var name = generate_slugable($(cell).data('user-name'));
-
-                    if(name.toLowerCase().indexOf(value.toLowerCase()) > -1) {
-                        row.show();
-                    }else{
-                        row.hide();
-                    }
-                });
-                return false;
-            }
-        });
-
-        $('#button--choose-recipients').on('click', function(){
-            var choosen = [];
-            var recipients = $("#table--recipients-doc input[type=checkbox]:checked.checkbox--recipient");
-            var isPublish = $('#block--recipients').data('publish') == '1';
-
-            var html = '';
-            if (recipients.length > 0) {
-                 for (var i = 0; i < recipients.length; i++) {
-                        var value = $(recipients[i]).val();
-                        if(choosen.indexOf(value) == -1){
-                            choosen.push(value);
-                            html += '<tr><td>'+ $('#checkbox--recipient-' +recipients[i]["value"]).parents('tr').find('.cell--user-name').data('user-name') + '</td></tr>';
-                        }
-                }
-            }
-            if(!isPublish){
-                html = '<table class="table table-bordered"><thead><tr><th>NGƯỜI NHẬN ĐÍCH DANH</th></tr></thead><tbody>' + html + '</tbody></table>';
-                $("#block--recipients").html(html);
-            }else{
-                $("#block--recipients .table tbody").html(html);
-            }
-            $('#modal--recipients').modal('hide');
-        })
-
-        loadScript('/Scripts/jquery.unobtrusive-ajax.min.js', function(){
-            $('#button--send-recipients').on('click', function(){
-                var checkboxes = $('input[type=checkbox].checkbox--other-recipient:checked');
-                if(checkboxes.length > 0){
-                    $.confirm({
-                        'title': 'Xác nhận gửi văn bản',
-                        'message': 'Bạn có chắc chắn muốn gửi văn bản này ?',
-                        'buttons': {
-                            'Đồng ý': {
-                                'class': 'btn-confirm-yes btn-primary',
-                                'action': function () {
-                                    $('#modal--other-recipients').hide();
-                                    $('#formSendVanBanPhatHanhCaNhan').submit();
-                                }
-                            },
-                            'Hủy bỏ': {
-                                'class': 'btn-danger',
-                                'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
-                            }
-                        }
-                    });
-                }
-                else{
-                    NotiError('Vui lòng chọn người nhận');
-                    return false;
-                }
-            });
-        });
-    })
-
-    function successSendVanBanPhatHanhCaNhan(result){
-        if(result.Status){
-            NotiSuccess('Gửi văn bản thành công');
-            location.reload();
-        }else{
-            NotiError(result.Message);
+    function onSearchRecipient() {
+        var callBack = function (result) {
+            $('#modal--recipients-search-result').html(result);
         }
+        var data = {
+            RECIPIENT_HOTEN: $('#RECIPIENT_HOTEN').val(),
+            RECIPIENT_GROUP: $('#RECIPIENT_GROUP').val()
+        }
+        AjaxCall('/Common/SearchRecipientOfDocument', 'post', data, callBack)
+    }
+
+
+    /**
+     * chọn người nhận văn bản đích danh để hiển thị trên màn hình cập nhật văn bản đi
+     * */
+    function onChooseRecipients() {
+        var choosen = [];
+        var recipients = $("#modal--recipients-chosen-users input[type=hidden]");
+        var isPublish = $('#block--recipients').data('publish') == '1';
+
+        var html = '';
+        if (recipients.length > 0) {
+            for (var i = 0; i < recipients.length; i++) {
+                var value = $(recipients[i]).val();
+                if (choosen.indexOf(value) == -1) {
+                    choosen.push(value);
+                    html += '<tr>';
+                    html += '<td>';
+                    html += '<input type="hidden" name="USERS_RECEIVE_SPECIAL" value="' + value + '"/>'
+                    html += $(recipients[i]).data('hoten');
+                    html += '</td>';
+                    html += '</tr>';
+                }
+            }
+        }
+        if (!isPublish) {
+            html = '<table class="table table-bordered"><thead><tr><th>NGƯỜI NHẬN ĐÍCH DANH</th></tr></thead><tbody>' + html + '</tbody></table>';
+            $("#block--recipients").html(html);
+        } else {
+            $("#block--recipients .table tbody").html(html);
+        }
+        $('#modal--recipients').modal('hide');
     }
 </script>

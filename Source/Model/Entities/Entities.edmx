@@ -884,6 +884,7 @@
           <Property Name="TEN_NHOM" Type="nvarchar" MaxLength="500" />
           <Property Name="NGUOINHAN_IDS" Type="nvarchar(max)" />
           <Property Name="DM_PHONGBAN_ID" Type="int" />
+          <Property Name="IS_DEFAULT" Type="bit" />
           <Property Name="IS_DELETE" Type="bit" />
         </EntityType>
         <EntityType Name="QL_PHONGHOP">
@@ -2513,6 +2514,7 @@
           <Property Name="TEN_NHOM" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="NGUOINHAN_IDS" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DM_PHONGBAN_ID" Type="Int32" />
+          <Property Name="IS_DEFAULT" Type="Boolean" />
           <Property Name="IS_DELETE" Type="Boolean" />
         </EntityType>
         <EntityType Name="QL_PHONGHOP">
@@ -3975,6 +3977,7 @@
             <EntityTypeMapping TypeName="DBModel.QL_NGUOINHAN_VANBAN">
               <MappingFragment StoreEntitySet="QL_NGUOINHAN_VANBAN">
                 <ScalarProperty Name="IS_DELETE" ColumnName="IS_DELETE" />
+                <ScalarProperty Name="IS_DEFAULT" ColumnName="IS_DEFAULT" />
                 <ScalarProperty Name="DM_PHONGBAN_ID" ColumnName="DM_PHONGBAN_ID" />
                 <ScalarProperty Name="NGUOINHAN_IDS" ColumnName="NGUOINHAN_IDS" />
                 <ScalarProperty Name="TEN_NHOM" ColumnName="TEN_NHOM" />

@@ -38,7 +38,9 @@
                         <tr>
                             <th class="center">STT</th>
                             <th>Tên nhóm</th>
-                            <th>Thành viên</th>
+                            <th>Phòng ban</th>
+                            <th>Số lượng thành viên</th>
+                            <th>Loại</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -49,7 +51,7 @@
     </div>
 </div>
 
-<div id="modal--recipients-edit" class="modal fade"data-backdrop="static" data-keyboard="false" role="dialog"></div>
+<div id="modal--recipients-edit" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog"></div>
 
 <script>
     var data = eval(@recipientJSON);
@@ -66,7 +68,7 @@
     })
 
     function refreshData(){
-        $("#table--assignment").hinetTable("reload");
+        $("#table--recipients").hinetTable("reload");
     }
 
     function onConfigDataTable(){
@@ -88,19 +90,50 @@
                      }
                 },
                 {
-                     isSort:false,
-                     nameModel:'Members',
+                     isSort:true,
+                    nameModel:'TEN_PHONGBAN',
                      content: function (data) {
-                        return data.Members
+                         return data.TEN_PHONGBAN
                      }
-                },
+            },
+            {
+                isSort: false,
+                nameModel: '',
+                content: function (data) {
+                    if (data.NGUOINHAN_IDS == null) {
+                        return 0;
+                    } else {
+                        return data.NGUOINHAN_IDS.split(',').length;
+                    }
+                }
+            },
+            {
+                isSort: false,
+                nameModel: 'IS_DEFAULT',
+                content: function (data) {
+                    if (data.IS_DEFAULT == true) {
+                        return "<span class='label label-success'>Mặc định</span>";
+                    } else {
+                        return "<span class='label label-primary'>Thuộc riêng phòng ban</span>";
+                    }
+                }
+            },
                  {
                      isSort:false,
                      nameModel:"",
                      content: function (data) {
-                        var result = "<div class='btn-group'>";
-                        result += "<a href='javascript:void(0)' onclick='onEdit(" + data.ID + ")' title = 'Chỉnh sửa nhóm người nhận văn bản'><i class='glyphicon glyphicon-edit'></i></a>";
-                        result += "<a href='javascript:void(0)' onclick='onDelete(" + data.ID + ")' title = 'Xóa nhóm người nhận văn bản'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>";
+                         var result = "<div class='btn-group'>";
+                         if ('@Model.IsSystemAdmin' == 'True') {
+                             if (data.DM_PHONGBAN_ID == '@Model.DepartmentId' || data.IS_DEFAULT == true) {
+                                 result += "<a href='javascript:void(0)' onclick='onEdit(" + data.ID + ")' title = 'Chỉnh sửa nhóm người nhận văn bản'><i class='glyphicon glyphicon-edit'></i></a>";
+                                 result += "<a href='javascript:void(0)' onclick='onDelete(" + data.ID + ")' title = 'Xóa nhóm người nhận văn bản'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>";
+                             }
+                         } else {
+                             if (data.DM_PHONGBAN_ID == '@Model.DepartmentId') {
+                                 result += "<a href='javascript:void(0)' onclick='onEdit(" + data.ID + ")' title = 'Chỉnh sửa nhóm người nhận văn bản'><i class='glyphicon glyphicon-edit'></i></a>";
+                                 result += "<a href='javascript:void(0)' onclick='onDelete(" + data.ID + ")' title = 'Xóa nhóm người nhận văn bản'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>";
+                             }
+                         }
                         result += "</div>";
                         return result;
                     }

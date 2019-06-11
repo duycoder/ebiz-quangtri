@@ -391,10 +391,14 @@ namespace Business.Business
         }
         public List<CCTC_THANHPHAN> GetDataByIds(List<int> ids)
         {
-            var result = from donvi in this.context.CCTC_THANHPHAN
-                         where ids.Contains(donvi.ID)
-                         select donvi;
-            return result.ToList();
+            if(ids != null && ids.Any())
+            {
+                var result = from donvi in this.context.CCTC_THANHPHAN
+                             where ids.Contains(donvi.ID)
+                             select donvi;
+                return result.ToList();
+            }
+            return new List<CCTC_THANHPHAN>();
         }
         public List<CCTC_THANHPHAN> GetData()
         {

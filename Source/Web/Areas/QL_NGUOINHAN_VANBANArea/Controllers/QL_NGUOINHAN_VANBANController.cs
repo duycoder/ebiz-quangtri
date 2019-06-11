@@ -20,7 +20,7 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
         // GET: QL_NGUOINHAN_VANBANArea/QL_NGUOINHAN_VANBAN
         private DM_NGUOIDUNGBusiness UserBusiness;
         private QL_NGUOINHAN_VANBANBusiness RecipientBusiness;
-        SYS_THONGBAOBusiness SYS_THONGBAOBusiness;
+        private CCTC_THANHPHANBusiness CCTC_THANHPHANBusiness;
 
         // GET: DTPhanCongDaoTao/DTPhanCongDaoTao
 
@@ -34,9 +34,10 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
             RecipientBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
             QLNguoiNhanVanBanIndexViewModel viewModel = new QLNguoiNhanVanBanIndexViewModel();
             QL_NGUOINHAN_VANBAN_SEARCH_BO searchModel = new QL_NGUOINHAN_VANBAN_SEARCH_BO();
-            searchModel.QueryDeptId = currentUser.DeptParentID;
             SessionManager.SetValue("QLNguoiNhanVanBanSearch", searchModel);
-            viewModel.GroupRecipients = RecipientBusiness.GetDataByPage(searchModel);
+            viewModel.GroupRecipients = RecipientBusiness.GetDataByPage(searchModel, currentUser);
+            viewModel.IsSystemAdmin = currentUser.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT");
+            viewModel.DepartmentId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
             return View(viewModel);
         }
 
@@ -49,37 +50,69 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
             AssignUserInfo();
             RecipientBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
             UserBusiness = Get<DM_NGUOIDUNGBusiness>();
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
 
             QLNguoiNhanVanBanEditViewModel viewModel = new QLNguoiNhanVanBanEditViewModel();
-            QL_NGUOINHAN_VANBAN entity = new QL_NGUOINHAN_VANBAN();
-            List<long> selected = new List<long>();
-            if (id > 0)
+            QL_NGUOINHAN_VANBAN entity = RecipientBusiness.Find(id) ?? new QL_NGUOINHAN_VANBAN();
+            List<long> choosenUserIds = new List<long>();
+
+            /**
+             * dah sách ngươi dùng
+             */
+            if (!string.IsNullOrEmpty(entity.NGUOINHAN_IDS))
             {
-                entity = RecipientBusiness.Find(id);
-                if (string.IsNullOrEmpty(entity.NGUOINHAN_IDS) == false)
-                {
-                    selected = entity.NGUOINHAN_IDS.ToListLong(',');
-                }
+                choosenUserIds = entity.NGUOINHAN_IDS.ToListLong(',');
             }
-            List<NguoiDungPhongBanBO> users = UserBusiness.GetUsersOfDepartments();
-            foreach (var item in users)
+            /**
+             * lấy danh sách người dùng phòng ban
+             */
+            List<NguoiDungPhongBanBO> groupDepts = UserBusiness.GetUsersOfDepartments();
+            
+            //if (currentUser.ListVaiTro.Any(x=>x.MA_VAITRO == "QLHT"))
+            //{
+            //    groupDeptUsers = UserBusiness.GetUsersOfDepartments();
+            //}
+            //else
+            //{
+            //    groupDeptUsers = UserBusiness.GetUsersOfDepartments(currentUser.DM_PHONGBAN_ID.GetValueOrDefault());
+            //}
+
+            foreach (var dept in groupDepts)
             {
-                SelectListGroup group = new SelectListGroup() { Name = item.PhongBan.NAME };
-                item.LstNguoiDung = item.LstNguoiDung.OrderBy(x => x.HOTEN).ToList();
-                foreach (var subItem in item.LstNguoiDung)
-                {
-                    viewModel.GroupUsers.Add(new SelectListItem()
-                    {
-                        Text = subItem.HOTEN,
-                        Value = subItem.ID.ToString(),
-                        Selected = selected.Contains(subItem.ID),
-                        Group = group
-                    });
-                }
+                SelectListGroup group = new SelectListGroup() { Name = dept.PhongBan.NAME };
+                viewModel.GroupUsers.AddRange(this.GetGroupUsers(group, choosenUserIds, dept.LstNguoiDung));
             }
+            viewModel.Department = CCTC_THANHPHANBusiness.Find(currentUser.DM_PHONGBAN_ID) ?? new CCTC_THANHPHAN();
+            viewModel.IsSystemAdmin = currentUser.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT");
             viewModel.Entity = entity;
             return PartialView("_EditRecipient", viewModel);
         }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: lấy danh sách người dùng
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="choosenUserIds"></param>
+        /// <param name="groupUsers"></param>
+        /// <returns></returns>
+        private IEnumerable<SelectListItem> GetGroupUsers(SelectListGroup group,
+            List<long> choosenUserIds, 
+            List<DM_NGUOIDUNG_BO> groupUsers)
+        {
+            foreach (var subItem in groupUsers)
+            {
+                var item = new SelectListItem()
+                {
+                    Text = subItem.HOTEN,
+                    Value = subItem.ID.ToString(),
+                    Selected = choosenUserIds.Contains(subItem.ID),
+                    Group = group
+                };
+                yield return item;
+            }
+        }
+
 
         /// <summary>
         /// @author: duynn
@@ -90,56 +123,26 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
         public JsonResult SaveRecipients(FormCollection collection)
         {
             AssignUserInfo();
-            JsonResultBO result = new JsonResultBO(true);
-
             RecipientBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
-            long id = collection["ID"].ToLongOrZero();
-            string name = collection["TEN_NHOM"];
-            string users = collection["NGUOINHAN_IDS"];
-            int contentId = collection["DT_NOIDUNG_DAOTAO_ID"].ToIntOrZero();
 
-            QL_NGUOINHAN_VANBAN recipients = new QL_NGUOINHAN_VANBAN();
-            recipients.TEN_NHOM = name.Trim();
-            recipients.NGUOINHAN_IDS = users;
-            recipients.DM_PHONGBAN_ID = currentUser.DeptParentID.GetValueOrDefault();
-            if (id > 0)
+            JsonResultBO result = new JsonResultBO(true);
+            long id = collection["ID"].ToLongOrZero();
+            
+            QL_NGUOINHAN_VANBAN recipients = RecipientBusiness.Find(id) ?? new QL_NGUOINHAN_VANBAN();
+            recipients.TEN_NHOM = collection["TEN_NHOM"];
+            bool existed = RecipientBusiness.CheckExistedName(recipients.TEN_NHOM, recipients.ID);
+            if (existed)
             {
-                bool existed = RecipientBusiness.context.QL_NGUOINHAN_VANBAN
-                    .Where(x => x.TEN_NHOM == name && x.ID != id
-                    && x.DM_PHONGBAN_ID == currentUser.DM_PHONGBAN_ID
-                    && x.IS_DELETE != true).Count() > 0;
-                if (existed)
-                {
-                    result.Status = false;
-                    result.Message = "Nhóm đã tồn tại";
-                }
-                else
-                {
-                    QL_NGUOINHAN_VANBAN dbRecipients = RecipientBusiness.Find(id);
-                    dbRecipients.TEN_NHOM = recipients.TEN_NHOM;
-                    dbRecipients.NGUOINHAN_IDS = recipients.NGUOINHAN_IDS;
-                    //dbRecipients.DM_PHONGBAN_ID = currentUser.DeptParentID.GetValueOrDefault();
-                    RecipientBusiness.Save(dbRecipients);
-                    result.Message = "Tạo nhóm thành công";
-                }
+                result.Status = false;
+                result.Message = "Nhóm đã tồn tại trên hệ thống";
             }
-            else
-            {
-                bool existed = RecipientBusiness.context.QL_NGUOINHAN_VANBAN
-                    .Where(x => x.TEN_NHOM == name
-                    && x.DM_PHONGBAN_ID == currentUser.DeptParentID
-                    && x.IS_DELETE != true).Count() > 0;
-                if (existed)
-                {
-                    result.Status = false;
-                    result.Message = "Nhóm đã tồn tại";
-                }
-                else
-                {
-                    RecipientBusiness.Save(recipients);
-                    result.Message = "Cập nhật nhóm thành công";
-                }
-            }
+
+            recipients.NGUOINHAN_IDS = collection["NGUOINHAN_IDS"];
+            recipients.DM_PHONGBAN_ID = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
+            recipients.IS_DEFAULT = collection["IS_DEFAULT"].ToIntOrZero() > 0;
+            RecipientBusiness.Save(recipients);
+
+            result.Message = "Cập nhật nhóm người nhận thành công";
             return Json(result);
         }
 
@@ -157,9 +160,9 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
             {
                 searchModel = new QL_NGUOINHAN_VANBAN_SEARCH_BO();
             }
-            searchModel.QueryDeptId = currentUser.DeptParentID.GetValueOrDefault();
+            //searchModel.QueryDeptId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
             searchModel.QueryName = collection["TEN_NHOM"];
-            result = RecipientBusiness.GetDataByPage(searchModel);
+            result = RecipientBusiness.GetDataByPage(searchModel, currentUser);
             return Json(result);
         }
 
@@ -177,11 +180,11 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
             {
                 searchModel = new QL_NGUOINHAN_VANBAN_SEARCH_BO();
             }
-            searchModel.QueryDeptId = currentUser.DeptParentID.GetValueOrDefault();
+            //searchModel.QueryDeptId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
             searchModel.pageIndex = pageIndex;
             searchModel.pageSize = pageSize;
             searchModel.sortQuery = sortQuery;
-            result = RecipientBusiness.GetDataByPage(searchModel);
+            result = RecipientBusiness.GetDataByPage(searchModel, currentUser);
             return Json(result);
         }
 
@@ -196,11 +199,8 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
             QL_NGUOINHAN_VANBAN entity = RecipientBusiness.Find(id);
             if (entity != null)
             {
-                //entity.IS_DELETE = true;
-                //RecipientBusiness.Save(entity);
                 RecipientBusiness.repository.Delete(id);
                 result.Message = "Xóa nhóm người nhận thành công";
-
             }
             else
             {
@@ -208,6 +208,20 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
                 result.Message = "Thông tin nhóm người nhận không tồn tại";
             }
             return Json(result);
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description:hiển thị danh sách người dùng của nhóm vai trò
+        /// @since: 11/06/2019
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public PartialViewResult ListUsers(int groupId)
+        {
+            UserBusiness = Get<DM_NGUOIDUNGBusiness>();
+            var users = UserBusiness.GetUsersByRecipient(groupId, string.Empty);
+            return PartialView("_Recipient", users);
         }
     }
 }

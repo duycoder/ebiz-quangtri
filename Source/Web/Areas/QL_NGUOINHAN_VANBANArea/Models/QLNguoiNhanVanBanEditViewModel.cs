@@ -11,7 +11,8 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Models
     {
         public QL_NGUOINHAN_VANBAN Entity { set; get; }
         public List<SelectListItem> GroupUsers { set; get; }
-
+        public bool IsSystemAdmin { get; set; }
+        public CCTC_THANHPHAN Department { get; set; }
         public QLNguoiNhanVanBanEditViewModel()
         {
             this.Entity = new QL_NGUOINHAN_VANBAN();
