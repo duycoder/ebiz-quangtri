@@ -42,14 +42,14 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
             DM_NHOMDANHMUCBusiness = Get<DM_NHOMDANHMUCBusiness>();
             var Nhom = DM_NHOMDANHMUCBusiness.repository.All().Where(x => x.GROUP_CODE == code).FirstOrDefault();
-            if(Nhom != null)
+            if (Nhom != null)
             {
                 string TenSo = Nhom.GROUP_NAME + " " + year.ToString();
                 var LstTypeLabel = CCTC_THANHPHANBusiness.repository.All().Where(x => x.TYPE == 10).ToList();
-                foreach(var item in LstTypeLabel)
+                foreach (var item in LstTypeLabel)
                 {
                     var checkExist = DM_DANHMUC_DATABusiness.repository.All().Where(x => x.DEPTID == item.ID && x.DATA == year && x.TEXT == TenSo).FirstOrDefault();
-                    if(checkExist == null)
+                    if (checkExist == null)
                     {
                         DM_DANHMUC_DATA model = new DM_DANHMUC_DATA();
                         model.DM_NHOM_ID = Nhom.ID;
@@ -63,82 +63,186 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             return Redirect("/");
         }
         //[CodeAllowAccess(Code = "DsCCTC")]
+
         public ActionResult Index()
         {
             AssignUserInfo();
-            var user = (UserInfoBO)SessionManager.GetUserInfo();
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
             DMLoaiDonViBusiness = Get<DMLoaiDonViBusiness>();
-            var DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
-            CoCauToChucIndexModel model = new CoCauToChucIndexModel();
-            //var listAll = CCTCThanhPhanBusiness.GetDSChild(user.DeptParentID);
-            int DonViId = 0;
-            if (currentUser.ListVaiTro.Any(x => x.MA_VAITRO == PermissionVanbanModel.QLHT))
-            {
-                //Cấp lãnh đạo
-                CCTC_THANHPHAN DonVi = CCTC_THANHPHANBusiness.Find(currentUser.DM_PHONGBAN_ID.HasValue ? currentUser.DM_PHONGBAN_ID.Value : 0);
-                if (DonVi != null)
-                {
-                    DonViId = DonVi.PARENT_ID.HasValue ? DonVi.PARENT_ID.Value : DonVi.ID;
-                }
-            }
-            else if (currentUser.ListVaiTro.Any(x => x.MA_VAITRO == PermissionVanbanModel.QLHT_HUYENUY) || currentUser.ListVaiTro.Any(x => x.MA_VAITRO == PermissionVanbanModel.QLHT_XAPHUONG))
-            {
-                if (currentUser.DeptType == 10)
-                {
-                    DonViId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
-                }
-                else
-                {
-                    DonViId = currentUser.DeptParentID.GetValueOrDefault();
-                }
-            }
-            else
-            {
-                DonViId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
-            }
-            //if (IsInActivities(user.ListThaoTac, PermissionVanbanModel.DONVI))
-            //{
-            //    CCTC_THANHPHAN DonVi = CCTC_THANHPHANBusiness.Find(user.DM_PHONGBAN_ID);
-            //    if (DonVi != null && DonVi.PARENT_ID.HasValue)
-            //    {
-            //        DonViId = DonVi.PARENT_ID.Value;
-            //    }
-            //    else
-            //    {
-            //        DonViId = user.DM_PHONGBAN_ID.GetValueOrDefault(0);
-            //    }
-            //}
-            //else
-            //{
-            //    DonViId = user.DM_PHONGBAN_ID.GetValueOrDefault(0);
-            //}
-            var dataTree = CCTC_THANHPHANBusiness.GetTree(DonViId);
+            DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
 
-            model.TreeData = dataTree;
-            model.DS_TYPE = DMLoaiDonViBusiness.DSLoaiDonVi();
-            model.DS_CATEGORY = DM_DANHMUC_DATABusiness.DsByMaNhom("DMCAPPHONGBAN", currentUser.ID);
-            //model.ListCoCau = listAll;
-            return View(model);
+            CCTC_THANHPHAN_SEARCHBO searchModel = new CCTC_THANHPHAN_SEARCHBO();
+            SessionManager.SetValue("CctcThanhPhanSearch", searchModel);
+
+            CoCauToChucIndexModel viewModel = new CoCauToChucIndexModel()
+            {
+                GroupData = CCTC_THANHPHANBusiness.GetDataByPage(searchModel, currentUser),
+                DS_TYPE = DMLoaiDonViBusiness.DSLoaiDonVi(),
+                DS_CATEGORY = DM_DANHMUC_DATABusiness.DsByMaNhom("DMCAPPHONGBAN", currentUser.ID)
+            };
+
+            return View(viewModel);
         }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: tìm kiếm phòng ban
+        /// @since: 03/06/2019
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         [HttpPost]
-        public JsonResult CheckCode(string code, int id = 0)
+        [ValidateAntiForgeryToken]
+        public JsonResult SearchData(FormCollection form)
         {
-            var result = new JsonResultBO(true);
+            AssignUserInfo();
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            var searchModel = (CCTC_THANHPHAN_SEARCHBO)SessionManager.GetValue("CctcThanhPhanSearch") ?? new CCTC_THANHPHAN_SEARCHBO();
+            searchModel.pageSize = 20;
+            searchModel.QR_MAPHONGBAN = form["QR_MAPHONGBAN"];
+            searchModel.QR_LOAIPHONGBAN = form["QR_LOAIPHONGBAN"].ToIntOrNULL();
+            searchModel.QR_CAPPHONGBAN = form["QR_CAPPHONGBAN"].ToIntOrNULL();
+            searchModel.QR_TENPHONGBAN = form["QR_TENPHONGBAN"];
+            SessionManager.SetValue("CctcThanhPhanSearch", searchModel);
+            var data = CCTC_THANHPHANBusiness.GetDataByPage(searchModel, currentUser, 1, searchModel.pageSize);
+            return Json(data);
+        }
 
-            result.Status = CCTC_THANHPHANBusiness.ExistCode(code, id);
-            return Json(result);
+        /// <summary>
+        /// @author:duynn
+        /// @description: tìm kiếm cơ cấu tổ chức thành phần
+        /// @since: 14/06/2019
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetData(int pageIndex, string sortQuery, int pageSize)
+        {
+            AssignUserInfo();
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            var searchModel = (CCTC_THANHPHAN_SEARCHBO)SessionManager.GetValue("CctcThanhPhanSearch") ?? new CCTC_THANHPHAN_SEARCHBO();
+            if (!string.IsNullOrEmpty(sortQuery))
+            {
+                searchModel.sortQuery = sortQuery;
+            }
+            if (pageSize > 0)
+            {
+                searchModel.pageSize = pageSize;
+            }
+            SessionManager.SetValue("CctcThanhPhanSearch", searchModel);
+            var data = CCTC_THANHPHANBusiness.GetDataByPage(searchModel, currentUser, pageIndex, pageSize);
+            return Json(data);
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: xóa phòng ban
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Delele(int id)
+        {
+            JsonResultBO result = new JsonResultBO(true);
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            try
+            {
+                CCTC_THANHPHANBusiness.repository.Delete(id);
+                CCTC_THANHPHANBusiness.Save();
+                return Json(result);
+            }
+            catch
+            {
+                result.Status = false;
+                result.Message = "Xóa phòng ban thành công";
+                return Json(result);
+            }
         }
 
 
-        public JsonResult ReloadPage()
+        /// <summary>
+        /// @author:duynn
+        /// @description: gửi phòng ban
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Save(FormCollection form)
         {
-            var user = (UserInfoBO)SessionManager.GetUserInfo();
+            AssignUserInfo();
+            JsonResultBO result = new JsonResultBO(true);
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
-            var dataTree = CCTC_THANHPHANBusiness.GetTree(user.DM_PHONGBAN_ID.GetValueOrDefault(0));
-            return Json(dataTree, JsonRequestBehavior.AllowGet);
+            try
+            {
+                var id = form["ID"].ToIntOrZero();
+                var dept = CCTC_THANHPHANBusiness.Find(id) ?? new CCTC_THANHPHAN();
+                var parent = CCTC_THANHPHANBusiness.Find(dept.PARENT_ID);
+                dept.PARENT_ID = form["PARENT_ID"].ToIntOrNULL();
+                dept.NAME = form["NAME"]?.Trim();
+                dept.CODE = form["CODE"]?.Trim();
+
+                var existCode = CCTC_THANHPHANBusiness.CheckExistCode(dept.CODE, id);
+                if (existCode)
+                {
+                    result.Status = false;
+                    result.Message = "Mã phòng ban đã tồn tại";
+                    return Json(result);
+                }
+
+                var existName = CCTC_THANHPHANBusiness.CheckExistName(dept.NAME, id);
+                if (existName)
+                {
+                    result.Status = false;
+                    result.Message = "Tên phòng ban đã tồn tại";
+                    return Json(result);
+                }
+                
+                dept.TYPE = form["TYPE"].ToIntOrZero();
+                dept.CATEGORY = form["CATEGORY"].ToIntOrZero();
+
+                dept.THUTU = form["THUTU"].ToIntOrZero();
+                dept.ITEM_LEVEL = parent.ITEM_LEVEL + 1;
+                dept.NGUOITAO = currentUser.ID;
+                dept.NGAYTAO = DateTime.Now;
+                if (dept.TYPE == 10)
+                {
+                    dept.CAN_SEND_SMS = form["CAN_SEND_SMS"].ToIntOrZero() > 0;
+                }
+                CCTC_THANHPHANBusiness.Save(dept);
+                return Json(result);
+            }
+            catch
+            {
+                result.Status = false;
+                result.Message = "Cập nhật phòng ban không thành công";
+                return Json(result);
+            }
         }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: lấy danh sách người dùng thuộc phòng ban
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public PartialViewResult GetListUsers(int deptId)
+        {
+            //DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+            //var searchModel = new DM_NGUOIDUNG_
+
+            //var data = DM_NGUOIDUNGBusiness.GetUser
+            return PartialView("_ListUsers");
+        }
+
+
+        //public JsonResult ReloadPage()
+        //{
+        //    var user = (UserInfoBO)SessionManager.GetUserInfo();
+        //    CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+        //    var dataTree = CCTC_THANHPHANBusiness.GetTree(user.DM_PHONGBAN_ID.GetValueOrDefault(0));
+        //    return Json(dataTree, JsonRequestBehavior.AllowGet);
+        //}
+
         public JsonResult GetNode(int id)
         {
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
@@ -147,18 +251,19 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             order++;
             return Json(new { node = node, order = order }, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetUser(int id)
-        {
-            DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
-            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
-            var model = new CoCauToChucNguoiDungModel();
-            var lstUser = DM_NGUOIDUNGBusiness.GetByPhongBan(id);
 
-            var node = CCTC_THANHPHANBusiness.Find(id);
-            model.Item = node;
-            model.ListNguoiDung = lstUser;
-            return Json(model, JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult GetUser(int id)
+        //{
+        //    DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+        //    CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+        //    var model = new CoCauToChucNguoiDungModel();
+        //    var lstUser = DM_NGUOIDUNGBusiness.GetByPhongBan(id);
+
+        //    var node = CCTC_THANHPHANBusiness.Find(id);
+        //    model.Item = node;
+        //    model.ListNguoiDung = lstUser;
+        //    return Json(model, JsonRequestBehavior.AllowGet);
+        //}
 
         public PartialViewResult GetUserPhongBan(int id)
         {
@@ -194,6 +299,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             var data = DM_NGUOIDUNGBusiness.GetUserTuDoByPage(searchModel, 1, searchModel.pageSize);
             return Json(data);
         }
+
         //Lấy dữ liệu người dùng
         public JsonResult getDataND(int indexPage, string sortQuery, int pageSize)
         {
@@ -212,7 +318,6 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                 }
                 SessionManager.SetValue("NguoiDungSearchModel", searchModel);
             }
-
             var data = DM_NGUOIDUNGBusiness.GetUserTuDoByPage(searchModel, indexPage, pageSize);
             return Json(data);
         }
@@ -228,6 +333,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             return PartialView("_chuyenPhongModel", model);
         }
 
+
         [HttpPost]
         public JsonResult ChuyenBan(long id, int idphongban)
         {
@@ -238,7 +344,6 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                 var ngdung = DM_NGUOIDUNGBusiness.Find(id);
                 ngdung.DM_PHONGBAN_ID = idphongban;
                 DM_NGUOIDUNGBusiness.Save(ngdung);
-
             }
             catch
             {
@@ -268,6 +373,8 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             }
             return Json(result);
         }
+
+
         [HttpPost]
         public JsonResult saveUserPhongBan(List<long> lstUser, int idphongban)
         {
@@ -284,6 +391,8 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             }
             return Json(result);
         }
+
+
         public PartialViewResult newUserModal(int id)
         {
             var model = new NewNguoiDungVM();
@@ -292,7 +401,6 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             model.PhongBan = CCTC_THANHPHANBusiness.Find(id);
             model.lstNguoiDung = DM_NGUOIDUNGBusiness.GetUserTuDoByPage(null);
             return PartialView("_NewUserPhongBanPartial", model);
-
         }
 
         public JsonResult getDS(int id)
@@ -301,6 +409,8 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             var node = CCTC_THANHPHANBusiness.repository.All().Where(x => x.ID != id).OrderBy(x => x.ITEM_LEVEL).ThenBy(x => x.ID).ToList();
             return Json(node, JsonRequestBehavior.AllowGet);
         }
+
+
         public JsonResult GetParent(int id)
         {
             AssignUserInfo();
@@ -316,111 +426,13 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             model.DS_CATEGORY = DM_DANHMUC_DATABusiness.DsByMaNhom("DMCAPPHONGBAN", currentUser.ID, item.CATEGORY.HasValue ? item.CATEGORY.Value : 0);
             return Json(model, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        public JsonResult Create(FormCollection form)
-        {
-            try
-            {
-                var cocau = new CCTC_THANHPHAN();
-                cocau.NAME = form["NAME"];
-                cocau.PARENT_ID = form["PARENT"].ToIntOrNULL();
-                CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
-                var parent = CCTC_THANHPHANBusiness.Find(cocau.PARENT_ID);
-                var user = (UserInfoBO)SessionManager.GetUserInfo();
-                cocau.ITEM_LEVEL = parent.ITEM_LEVEL + 1;
-                cocau.TYPE = form["TYPE"].ToIntOrZero();
-                cocau.NGUOITAO = (int)user.ID;
-                cocau.NGAYTAO = DateTime.Now;
-                cocau.CODE = form["CODE"];
-                cocau.CATEGORY = form["CATEGORY"].ToIntOrZero();
-                cocau.THUTU = form["THUTU"].ToIntOrZero();
-                if(cocau.TYPE == 10)
-                {
-                    cocau.CAN_SEND_SMS = form["CAN_SEND_SMS"].ToIntOrZero() > 0;
-                }
-                CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
-                CCTC_THANHPHANBusiness.Save(cocau);
-                return Json(true);
-            }
-            catch
-            {
-                return Json(false);
 
-            }
-
-        }
+        
         [HttpPost]
         public JsonResult CheckHasChild(int id)
         {
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
             return Json(CCTC_THANHPHANBusiness.ExistChild(id));
-        }
-
-        public JsonResult Delele(int id)
-        {
-            try
-            {
-                CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
-                CCTC_THANHPHANBusiness.repository.Delete(id);
-                CCTC_THANHPHANBusiness.Save();
-                return Json(true, JsonRequestBehavior.AllowGet);
-
-            }
-            catch
-            {
-
-                return Json(false, JsonRequestBehavior.AllowGet);
-            }
-        }
-        [HttpPost]
-        public JsonResult Edit(FormCollection form)
-        {
-            try
-            {
-                var id = form["ID_NODE"].ToIntOrZero();
-                if (id > 0)
-                {
-                    CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
-                    var cocau = CCTC_THANHPHANBusiness.Find(id);
-                    cocau.NAME = form["NAME"];
-                    cocau.PARENT_ID = form["PARENT"].ToIntOrNULL();
-                    var user = (UserInfoBO)SessionManager.GetUserInfo();
-                    var parent = CCTC_THANHPHANBusiness.Find(cocau.PARENT_ID);
-                    //if (parent != null)
-                    //{
-                    //    int tmpLevel = (parent.ITEM_LEVEL != null) ? parent.ITEM_LEVEL.Value : 0;
-                    //    cocau.ITEM_LEVEL = tmpLevel + 1;
-                    //}
-                    //else
-                    //{
-                    //    cocau.ITEM_LEVEL = 1;
-                    //}
-
-                    cocau.TYPE = form["TYPE"].ToIntOrZero();
-                    cocau.NGUOISUA = (int)user.ID;
-                    cocau.NGAYSUA = DateTime.Now;
-                    cocau.CODE = form["CODE"];
-                    cocau.CATEGORY = form["CATEOGRY"].ToIntOrZero();
-                    cocau.THUTU = form["THUTU"].ToIntOrZero();
-                    if (cocau.TYPE == 10)
-                    {
-                        cocau.CAN_SEND_SMS = form["CAN_SEND_SMS"].ToIntOrZero() > 0;
-                    }
-                    CCTC_THANHPHANBusiness.Save(cocau);
-                    return Json(true);
-                }
-                else
-                {
-                    return Json(false);
-                }
-
-            }
-            catch
-            {
-                return Json(false);
-
-            }
-
         }
 
         public PartialViewResult Import(int id)
@@ -439,13 +451,14 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
 
             model.PathTemplate = Path.Combine(HostUpload, WebConfigurationManager.AppSettings["ImportCCTCTemplate"]);
 
-            return PartialView("_ImportPartial",model);
+            return PartialView("_ImportPartial", model);
         }
+
         [HttpPost]
         public JsonResult CheckImport(HttpPostedFileBase fileImport)
         {
             JsonResultImportBO<DM_CCTC_IMPORTBO> result = new JsonResultImportBO<DM_CCTC_IMPORTBO>(true);
-            
+
             //Kiểm tra file có tồn tại k?
             if (fileImport == null)
             {
@@ -496,7 +509,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                     require = false,
                     TypeValue = typeof(int).FullName,
                 });
-                
+
                 var rsl = importHelper.Import();
                 if (rsl.Status)
                 {
@@ -514,6 +527,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             }
             return Json(result);
         }
+
         [HttpPost]
         public JsonResult SaveImportData(List<List<string>> Data, int id_parent)
         {
@@ -542,7 +556,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                 Value = x.ID.ToString(),
 
             }).ToList();
-            
+
             var lstObjSave = new List<CCTC_THANHPHAN>();
             try
             {
@@ -583,10 +597,10 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                         {
                             newObj.CODE = tmpCode;
                         }
-                        
+
                     }
                     newObj.THUTU = item[4].ToIntOrZero();
-                   
+
                     if (newObj.ID > 0)
                     {
                         CCTC_THANHPHANBusiness.Save(newObj);
@@ -596,7 +610,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                     {
                         lstObjSave.Add(newObj);
                     }
-                   
+
                 }
                 if (lstObjSave.Count > 0)
                 {

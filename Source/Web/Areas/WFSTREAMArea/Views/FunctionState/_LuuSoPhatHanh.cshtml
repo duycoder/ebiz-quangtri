@@ -1,7 +1,7 @@
 ﻿@using Web.Areas.HSVanBanDiArea.Models;
 @model VanBanDiVM
 <link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
-<div class="modal-dialog" style="width: 55%">
+<div class="modal-dialog" style="width: 1000px">
     @using (Ajax.BeginForm("SavePhatHanhVanBan", "FunctionState", new AjaxOptions()
     {
         HttpMethod = "POST",
@@ -217,7 +217,11 @@
             </div>
         </div>
 
-        @Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary { { "UserIdsReceiveDirectly", Model.GroupUserIdsReceiveDirectly } })
+        <!--MODAL TÌM KIẾM NGƯỜI NHẬN VĂN BẢN-->
+        <div class="modal" id="modal--recipients" role="dialog">
+        </div>
+
+        @*@Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary { { "UserIdsReceiveDirectly", Model.GroupUserIdsReceiveDirectly } })*@
     }
 </div>
 <style>
@@ -465,7 +469,7 @@
         return error;
     }
     $(document).ready(function () {
-        //loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
             loadScript("/Scripts/autoNumeric.min.js", function () {
                 loadScript("/Content/select/js/bootstrap-select.js", function () {
                     loadScript("/js/plugin/datatables/jquery.dataTables.min.js", function () {
@@ -476,7 +480,15 @@
                                         $(".selectpicker1").selectpicker();
                                         if($('#button--choose-users').length > 0){
                                             $('#button--choose-users').on('click', function(){
-                                                $('#modal--recipients').modal('show');
+                                                if ($('#modal--recipients').html().trim() != '') {
+                                                    $('#modal--recipients').modal('show');
+                                                } else {
+                                                    var callBack = function (result) {
+                                                        $('#modal--recipients').html(result);
+                                                        $('#modal--recipients').modal('show');
+                                                    }
+                                                    AjaxCall('/Common/GetRecipientOfDocument', 'post', {}, callBack);
+                                                }
                                             })
                                         }
                                     })
@@ -487,7 +499,8 @@
                 });
             });
         });
-    //});
+    });
+
     function successAjaxCreate(rs) {
         if (rs.Type == "SUCCESS") {
             NotiSuccess(rs.Message);

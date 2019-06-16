@@ -25,7 +25,7 @@ namespace Business.Business
 
         /// <summary>
         /// @author: duynn
-        /// @description: kiểm tra các văn bản nội bộ đã được đọc
+        /// @description: kiểm tra các văn bản đến gửi nội bộ đã được đọc
         /// </summary>
         /// <param name="itemType"></param>
         /// <param name="itemId"></param>
@@ -69,6 +69,14 @@ namespace Business.Business
                         .GetUserByRoleAndDeptId(state.VAITRO_ID.GetValueOrDefault(), department.ID)
                         .Select(x => long.Parse(x.Value)).ToList();
                     }
+
+                    if (!userIds.Any())
+                    {
+                        //lấy người dùng có vai trò cao nhất
+                        var highestPriorityUser = userBusiness.GetUserHighestPriority(department.ID);
+                        userIds.Add(highestPriorityUser.ID);
+                    }
+
                     isRead = (from read in this.context.HSCV_READVANBAN.Where(x => x.TYPE == 1)
                               join vanban in this.context.HSCV_VANBANDEN.Where(x => x.VANBANDI_ID == itemId)
                               on read.VANBAN_ID equals vanban.ID

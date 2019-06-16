@@ -3,7 +3,10 @@
 @using Model.Entities
 
 @model ActionFlowBO
-<a class="btn btn-default" href="javascript:History()"><span>Lịch sử xử lý</span></a>
+@if (Model.Process != null && Model.Process.ID > 0)
+{
+    <a class="btn btn-default" href="javascript:History()"><span>Lịch sử xử lý</span></a>
+}
 
 @if (Model.REQUIRED_REVIEW != true)
 {
@@ -113,9 +116,7 @@ else
                             <th>Số đi theo sổ</th>
                         </tr>
                     </thead>
-                    <tbody>
-
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
             <div class="modal-footer">

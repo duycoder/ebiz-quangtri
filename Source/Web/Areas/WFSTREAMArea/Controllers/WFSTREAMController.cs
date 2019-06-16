@@ -49,7 +49,7 @@ namespace Web.Areas.WFSTREAMArea.Controllers
             var WF_STEPBusiness = Get<WF_STEPBusiness>();
             var WF_STATE_FUNCTIONBusiness = Get<WF_STATE_FUNCTIONBusiness>();
             var WF_FUNCTION_DONEBusiness = Get<WF_FUNCTION_DONEBusiness>();
-            model.Process = WF_PROCESSBusiness.GetProcess(idItem, itemType);
+            model.Process = WF_PROCESSBusiness.GetProcess(idItem, itemType) ?? new WF_PROCESS();
             // Kiểm tra xem có bản ghi nào bị reject hay không
             WF_REVIEWBusiness = Get<WF_REVIEWBusiness>();
             WF_REVIEW ReviewRejectObj = WF_REVIEWBusiness.repository.All().Where(x =>

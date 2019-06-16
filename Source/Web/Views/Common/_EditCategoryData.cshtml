@@ -1,0 +1,116 @@
+﻿@using Model.Entities
+@{
+    string targetID = (string)ViewBag.TargetID;
+    DM_NHOMDANHMUC groupCategory = (DM_NHOMDANHMUC)ViewBag.GroupCategory;
+}
+
+<div class="modal-dialog">
+    @using (Html.BeginForm("SaveCategory", "Common", FormMethod.Post,
+        new { id = "form--edit-category" }))
+    {
+        @Html.AntiForgeryToken()
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">THÊM MỚI GIÁ TRỊ - @groupCategory.GROUP_NAME</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <input type="hidden" name="DM_NHOM_ID" value="@groupCategory.ID">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">
+                            Tên <span class="red">*</span>
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control required checkSpecialCharacter" name="TEXT">
+                            <div class="note-error">
+                                <span class="error mes-note-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="form-group">
+                        <label class="control-label col-sm-4">
+                            Mã <span class="red">*</span>
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control required" name="CODE" id="CODE">
+                            <div class="note-error">
+                                <span class="error mes-note-error" id="errCODE"></span>
+                            </div>
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">
+                            Giá trị <span class="red">*</span>
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control required" name="DATA" id="DATA">
+                            <div class="note-error">
+                                <span class="error mes-note-error" id="errGiaTri"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="checkSubmit()">
+                    Hoàn thành
+                </button>
+                <button type="button" class="btn btn-default btn-dong" data-dismiss="modal">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function successAjaxCreate(result) {
+        if (result != null && result.hasOwnProperty('ID')) {
+            $('#@targetID').val('');
+            $('#@targetID').append('<option  value="'+result.ID+'">'+result.TEXT+'</option>');
+            $('#@targetID option[value=' + result.ID + ']').prop('selected', true);
+            $("#@targetID").selectpicker("refresh");
+            $("#modal_create").modal("hide");
+            $("#modal_create").empty();
+            NotiSuccess("Thêm mới thành công");
+        } else {
+            NotiError(result.Message);
+        }
+    }
+
+    function checkSubmit() {
+        var err = 0;
+        var require = requiredFieldForFormId("form--edit-category");
+        if (!require) {
+            err++;
+        }
+
+        if (err == 0) {
+            $("#form--edit-category").submit();
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+    $("#form--edit-category").ajaxForm({
+        beforeSend: function () {
+            $("#loading").show();
+            $("#btnUpload").prop('disabled', true);
+            $("#btnClose").prop('disabled', true);
+        },
+        uploadProgress: function () {
+
+        },
+        success: function (data) {
+            successAjaxCreate(data);
+        },
+        complete: function () {
+        }, error: function (data) {
+            NotiError(data);
+        }
+    });
+</script>

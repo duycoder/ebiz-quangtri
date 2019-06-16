@@ -1251,19 +1251,29 @@ namespace Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public PartialViewResult GetRecipientOfDocument()
+        public PartialViewResult GetRecipientOfDocument(long idVanBanDi = 0)
         {
             QL_NGUOINHAN_VANBANBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
+            HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
             RecipientDocViewModel viewModel = new RecipientDocViewModel()
             {
                 GroupRecipients = QL_NGUOINHAN_VANBANBusiness.repository.All()
                 .Where(x => x.IS_DEFAULT == true || x.DM_PHONGBAN_ID == currentUser.DM_PHONGBAN_ID)
+                .OrderBy(x=>x.TEN_NHOM)
                 .Select(x => new SelectListItem()
                 {
                     Value = x.ID.ToString(),
                     Text = x.TEN_NHOM.ToString()
                 })
             };
+
+
+            if(idVanBanDi > 0)
+            {
+                viewModel.IsSendOthers = true;
+                viewModel.EntityVanBanDi = HSCV_VANBANDIBusiness.Find(idVanBanDi);
+            }
+
             return PartialView("_RecipientListOfDoc", viewModel);
         }
 
@@ -1287,5 +1297,73 @@ namespace Web.Controllers
             return PartialView("_Recipient", users);
         }
 
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: thêm mới dữ liệu
+        /// </summary>
+        /// <param name="groupCode"></param>
+        /// <param name="targetID"></param>
+        /// <returns></returns>
+        public PartialViewResult EditCategoryData(string groupCode, string targetID)
+        {
+            var DM_NHOMDANHMUCBusiness = Get<DM_NHOMDANHMUCBusiness>();
+            DM_NHOMDANHMUC groupCategory = DM_NHOMDANHMUCBusiness.GetByCode(groupCode);
+            ViewBag.GroupCategory = groupCategory;
+            ViewBag.TargetID = targetID;
+            return PartialView("_EditCategoryData");
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: thêm dữ liệu
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public JsonResult SaveCategory(FormCollection collection)
+        {
+            var result = new JsonResultBO(true);
+            try
+            {
+                var DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
+                DM_DANHMUC_DATA entity = new DM_DANHMUC_DATA();
+                entity.DM_NHOM_ID = collection["DM_NHOM_ID"].ToIntOrZero();
+               //entity.CODE = collection["CODE"].ToString();
+                entity.DATA = collection["DATA"].ToIntOrZero();
+                entity.TEXT = collection["TEXT"].ToString();
+
+                var checkExistText = DM_DANHMUC_DATABusiness.CheckExistText(entity.TEXT, entity.DM_NHOM_ID.Value);
+                //var checkExistCode = DM_DANHMUC_DATABusiness.CheckExistCode(entity.CODE, entity.DM_NHOM_ID.Value);
+                var checkExistData = DM_DANHMUC_DATABusiness.ExistValue(entity.DM_NHOM_ID.Value, entity.DATA.Value);
+                if (checkExistText)
+                {
+                    result.Status = false;
+                    result.Message = "Tên đã tồn tại";
+                    return Json(result);
+                }
+
+                //if (checkExistCode)
+                //{
+                //    result.Status = false;
+                //    result.Message = "Mã đã tồn tại";
+                //    return Json(result);
+                //}
+
+                if (checkExistData.Status)
+                {
+                    result.Status = false;
+                    result.Message = "Giá trị đã tồn tại";
+                    return Json(result);
+                }
+
+                DM_DANHMUC_DATABusiness.Save(entity);
+                return Json(entity);
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                return Json(result);
+            }
+        }
     }
 }

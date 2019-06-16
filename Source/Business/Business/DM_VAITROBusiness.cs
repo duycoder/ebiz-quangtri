@@ -98,6 +98,7 @@ namespace Business.Business
                             NGUOITAO = tbl.NGUOITAO,
                             NGUOISUA = tbl.NGUOISUA,
                             IS_DELETE = tbl.IS_DELETE,
+                            TRONGSO = tbl.TRONGSO,
                             IS_RECEIVE_DOC_DIRECTLY = tbl.IS_RECEIVE_DOC_DIRECTLY
                         };
             if (searchModel != null)

@@ -5,7 +5,9 @@
     <table class="table table-bordered table-striped table-condensed">
         <thead>
             <tr>
-                <th>STT</th>
+                <th>
+                    <input type="checkbox" onchange="onCheckAllRecipient(this)"/>
+                </th>
                 <th>Họ tên</th>
                 <th>Phòng ban</th>
                 <th>Chức vụ</th>
@@ -19,6 +21,7 @@
                     <tr>
                         <td>
                             <input type="checkbox"
+                                   class="checkbox--recipient"
                                    value="@user.ID"
                                    data-hoten="@user.HOTEN"
                                    data-phongban="@user.TenPhongBan"
@@ -57,6 +60,16 @@
 </div>
 
 <script>
+
+    /**
+     * kiểm tra check all đơn vị
+     * param obj
+     */
+    function onCheckAllRecipient(obj) {
+        var checked = $(obj).is(':checked');
+        $('.checkbox--recipient').prop('checked', checked);
+    }
+
     /**
      * xóa danh sách ngừi dùng đã chọn
      **/
@@ -69,7 +82,7 @@
      * chọn người dùng từ kết quả tìm được đưa sang danh sách gửi nhận đích danh
      * */
     function onSelectRecipients() {
-        var checkboxes = $('#modal--recipients-search-result').find('input:checked');
+        var checkboxes = $('#modal--recipients-search-result tbody').find('input:checked');
         if (checkboxes && checkboxes.length > 0) {
             for (var i = 0; i < checkboxes.length; i++) {
                 var $checkbox = $(checkboxes[i]);
@@ -83,7 +96,7 @@
                 }
 
                 var newHtmlRow = "<tr>";
-                newHtmlRow += "<input type='hidden' value='" + value + "' data-hoten='" + $checkbox.data('hoten')+"'/>"
+                newHtmlRow += "<input type='hidden' name='CHOSEN_RECIPIENT' value='" + value + "' data-hoten='" + $checkbox.data('hoten')+"'/>"
                 newHtmlRow += "<td>" + $checkbox.data('hoten') + "</td>";
                 newHtmlRow += "<td>" + $checkbox.data('phongban') + "</td>";
                 newHtmlRow += "<td>" + $checkbox.data('chucvu') + "</td>";

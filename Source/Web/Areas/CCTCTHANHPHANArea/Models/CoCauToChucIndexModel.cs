@@ -5,8 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using Model.Entities;
 using Business.CommonBusiness;
+using Business.CommonModel.CCTCTHANHPHAN;
 
-namespace Web.Areas.CoCauToChucArea.Models
+namespace Web.Areas.CCTCTHANHPHANArea.Models
 {
     public class CoCauToChucIndexModel
     {
@@ -14,5 +15,6 @@ namespace Web.Areas.CoCauToChucArea.Models
         public List<SelectListItem> DS_CATEGORY { get; set; }
         public List<CCTC_THANHPHAN> ListCoCau { get; set; }
         public CCTCItemTreeBO TreeData { get; set; }
+        public PageListResultBO<CCTC_THANHPHAN_BO> GroupData { get; set; }
     }
 }

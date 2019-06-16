@@ -276,6 +276,7 @@
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\EditVM.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\ImportCCTC.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\NewNguoiDungVM.cs" />
+    <Compile Include="Areas\CCTCTHANHPHANArea\Models\UserDeptViewModel.cs" />
     <Compile Include="Areas\ChatArea\ChatAreaAreaRegistration.cs" />
     <Compile Include="Areas\ChatArea\Controllers\ChatController.cs" />
     <Compile Include="Areas\ChatArea\Models\ChatIndexViewModel.cs" />
@@ -2781,6 +2782,7 @@
     <Content Include="Areas\QL_NGUOINHAN_VANBANArea\Views\web.config" />
     <Content Include="Areas\HSVanBanDiArea\Views\Shared\_ChonDonVi.cshtml" />
     <Content Include="Areas\CCTCTHANHPHANArea\Views\CCTCTHANHPHAN\_ImportPartial.cshtml" />
+    <Content Include="Areas\QL_NGUOINHAN_VANBANArea\Views\QL_NGUOINHAN_VANBAN\_ListUsers.cshtml" />
     <None Include="Properties\PublishProfiles\vanban_quangtri.pubxml" />
     <None Include="Resources\OfficeObject.xml" />
     <Content Include="obj\Debug\TempPE\Properties.Resources.Designer.cs.dll" />
@@ -3701,6 +3703,7 @@
     <Content Include="Views\Common\_EditDocAttachment.cshtml" />
     <Content Include="Views\Common\_RecipientListOfDoc.cshtml" />
     <Content Include="Views\Common\_Recipient.cshtml" />
+    <Content Include="Views\Common\_EditCategoryData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Abbyy\" />

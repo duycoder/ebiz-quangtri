@@ -1694,5 +1694,128 @@ namespace Business.Business
             }
             return result;
         }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: người dùng có vai trò cao nhất trong phòng ban
+        /// </summary>
+        /// <param name="deptId"></param>
+        /// <returns></returns>
+        public UserInfoBO GetUserHighestPriority(int deptId)
+        {
+            var result = (from user in this.context.DM_NGUOIDUNG
+                          join dept in this.context.CCTC_THANHPHAN.Where(x => x.ID == deptId)
+                          on user.DM_PHONGBAN_ID equals dept.ID
+                          join userRole in this.context.NGUOIDUNG_VAITRO
+                          on user.ID equals userRole.NGUOIDUNG_ID
+                          into groupUserRole
+                          from gUserRole in groupUserRole.DefaultIfEmpty()
+                          join role in this.context.DM_VAITRO
+                          on gUserRole.VAITRO_ID equals role.DM_VAITRO_ID
+                          into groupRole
+                          from gRole in groupRole.DefaultIfEmpty()
+
+                          orderby gRole.TRONGSO descending, gRole.TEN_VAITRO descending,
+                          user.HOTEN descending
+                          select new UserInfoBO()
+                          {
+                              ID = user.ID,
+                              HOTEN = user.HOTEN,
+                              EMAIL = user.EMAIL,
+                              DIENTHOAI = user.DIENTHOAI
+                          }).FirstOrDefault() ?? new UserInfoBO();
+            return result;
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: danh sách người dùng trong phòng ban
+        /// @since: 14/06/2019
+        /// </summary>
+        /// <returns></returns>
+        public PageListResultBO<DM_NGUOIDUNG_BO> GetUsersInDept(DM_NGUOIDUNG_SEARCHBO searchModel, int deptId, int pageIndex = 1, int pageSize = 5)
+        {
+            var query = (from user in this.context.DM_NGUOIDUNG
+                         .Where(x => x.DM_PHONGBAN_ID == deptId)
+                         join userRole in this.context.NGUOIDUNG_VAITRO
+                         on user.ID equals userRole.NGUOIDUNG_ID
+                         join role in this.context.DM_VAITRO
+                         on userRole.VAITRO_ID equals role.DM_VAITRO_ID
+                         into groupUserRole
+                         join position in this.context.DM_DANHMUC_DATA
+                         on user.CHUCVU_ID equals position.ID
+                         into groupUserPosition
+                         from gUserPosition in groupUserPosition.DefaultIfEmpty()
+                         select new DM_NGUOIDUNG_BO()
+                         {
+                             ID = user.ID,
+                             HOTEN = user.HOTEN,
+                             EMAIL = user.EMAIL,
+                             DIENTHOAI = user.DIENTHOAI,
+                             ChucVu = gUserPosition.TEXT,
+                             CHUCVU_ID = user.CHUCVU_ID,
+                             LstVaiTro = groupUserRole
+                             .Select(x => x.TEN_VAITRO).ToList(),
+                         });
+            if (searchModel != null)
+            {
+                if (searchModel.sea_CHUCVU_ID.HasValue)
+                {
+                    query = query.Where(x => x.ChucVu_Id == searchModel.sea_CHUCVU_ID);
+                }
+
+                if (!string.IsNullOrEmpty(searchModel.sea_HoTen))
+                {
+                    searchModel.sea_HoTen = searchModel.sea_HoTen.Trim().ToLower();
+                    query = query.Where(x => x.HOTEN != null && x.HOTEN.Trim().ToLower().Contains(searchModel.sea_HoTen));
+                }
+                if (!string.IsNullOrEmpty(searchModel.sea_Email))
+                {
+                    searchModel.sea_Email = searchModel.sea_Email.Trim().ToLower();
+                    query = query.Where(x => x.EMAIL != null && x.EMAIL.Trim().ToLower().Contains(searchModel.sea_Email));
+                }
+
+                if (!string.IsNullOrEmpty(searchModel.sea_DienThoai))
+                {
+                    searchModel.sea_DienThoai = searchModel.sea_DienThoai.Trim().ToLower();
+                    query = query.Where(x => x.DIENTHOAI != null && x.DIENTHOAI.Contains(searchModel.sea_DienThoai));
+                }
+
+                if (!string.IsNullOrEmpty(searchModel.sea_TenDangNhap))
+                {
+                    searchModel.sea_TenDangNhap = searchModel.sea_TenDangNhap.Trim().ToLower();
+                    query = query.Where(x => x.TENDANGNHAP != null && x.TENDANGNHAP.Contains(searchModel.sea_TenDangNhap));
+                }
+
+                if (!string.IsNullOrEmpty(searchModel.sortQuery))
+                {
+                    query = query.OrderBy(searchModel.sortQuery);
+                }
+                else
+                {
+                    query = query.OrderByDescending(x => x.ID);
+                }
+            }
+            else
+            {
+                query = query.OrderByDescending(x => x.ID);
+            }
+            var result = new PageListResultBO<DM_NGUOIDUNG_BO>();
+            if (pageSize == -1)
+            {
+                var pagedList = query.ToList();
+                result.Count = pagedList.Count;
+                result.TotalPage = 1;
+                result.ListItem = pagedList;
+            }
+            else
+            {
+                var pagedList = query.ToPagedList(pageIndex, pageSize);
+                result.Count = pagedList.TotalItemCount;
+                result.TotalPage = pagedList.PageCount;
+                result.ListItem = pagedList.ToList();
+            }
+            return result;
+        }
     }
 }

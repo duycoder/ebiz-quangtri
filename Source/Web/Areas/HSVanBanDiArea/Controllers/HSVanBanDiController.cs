@@ -385,83 +385,109 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
         /// <param name="isInternal">có phải là nội bộ không</param>
         /// <returns></returns>
         [ActionAudit]
-        public ActionResult CreateVB(long id = 0,
-            long idVanBanDen = 0,
-            int docType = VANBANDI_CONSTANT.CHUA_XULY,
-            bool isAllowPublish = false,
-            bool isInternal = false)
+        public ActionResult CreateVB(long id = 0, long idVanBanDen = 0, int docType = VANBANDI_CONSTANT.CHUA_XULY, bool isAllowPublish = false, bool isInternal = false)
         {
             AssignUserInfo();
-
-            //khai báo
             DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
             CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
             DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
             DM_VAITROBusiness = Get<DM_VAITROBusiness>();
             QL_NGUOINHAN_VANBANBusiness = Get<QL_NGUOINHAN_VANBANBusiness>();
-            HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
-            HSCV_VANBANDENBusiness = Get<HSCV_VANBANDENBusiness>();
-            TAILIEUDINHKEMBusiness = Get<TAILIEUDINHKEMBusiness>();
+            VanBanDiVM model = new VanBanDiVM();
+            model.IsAllowPublish = isAllowPublish;
+            model.IsInternal = isInternal;
+            model.docType = docType;
+            var roleLanhDaoDonVi = DM_VAITROBusiness.repository.All().Where(x => x.MA_VAITRO == CODE_ROLE_LANHDAODONVI).FirstOrDefault();
+            int LANHDAODONVI = ROLE_LANHDAODONVI.ToIntOrZero();
 
-            var entityVanBanDi = HSCV_VANBANDIBusiness.Find(id) ?? new HSCV_VANBANDI();
-            var entityVanBanDen = HSCV_VANBANDENBusiness.Find(idVanBanDen) ?? new HSCV_VANBANDEN();
-
-            //gán phòng ban cha choi người dùng hiện tại
-            currentUser.DeptParentID = currentUser.DeptParentID ?? 0;
-
-            //gán vai trò lãnh đạo đơn vị
-            var roleLanhDaoDonVi = DM_VAITROBusiness.GetRoleByCode(CODE_ROLE_LANHDAODONVI);
-            int LANHDAODONVI = roleLanhDaoDonVi != null ? roleLanhDaoDonVi.DM_VAITRO_ID : ROLE_LANHDAODONVI.ToIntOrZero();
-
-            //khởi tạo view model
-            VanBanDiVM model = new VanBanDiVM()
+            if (roleLanhDaoDonVi != null)
             {
-                IsAllowPublish = isAllowPublish,
-                IsInternal = isInternal,
-                docType = docType,
-                LstNguoiKyVanBan = DM_NGUOIDUNGBusiness.GetUserByRoleAndParentDept(LANHDAODONVI, currentUser.DeptParentID.Value, entityVanBanDi.NGUOIKY_ID.GetValueOrDefault()),
-                Recipients = QL_NGUOINHAN_VANBANBusiness.GetRecipientGroups(currentUser.DeptParentID.GetValueOrDefault()),
-
-                LstDoUuTien = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.DOUUTIEN, currentUser.ID, entityVanBanDi.DOUUTIEN_ID ?? 0),
-                LstDoKhan = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.DOQUANTRONG, currentUser.ID, entityVanBanDi.DOKHAN_ID ?? 0),
-                LstLinhVucVanBan = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.LINHVUCVANBAN, currentUser.ID, entityVanBanDi.LINHVUCVANBAN_ID ?? 0),
-                LstLoaiVanBan = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.LOAIVANBAN, currentUser.ID, entityVanBanDi.LOAIVANBAN_ID ?? 0),
-                GroupDeptTypes = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.LOAI_COQUAN, currentUser.ID, entityVanBanDi.LOAI_COQUAN_ID ?? 0),
-                GroupDocTypes = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.PHANLOAI_VANBAN, currentUser.ID, entityVanBanDi.THONGTIN_LOAI_ID ?? 0),
-                GroupDocAuthors = DM_NGUOIDUNGBusiness.GetDanhSachTacGia(currentUser.DeptParentID.Value, entityVanBanDi.TACGIA_ID ?? 0),
-                VanBan = entityVanBanDi,
-                VanBanDen = entityVanBanDen,
-                ListTaiLieu = TAILIEUDINHKEMBusiness.GetNewestData(id, LOAITAILIEU.VANBAN),
-                ListDonVi = CCTC_THANHPHANBusiness.GetDataByIds(entityVanBanDi.DONVINHAN_INTERNAL_ID?.ToListInt(',')),
-                LstReceiveDirectly = DM_NGUOIDUNGBusiness.GetDanhSachByListIds(entityVanBanDi.USER_RECEIVE_DIRECTLY?.ToListLong(','))
-            };
-
+                LANHDAODONVI = roleLanhDaoDonVi.DM_VAITRO_ID;
+            }
+            if (currentUser.DeptParentID == null)
+            {
+                currentUser.DeptParentID = 0;
+            }
+            model.LstNguoiKyVanBan = DM_NGUOIDUNGBusiness.GetUserByRoleAndParentDept(LANHDAODONVI, currentUser.DeptParentID.Value);
+            model.TreeDonVi = CCTC_THANHPHANBusiness.GetTreeLabel(currentUser);
             //lấy danh sách người dùng có thể nhận trực tiếp
             model.UsersReceived = new List<long>();
-
+            model.Recipients = QL_NGUOINHAN_VANBANBusiness.GetRecipientGroups(currentUser.DeptParentID.GetValueOrDefault());
             //hiển thị người nhận văn bản
-            //if (model.IsInternal)
-            //{
-            //    List<DM_NGUOIDUNG_BO> usersReceiveInternal = DM_NGUOIDUNGBusiness.GetUsersReceiveInternal(currentUser);
-            //    model.GroupUsersReceiveInternal = usersReceiveInternal.Select(x => new SelectListItem()
-            //    {
-            //        Value = x.ID.ToString(),
-            //        Text = x.HOTEN
-            //    }).ToList();
-            //    model.GroupUserIdsReceiveInternal = new List<long>();
-            //}
 
-            //model.LstReceiveDirectly = new List<SelectListItem>();
-            //model.GroupUserIdsReceiveDirectly = new List<long>();
-            //HSCV_VANBANDI VanBan = new HSCV_VANBANDI();
-            //if (id > 0)
-            //{
-            //    if (!string.IsNullOrEmpty(VanBan.USER_RECEIVE_DIRECTLY))
-            //    {
-            //        model.GroupUserIdsReceiveDirectly = VanBan.USER_RECEIVE_DIRECTLY.ToListLong(',');
-            //        model.LstReceiveDirectly = DM_NGUOIDUNGBusiness.GetDanhSachByListIds(model.GroupUserIdsReceiveDirectly);
-            //    }
-            //}
+            if (model.IsInternal)
+            {
+                List<DM_NGUOIDUNG_BO> usersReceiveInternal = DM_NGUOIDUNGBusiness.GetUsersReceiveInternal(currentUser);
+                model.GroupUsersReceiveInternal = usersReceiveInternal.Select(x => new SelectListItem()
+                {
+                    Value = x.ID.ToString(),
+                    Text = x.HOTEN
+                }).ToList();
+                model.GroupUserIdsReceiveInternal = new List<long>();
+            }
+            model.LstReceiveDirectly = new List<SelectListItem>();
+            model.GroupUserIdsReceiveDirectly = new List<long>();
+            HSCV_VANBANDI VanBan = new HSCV_VANBANDI();
+            if (id > 0)
+            {
+                HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
+                VanBan = HSCV_VANBANDIBusiness.Find(id);
+                if (VanBan == null || currentUser.ID != VanBan.CREATED_BY)
+                {
+                    return Redirect("/Home/UnAuthor");
+                }
+                if (!string.IsNullOrEmpty(VanBan.DONVINHAN_INTERNAL_ID))
+                {
+                    model.ListDonVi = CCTC_THANHPHANBusiness.GetDataByIds(VanBan.DONVINHAN_INTERNAL_ID.ToListInt(','));
+                }
+                model.LstNguoiKyVanBan = model.LstNguoiKyVanBan.Select(
+                    x => new SelectListItem
+                    {
+                        Text = x.Text,
+                        Value = x.Value,
+                        Selected = x.Value == (VanBan.NGUOIKY_ID == null ? "" : VanBan.NGUOIKY_ID.ToString())
+                    }).ToList();
+                if (!string.IsNullOrEmpty(VanBan.USER_RECEIVE_DIRECTLY))
+                {
+                    model.GroupUserIdsReceiveDirectly = VanBan.USER_RECEIVE_DIRECTLY.ToListLong(',');
+                    model.LstReceiveDirectly = DM_NGUOIDUNGBusiness.GetDanhSachByListIds(model.GroupUserIdsReceiveDirectly);
+                }
+            }
+            else
+            {
+                if (idVanBanDen > 0)
+                {
+                    HSCV_VANBANDENBusiness = Get<HSCV_VANBANDENBusiness>();
+                    var TmpVanBanDen = HSCV_VANBANDENBusiness.Find(idVanBanDen);
+                    if (TmpVanBanDen != null)
+                    {
+                        model.VanBanDen = TmpVanBanDen;
+                    }
+                }
+            }
+
+            if (model.ListDonVi == null)
+            {
+                model.ListDonVi = new List<CCTC_THANHPHAN>();
+            }
+            model.LstDoUuTien = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.DOUUTIEN, currentUser.ID, VanBan.DOUUTIEN_ID.HasValue ? VanBan.DOUUTIEN_ID.Value : 0);
+            model.LstDoKhan = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.DOQUANTRONG, currentUser.ID, VanBan.DOKHAN_ID.HasValue ? VanBan.DOKHAN_ID.Value : 0);
+            model.LstLinhVucVanBan = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.LINHVUCVANBAN, currentUser.ID, VanBan.LINHVUCVANBAN_ID.HasValue ? VanBan.LINHVUCVANBAN_ID.Value : 0);
+            model.LstLoaiVanBan = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.LOAIVANBAN, currentUser.ID, VanBan.LOAIVANBAN_ID.HasValue ? VanBan.LOAIVANBAN_ID.Value : 0);
+            model.GroupDeptTypes = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.LOAI_COQUAN, currentUser.ID, VanBan.LOAI_COQUAN_ID.GetValueOrDefault());
+            model.GroupDocTypes = DM_DANHMUC_DATABusiness.DsByMaNhom(VanBanConstant.PHANLOAI_VANBAN, currentUser.ID, VanBan.THONGTIN_LOAI_ID.GetValueOrDefault());
+            model.GroupDocAuthors = DM_NGUOIDUNGBusiness.GetDanhSachTacGia(currentUser.DeptParentID.Value, VanBan.TACGIA_ID.GetValueOrDefault());
+            model.LstSoVanBanDi =  DM_DANHMUC_DATABusiness.DsByMaNhomByDept(VanBanConstant.SOVANBANDI, 0, currentUser.DeptParentID.Value);
+            model.VanBan = VanBan;
+            if (id > 0)
+            {
+                TAILIEUDINHKEMBusiness = Get<TAILIEUDINHKEMBusiness>();
+                model.ListTaiLieu = TAILIEUDINHKEMBusiness.GetNewestData(id, LOAITAILIEU.VANBAN);
+            }
+            else
+            {
+                model.ListTaiLieu = new List<TAILIEUDINHKEM>();
+            }
             return View(model);
         }
 
@@ -514,6 +540,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
             }
             return "";
         }
+
         /// <summary>
         /// Hàm tạo mới văn bản đi
         /// </summary>
@@ -521,28 +548,321 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
         /// <returns></returns>
         [ValidateInput(false)]
         [ActionAudit]
-        public ActionResult SaveVanBanDi(FormCollection form, IEnumerable<HttpPostedFileBase> filebase, string[] filename, string[] FOLDER_ID)
+        public ActionResult InsertVanBanDi(HSCV_VANBANDI VanBanDi, FormCollection form, IEnumerable<HttpPostedFileBase> filebase, string[] filename, string[] FOLDER_ID)
         {
             AssignUserInfo();
-            SMSDAL.SendSMSDAL sms = new SMSDAL.SendSMSDAL();
-            HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
-            HSCV_VANBANDENBusiness = Get<HSCV_VANBANDENBusiness>();
 
-            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            SMSDAL.SendSMSDAL sms = new SMSDAL.SendSMSDAL();
+            SYS_TINNHANBusiness = Get<SYS_TINNHANBusiness>();
+            LogSMSBusiness = Get<LogSMSBusiness>();
+
             WF_MODULEBusiness = Get<WF_MODULEBusiness>();
             WF_PROCESSBusiness = Get<WF_PROCESSBusiness>();
             WF_STREAMBusiness = Get<WF_STREAMBusiness>();
             WF_STATEBusiness = Get<WF_STATEBusiness>();
             WF_ITEM_USER_PROCESSBusiness = Get<WF_ITEM_USER_PROCESSBusiness>();
-            DM_NHOMDANHMUCBusiness = Get<DM_NHOMDANHMUCBusiness>();
 
-            DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
             DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+            DM_NHOMDANHMUCBusiness = Get<DM_NHOMDANHMUCBusiness>();
+            DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
             TAILIEUDINHKEMBusiness = Get<TAILIEUDINHKEMBusiness>();
 
-            SYS_TINNHANBusiness = Get<SYS_TINNHANBusiness>();
-            LogSMSBusiness = Get<LogSMSBusiness>();
+            HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
+            HSCV_VANBANDENBusiness = Get<HSCV_VANBANDENBusiness>();
 
+            #region Check và tạo mới văn bản đi
+            var STR_SOHIEU = string.Empty;
+            bool HAS_SIGNED = false;
+            bool ALLOW_PUBLISH = false;
+            List<long> USERS_RECEIVE_INTERNAL = new List<long>();
+            if (!string.IsNullOrEmpty(form["SOHIEU"]))
+            {
+                STR_SOHIEU = form["SOHIEU"].Trim();
+            }
+            var STR_TRICHYEU = string.Empty;
+            if (!string.IsNullOrEmpty(form["TRICHYEU"]))
+            {
+                STR_TRICHYEU = form["TRICHYEU"].Trim();
+            }
+            var STR_CHUCVUNGUOIKY = string.Empty;
+            if (!string.IsNullOrEmpty(form["CHUCVUNGUOIKY"]))
+            {
+                STR_CHUCVUNGUOIKY = form["CHUCVUNGUOIKY"].Trim();
+            }
+            var NOIDUNGVANBAN = string.Empty;
+            if (!string.IsNullOrEmpty(form["NOIDUNGVANBAN"]))
+            {
+                NOIDUNGVANBAN = form["NOIDUNGVANBAN"].Trim();
+            }
+            if (!string.IsNullOrEmpty(form["HAS_SIGNED"]))
+            {
+                HAS_SIGNED = form["HAS_SIGNED"].Trim().ToIntOrZero() == 1;
+            }
+
+            //cho phép văn thư/chuyên viên có thể phát hành sau khi tạo mới
+            if (!string.IsNullOrEmpty(form["ALLOW_PUBLISH"]))
+            {
+                ALLOW_PUBLISH = form["ALLOW_PUBLISH"].Trim().ToIntOrZero() == 1;
+            }
+
+            if (!string.IsNullOrEmpty(form["USERS_RECEIVE_INTERNAL"]))
+            {
+                USERS_RECEIVE_INTERNAL = form["USERS_RECEIVE_INTERNAL"].Trim().ToListLong(',');
+            }
+
+            var LOAIVANBAN_ID = form["LOAIVANBAN_ID"].ToIntOrZero();
+            var LINHVUCVANBAN_ID = form["LINHVUCVANBAN_ID"].ToIntOrZero();
+            var DOKHAN_ID = form["DOKHAN_ID"].ToIntOrZero();
+            var DOUUTIEN_ID = form["DOUUTIEN_ID"].ToIntOrZero();
+            var NGUOIKY_ID = form["TENNGUOIKY"].ToLongOrZero();
+            var NOI_NHAN = form["NOI_NHAN"];
+            var MA_DANGKY = form["MA_DANGKY"];
+            var LOAI_COQUAN_ID = form["LOAI_COQUAN_ID"].ToIntOrNULL();
+            var THONGTIN_LOAI_ID = form["THONGTIN_LOAI_ID"].ToIntOrNULL();
+            var TACGIA_ID = form["TACGIA_ID"].ToIntOrNULL();
+            var selectedDept = form["department-choose"];
+            var usersReceiveDirectly = form["USERS_RECEIVE_SPECIAL"];
+            #region Validate dữ liệu và gán giá trị
+            VanBanDi.TRICHYEU = STR_TRICHYEU;
+            VanBanDi.SOHIEU = STR_SOHIEU;
+            VanBanDi.CHUCVU = STR_CHUCVUNGUOIKY;
+            VanBanDi.NOIDUNG = NOIDUNGVANBAN;
+            VanBanDi.NOI_NHAN = NOI_NHAN;
+            VanBanDi.MA_DANGKY = MA_DANGKY;
+            VanBanDi.LOAI_COQUAN_ID = LOAI_COQUAN_ID;
+            VanBanDi.THONGTIN_LOAI_ID = THONGTIN_LOAI_ID;
+            VanBanDi.TACGIA_ID = TACGIA_ID;
+            VanBanDi.CAN_SEND_SMS = form["CAN_SEND_SMS"].Trim().ToIntOrZero() > 0;
+            #endregion
+            List<CommonError> ListError = IsValid(VanBanDi);
+            if (ListError.Any())
+            {
+                return RedirectToAction("ChuaXuLy");
+            }
+            List<long> ListUser = new List<long>();
+            ListUser.Add(currentUser.ID);
+            if (!string.IsNullOrEmpty(STR_TRICHYEU))
+            {
+                try
+                {
+                    UploadFileTool tool = new UploadFileTool();
+                    HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
+                    if (VanBanDi.ID > 0)
+                    {
+                        #region Cập nhật văn bản trình ký
+                        var result = HSCV_VANBANDIBusiness.Find(VanBanDi.ID);
+                        if (result == null || currentUser.ID != result.CREATED_BY)
+                        {
+                            return RedirectToAction("NotFound", "Home", new { area = "" });
+                        }
+                        result.CHUCVU = STR_CHUCVUNGUOIKY;
+                        result.DOKHAN_ID = DOKHAN_ID;
+                        result.DONVINHAN_EXTERNAL_ID = VanBanDi.DONVINHAN_EXTERNAL_ID;
+                        result.DONVINHAN_INTERNAL_ID = selectedDept;
+                        result.USER_RECEIVE_DIRECTLY = usersReceiveDirectly;
+                        result.DONVINHAN_NGOAIHETHONG = VanBanDi.DONVINHAN_NGOAIHETHONG;
+                        result.DONVISOANTHAO_ID = VanBanDi.DONVISOANTHAO_ID;
+                        result.DOUUTIEN_ID = DOUUTIEN_ID;
+                        result.LANBANHANH = VanBanDi.LANBANHANH;
+                        result.LINHVUCVANBAN_ID = LINHVUCVANBAN_ID;
+                        result.LOAIVANBAN_ID = LOAIVANBAN_ID;
+                        result.NGAYBANHANH = VanBanDi.NGAYBANHANH;
+                        result.NGAYCOHIEULUC = VanBanDi.NGAYCOHIEULUC;
+                        result.NGAYHETHIEULUC = VanBanDi.NGAYHETHIEULUC;
+                        result.NGAYVANBAN = VanBanDi.NGAYVANBAN;
+                        result.NGUOIKY_ID = NGUOIKY_ID;
+                        result.NOIDUNG = NOIDUNGVANBAN;
+                        result.SOBANSAO = VanBanDi.SOBANSAO;
+                        result.SOHIEU = STR_SOHIEU;
+                        result.SOTHEOSO = VanBanDi.SOTHEOSO;
+                        result.SOTO = VanBanDi.SOTO;
+                        result.SOTRANG = VanBanDi.SOTRANG;
+                        result.SOVANBAN_ID = VanBanDi.SOVANBAN_ID;
+                        result.THOIHANHOIBAO = VanBanDi.THOIHANHOIBAO;
+                        result.THOIHANXULY = VanBanDi.THOIHANXULY;
+                        result.TRICHYEU = STR_TRICHYEU;
+                        result.UPDATED_AT = DateTime.Now;
+                        result.UPDATED_BY = currentUser.ID;
+                        result.YKIENCHIDAO = VanBanDi.YKIENCHIDAO;
+                        result.HAS_SIGNED = HAS_SIGNED;
+                        result.NOI_NHAN = VanBanDi.NOI_NHAN;
+                        result.MA_DANGKY = VanBanDi.MA_DANGKY;
+                        result.LOAI_COQUAN_ID = VanBanDi.LOAI_COQUAN_ID;
+                        result.THONGTIN_LOAI_ID = VanBanDi.THONGTIN_LOAI_ID;
+                        result.TACGIA_ID = VanBanDi.TACGIA_ID;
+                        result.CAN_SEND_SMS = VanBanDi.CAN_SEND_SMS;
+                        HSCV_VANBANDIBusiness.Save(result);
+                        #endregion
+                        bool isSave = tool.UploadFiles(filebase, VbTrinhKyExtension.Split(',').ToList(), URL_FOLDER, filename, result.ID, LOAITAILIEU.VANBAN, VbTrinhKySize, currentUser);
+                        if (isSave)
+                        {
+                            //cập nhật tài liệu gốc cho các tài liệu đính kèm mới
+                            List<TAILIEUDINHKEM> attachments = TAILIEUDINHKEMBusiness.GetInsertedData(result.ID, LOAITAILIEU.VANBAN);
+                            attachments.ForEach(x =>
+                            {
+                                x.TAILIEU_GOC_ID = x.TAILIEU_ID;
+                                TAILIEUDINHKEMBusiness.Save(x);
+                            });
+                        }
+
+                        DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+                        DM_NGUOIDUNG NguoiDung = DM_NGUOIDUNGBusiness.Find(VanBanDi.NGUOIKY_ID);
+                        ElasticModel model = ElasticModel.ConvertVanBan(result, ListUser, NguoiDung != null ? NguoiDung.HOTEN : "");
+                        ElasticSearch.updateDocument(model, model.Id.ToString(), ElasticType.VanBanDi);
+                    }
+                    else
+                    {
+                        HSCV_VANBANDENBusiness = Get<HSCV_VANBANDENBusiness>();
+                        var TmpVanBanDen = new HSCV_VANBANDEN();
+                        if (!string.IsNullOrEmpty(form["VANBANDENLIENQUAN"]))
+                        {
+                            var VANBANDENLIENQUAN = form["VANBANDENLIENQUAN"].ToLongOrZero();
+                            if (VANBANDENLIENQUAN > 0)
+                            {
+                                TmpVanBanDen = HSCV_VANBANDENBusiness.Find(VANBANDENLIENQUAN);
+                                if (TmpVanBanDen != null)
+                                {
+                                    VanBanDi.VANBANDEN_ID = TmpVanBanDen.ID;
+                                }
+                            }
+                        }
+
+                        #region Thêm mới văn bản trình ký
+                        VanBanDi.SOHIEU = STR_SOHIEU;
+                        VanBanDi.TRICHYEU = STR_TRICHYEU;
+                        VanBanDi.DOUUTIEN_ID = DOUUTIEN_ID;
+                        VanBanDi.DOKHAN_ID = DOKHAN_ID;
+                        VanBanDi.LOAIVANBAN_ID = LOAIVANBAN_ID;
+                        VanBanDi.LINHVUCVANBAN_ID = LINHVUCVANBAN_ID;
+                        VanBanDi.NGUOIKY_ID = NGUOIKY_ID;
+                        VanBanDi.CHUCVU = STR_CHUCVUNGUOIKY;
+                        VanBanDi.DONVINHAN_INTERNAL_ID = selectedDept;
+                        VanBanDi.USER_RECEIVE_DIRECTLY = usersReceiveDirectly;
+                        VanBanDi.CREATED_AT = DateTime.Now;
+                        VanBanDi.CREATED_BY = currentUser.ID;
+                        VanBanDi.HAS_SIGNED = HAS_SIGNED;
+                        VanBanDi.DEPTID = currentUser.DeptParentID;
+                        VanBanDi.NOI_NHAN = NOI_NHAN;
+                        VanBanDi.IS_INTERNAL = USERS_RECEIVE_INTERNAL.Any();
+                        VanBanDi.MA_DANGKY = MA_DANGKY;
+                        VanBanDi.LOAI_COQUAN_ID = LOAI_COQUAN_ID;
+                        VanBanDi.THONGTIN_LOAI_ID = THONGTIN_LOAI_ID;
+                        VanBanDi.TACGIA_ID = TACGIA_ID;
+                        HSCV_VANBANDIBusiness.Save(VanBanDi);
+                        if (TmpVanBanDen.ID > 0)
+                        {
+                            TmpVanBanDen.VANBANLIENQUAN = TmpVanBanDen.VANBANLIENQUAN + "," + VanBanDi.ID;
+                            HSCV_VANBANDENBusiness.Save(TmpVanBanDen);
+                        }
+                        #endregion
+                        WF_PROCESSBusiness = Get<WF_PROCESSBusiness>();
+                        int customState = 0;
+                        if (ALLOW_PUBLISH)
+                        {
+                            WF_STATEBusiness = Get<WF_STATEBusiness>();
+                            WF_STATE finalState = WF_STATEBusiness.GetFinalStateOfItem(MODULE_CONSTANT.VANBANTRINHKY, currentUser);
+                            customState = finalState != null ? finalState.ID : 0;
+                        }
+
+                        //duynn
+                        //lưu thông tin văn bản đi nội bộ
+                        if (USERS_RECEIVE_INTERNAL.Any())
+                        {
+                            SYS_TINNHANBusiness = Get<SYS_TINNHANBusiness>();
+                            WF_ITEM_USER_PROCESSBusiness = Get<WF_ITEM_USER_PROCESSBusiness>();
+                            List<long> tempUserIds = USERS_RECEIVE_INTERNAL;
+                            tempUserIds.Add(currentUser.ID);
+                            foreach (var item in tempUserIds)
+                            {
+                                var userProcess = new WF_ITEM_USER_PROCESS();
+                                userProcess.ITEM_ID = VanBanDi.ID;
+                                userProcess.ITEM_TYPE = MODULE_CONSTANT.VANBANTRINHKY;
+                                userProcess.IS_XULYCHINH = true;
+                                userProcess.USER_ID = item;
+                                userProcess.create_at = DateTime.Now;
+                                userProcess.create_by = currentUser.ID;
+                                WF_ITEM_USER_PROCESSBusiness.Save(userProcess);
+                            }
+
+                            //gửi thông báo
+                            string itemName = "VĂN BẢN TRÌNH KÝ NỘI BỘ";
+                            string content = currentUser.HOTEN + " đã gửi bạn một văn bản trình ký nội bộ";
+                            string url = "/HSVanBanDiArea/HSVanBanDi/DetailVanBan/" + VanBanDi.ID.ToString() + "?type=" + VANBANDI_CONSTANT.NOIBO;
+                            SYS_TINNHANBusiness.sendMessageMultipleUsers(USERS_RECEIVE_INTERNAL, currentUser, itemName, content, url, string.Empty, false, 0, TargetDocType.COORDINATED);
+                        }
+
+                        //duynn
+                        //cập nhật tài liệu văn bản đi
+                        if (USERS_RECEIVE_INTERNAL.Any())
+                        {
+                            bool isSave = tool.UploadFiles(filebase, VbTrinhKyExtension.Split(',').ToList(), URL_FOLDER, filename, VanBanDi.ID, LOAITAILIEU.VANBAN, VbTrinhKySize, currentUser);
+                            if (isSave)
+                            {
+                                //cập nhật tài liệu gốc cho các tài liệu đính kèm mới
+                                List<TAILIEUDINHKEM> attachments = TAILIEUDINHKEMBusiness.GetInsertedData(VanBanDi.ID, LOAITAILIEU.VANBAN);
+                                attachments.ForEach(x =>
+                                {
+                                    x.TAILIEU_GOC_ID = x.TAILIEU_ID;
+                                    TAILIEUDINHKEMBusiness.Save(x);
+                                });
+                            }
+                        }
+                        else
+                        {
+                            var isState = WF_PROCESSBusiness.AddFlow(VanBanDi.ID, MODULE_CONSTANT.VANBANTRINHKY, currentUser, customState);
+                            if (!isState.Status)
+                            {
+                                HSCV_VANBANDIBusiness.repository.Delete(VanBanDi.ID);
+                                HSCV_VANBANDIBusiness.repository.Save();
+                            }
+                            else
+                            {
+                                bool isSave = tool.UploadFiles(filebase, VbTrinhKyExtension.Split(',').ToList(), URL_FOLDER, filename, VanBanDi.ID, LOAITAILIEU.VANBAN, VbTrinhKySize, currentUser);
+                                if (isSave)
+                                {
+                                    //cập nhật tài liệu gốc cho các tài liệu đính kèm mới
+                                    List<TAILIEUDINHKEM> attachments = TAILIEUDINHKEMBusiness.GetInsertedData(VanBanDi.ID, LOAITAILIEU.VANBAN);
+                                    attachments.ForEach(x =>
+                                    {
+                                        x.TAILIEU_GOC_ID = x.TAILIEU_ID;
+                                        TAILIEUDINHKEMBusiness.Save(x);
+                                    });
+                                }
+                            }
+                        }
+
+                        if (ALLOW_PUBLISH)
+                        {
+                            VanBanDi.SOHIEU = form["SOHIEU"]?.Trim();
+                            VanBanDi.SOVANBAN_ID = form["SOVANBAN_ID"].ToIntOrZero();
+                            VanBanDi.SOTHEOSO = form["SOTHEOSO"]?.Trim();
+                            VanBanDi.NGAYBANHANH = form["NGAYBANHANH"].ToDateTime();
+                            VanBanDi.NGAYCOHIEULUC = form["NGAYCOHIEULUC"].ToDateTime();
+                            VanBanDi.NGAYHETHIEULUC = form["NGAYHET_HIEULUC"].ToDateTime();
+                            HSCV_VANBANDIBusiness.Save(VanBanDi);
+
+                            int numbSoDiTheoSo = VanBanDi.SOTHEOSO.GetPrefixNumber();
+                            DM_DANHMUC_DATABusiness.UpdateSoVanBan(VanBanDi.SOVANBAN_ID.GetValueOrDefault(), numbSoDiTheoSo);
+
+                            SaveVanBanPhatHanhToCaNhan(VanBanDi, sms);
+                            SaveVanBanPhatHanhToDonVi(VanBanDi, sms);
+                        }
+
+                        DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+                        DM_NGUOIDUNG NguoiDung = DM_NGUOIDUNGBusiness.Find(VanBanDi.NGUOIKY_ID);
+                        ElasticModel model = ElasticModel.ConvertVanBan(VanBanDi, ListUser, NguoiDung != null ? NguoiDung.HOTEN : "");
+                        ElasticSearch.insertDocument(model, model.Id.ToString(), ElasticType.VanBanDi);
+                    }
+                    return RedirectToAction("DetailVanBan", new { ID = VanBanDi.ID });
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("ChuaXuLy");
+                }
+            }
+            #endregion
+            return RedirectToAction("ChuaXuLy");
         }
 
         public ActionResult DetailVanBan(long ID, int type = VANBANDI_CONSTANT.CHUA_XULY)
@@ -655,7 +975,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
             myModel.GroupDonViRead = new List<int>();
 
             //lấy ra nhóm người dùng nhận văn bản
-            myModel.Recipients = QL_NGUOINHAN_VANBANBusiness.GetRecipientGroups(currentUser.DeptParentID.GetValueOrDefault(), myModel.GroupUsersReceiveDirectly.Select(x => x.ID).ToList());
+            //myModel.Recipients = QL_NGUOINHAN_VANBANBusiness.GetRecipientGroups(currentUser.DeptParentID.GetValueOrDefault(), myModel.GroupUsersReceiveDirectly.Select(x => x.ID).ToList());
             foreach (var unit in myModel.ListDonVi)
             {
                 bool isRead = HSCVREADVANBANBusiness.CheckIsRead(MODULE_CONSTANT.VANBANDENNOIBO, ID, unit, currentUser);
@@ -664,6 +984,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     myModel.GroupDonViRead.Add(unit.ID);
                 }
             }
+
             #endregion
             #endregion
             #region danh sách comment
@@ -1319,13 +1640,16 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     var idsNguoiDaNhan = entityVanBanDi.USER_RECEIVE_DIRECTLY.ToListLong(',');
                     idsNguoiDaNhan.AddRange(idsNguoiNhanDichDanh);
                     entityVanBanDi.USER_RECEIVE_DIRECTLY = string.Join(",", idsNguoiDaNhan.ToArray());
+                    HSCV_VANBANDIBusiness.Save(entityVanBanDi);
+                    this.SaveVanBanPhatHanhToCaNhan(entityVanBanDi, sms, idsNguoiNhanDichDanh);
                 }
                 else
                 {
                     entityVanBanDi.USER_RECEIVE_DIRECTLY = form["USERS_RECEIVE_SPECIAL"];
+                    HSCV_VANBANDIBusiness.Save(entityVanBanDi);
+                    this.SaveVanBanPhatHanhToCaNhan(entityVanBanDi, sms);
                 }
-                HSCV_VANBANDIBusiness.Save(entityVanBanDi);
-                this.SaveVanBanPhatHanhToCaNhan(entityVanBanDi, sms);
+                
             }
             catch (Exception ex)
             {
@@ -1345,18 +1669,23 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
         {
             AssignUserInfo();
             SMSDAL.SendSMSDAL sms = new SMSDAL.SendSMSDAL();
-            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            SYS_TINNHANBusiness = Get<SYS_TINNHANBusiness>();
+            LogSMSBusiness = Get<LogSMSBusiness>();
+
             WF_MODULEBusiness = Get<WF_MODULEBusiness>();
             WF_PROCESSBusiness = Get<WF_PROCESSBusiness>();
             WF_STREAMBusiness = Get<WF_STREAMBusiness>();
             WF_STATEBusiness = Get<WF_STATEBusiness>();
+            WF_ITEM_USER_PROCESSBusiness = Get<WF_ITEM_USER_PROCESSBusiness>();
+
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+            DM_NHOMDANHMUCBusiness = Get<DM_NHOMDANHMUCBusiness>();
             DM_DANHMUC_DATABusiness = Get<DM_DANHMUC_DATABusiness>();
+            TAILIEUDINHKEMBusiness = Get<TAILIEUDINHKEMBusiness>();
+
             HSCV_VANBANDIBusiness = Get<HSCV_VANBANDIBusiness>();
             HSCV_VANBANDENBusiness = Get<HSCV_VANBANDENBusiness>();
-            TAILIEUDINHKEMBusiness = Get<TAILIEUDINHKEMBusiness>();
-            SYS_TINNHANBusiness = Get<SYS_TINNHANBusiness>();
-            DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
-            LogSMSBusiness = Get<LogSMSBusiness>();
 
             JsonResultBO result = new JsonResultBO(true);
             try
@@ -1372,15 +1701,17 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     var idsDonViDaNhan = entityVanBanDi.DONVINHAN_INTERNAL_ID.ToListInt(',');
                     idsDonViDaNhan.AddRange(idsDonViNhan);
                     entityVanBanDi.DONVINHAN_INTERNAL_ID = string.Join(",", idsDonViDaNhan.ToArray());
+                    HSCV_VANBANDIBusiness.Save(entityVanBanDi);
+                    //gửi đơn vị nhận văn bản bên ngoài
+                    this.SaveVanBanPhatHanhToDonVi(entityVanBanDi, sms, idsDonViNhan);
                 }
                 else
                 {
                     entityVanBanDi.DONVINHAN_INTERNAL_ID = form["chonphongban"];
+                    HSCV_VANBANDIBusiness.Save(entityVanBanDi);
+                    //gửi đơn vị nhận văn bản bên ngoài
+                    this.SaveVanBanPhatHanhToDonVi(entityVanBanDi, sms);
                 }
-                HSCV_VANBANDIBusiness.Save(entityVanBanDi);
-
-                //gửi đơn vị nhận văn bản bên ngoài
-                SaveVanBanPhatHanhToDonVi(entityVanBanDi, sms);
             }
             catch (Exception ex)
             {
@@ -1397,8 +1728,9 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
         /// </summary>
         /// <param name="entityVanBanDi"></param>
         /// <param name="sms"></param>
+        /// <param name="otherDepts">gửi các đơn vị khác</param>
         /// <returns></returns>
-        public bool SaveVanBanPhatHanhToDonVi(HSCV_VANBANDI entityVanBanDi, SMSDAL.SendSMSDAL sms)
+        public bool SaveVanBanPhatHanhToDonVi(HSCV_VANBANDI entityVanBanDi, SMSDAL.SendSMSDAL sms, List<int> otherDepts = null)
         {
             bool result = true;
             try
@@ -1412,7 +1744,11 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
 
                 List<int> idsDonViNhan = new List<int>();
 
-                if (!string.IsNullOrEmpty(entityVanBanDi.DONVINHAN_INTERNAL_ID))
+                if(otherDepts != null && otherDepts.Any())
+                {
+                    idsDonViNhan = otherDepts;
+                }
+                else if (!string.IsNullOrEmpty(entityVanBanDi.DONVINHAN_INTERNAL_ID))
                 {
                     var idsDonViDaNhan = entityVanBanDi.DONVINHAN_INTERNAL_ID.ToListInt(',');
                     idsDonViNhan.AddRange(idsDonViDaNhan);
@@ -1423,12 +1759,13 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     .Where(x => idsDonViNhan.Contains(x.ID)).ToList();
                 List<LOGSMS> groupLogSMS = new List<LOGSMS>();
                 List<TAILIEUDINHKEM> groupForwardFiles = new List<TAILIEUDINHKEM>();
+                List<WF_ITEM_USER_PROCESS> groupItemUserProcess = new List<WF_ITEM_USER_PROCESS>();
                 foreach (var dept in groupDonViNhan)
                 {
                     WF_STATE firstState = null;
 
                     //kiểm tra có phải là gửi nội bộ hay không?
-                    bool isSendInternal = true;
+                    bool isSendInternal = false;
                     //- trường hợp gửi cho các ban ngành cấp tỉnh và các huyện xa -> thành văn bản đến của các đơnvị nhận được
                     if (dept.TYPE == DEPTTYLELABEL.ToIntOrZero())
                     {
@@ -1463,31 +1800,24 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                             .FirstOrDefault(x => x.IS_START == true && x.WF_ID == workflowStream.ID);
                     }
 
-                    /**
-                     *kiểm tra vai trò nhận của trạng thái đầu tiên trong luồng xử lý 
-                     */
-                    if (firstState == null || firstState.VAITRO_ID == null)
-                    {
-                        continue;
-                    }
+
+                    UserInfoBO processor = null;
 
                     /**
-                     * lấy thông tin người nhận văn bản này
+                     * kiểm tra vai trò nhận của trạng thái đầu tiên
                      */
-                    var receiver = DM_NGUOIDUNGBusiness.GetUserByRoleAndDeptId(firstState.VAITRO_ID.Value, dept.ID).FirstOrDefault();
-                    if (receiver == null)
+                    if (firstState != null)
                     {
-                        continue;
+                        /**
+                         * lấy người thuộc phòng ban có vai trò xử lý
+                         */
+                        var receiver = DM_NGUOIDUNGBusiness.GetUserByRoleAndDeptId(firstState.VAITRO_ID.GetValueOrDefault(), dept.ID).FirstOrDefault();
+                        if (receiver != null)
+                        {
+                            processor = DM_NGUOIDUNGBusiness.GetNewUserInfo(receiver.Value.ToLongOrZero());
+                        }
                     }
 
-                    /**
-                     * lấy thông tin người xử lý
-                     */
-                    UserInfoBO processor = DM_NGUOIDUNGBusiness.GetNewUserInfo(receiver.Value.ToLongOrZero());
-                    if (processor == null)
-                    {
-                        continue;
-                    }
 
                     var dataSoVanBanDen = DM_DANHMUC_DATABusiness.GetSoVanBan(DMLOAI_CONSTANT.SOVANBANDEN, DateTime.Now.Year, dept.ID);
                     if (dataSoVanBanDen == null)
@@ -1504,6 +1834,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     }
 
                     HSCV_VANBANDEN entityVanBanDen = this.ConvertToVanBanDen(entityVanBanDi, entityNguoiKy, dataSoVanBanDen);
+                    entityVanBanDen.IS_NOIBO = isSendInternal ? true : false;
                     HSCV_VANBANDENBusiness.Save(entityVanBanDen);
 
                     /**
@@ -1518,17 +1849,40 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                     var files = this.GenerateFiles(groupFiles, entityVanBanDen);
                     groupForwardFiles.AddRange(files);
 
-
-                    if (isSendInternal)
+                    /**
+                     * cập nhật thông tin văn bản đến trong luồng xử lý
+                     */
+                    if (processor != null)
                     {
-                        //gửi thông tin văn bản đi nội bộ
-                        WF_PROCESSBusiness.AddFlow(entityVanBanDen.ID, MODULE_CONSTANT.VANBANDENNOIBO, processor);
+                        WF_PROCESSBusiness.AddFlow(entityVanBanDen.ID, isSendInternal ? MODULE_CONSTANT.VANBANDENNOIBO : MODULE_CONSTANT.VANBANDEN, processor);
                     }
-                    else
-                    {
-                        //gửi thông tin văn bản cho phòng ban khác
-                        WF_PROCESSBusiness.AddFlow(entityVanBanDen.ID, MODULE_CONSTANT.VANBANDEN, processor);
 
+                    /**
+                     * nếu không có người phù hợp trong luồng xử lý ==> lấy người có vai trò cao nhất tại phòng
+                     */
+                    if (processor == null)
+                    {
+                        /**
+                        * lấy ra người có vai trò cao nhất tại phòng ban
+                        */
+                        processor = DM_NGUOIDUNGBusiness.GetUserHighestPriority(dept.ID);
+
+                        /**
+                         * lưu thông in người nhận vào bảng  WF_ITEM_USER_PROCESS
+                         */
+                        var itemUserProcess = new WF_ITEM_USER_PROCESS();
+                        itemUserProcess.ITEM_ID = entityVanBanDen.ID;
+                        itemUserProcess.ITEM_TYPE = isSendInternal ? MODULE_CONSTANT.VANBANDENNOIBO : MODULE_CONSTANT.VANBANDEN;
+                        itemUserProcess.IS_XULYCHINH = false;
+                        itemUserProcess.USER_ID = processor.ID;
+                        itemUserProcess.create_at = DateTime.Now;
+                        itemUserProcess.create_by = currentUser.ID;
+                        groupItemUserProcess.Add(itemUserProcess);
+                    }
+
+
+                    if (processor != null)
+                    {
                         ElasticSearch.updateListUser(entityVanBanDen.ID.ToString(), new List<long> { processor.ID }, ElasticType.VanBanDen);
 
                         //gửi email
@@ -1537,7 +1891,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                             var ContentEmail = currentUser.TenPhongBan + " đã gửi bạn một văn bản đến <a href='" + SERVERADDRESS + "/HSCV_VANBANDENArea/HSCV_VANBANDEN/DetailVanBanDen?id=" + entityVanBanDen.ID.ToString() + "'>" + entityVanBanDen.SOHIEU + "</a>";
                             EmailProvider.SendMailTemplate(currentUser, ContentEmail, ContentEmail, new List<string> { processor.EMAIL });
                         }
-
+                        //gửi tin nhắn
                         if (currentUser.CanSendSMS && entityVanBanDi.CAN_SEND_SMS == true && processor.DIENTHOAI != null)
                         {
                             var ContentSMS = currentUser.TenPhongBan + " đã gửi bạn một văn bản đến " + entityVanBanDen.SOHIEU;
@@ -1562,6 +1916,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                             groupLogSMS.Add(SmsObject);
                         }
 
+                        //lưu thông báo
                         SYS_TINNHAN noti = new SYS_TINNHAN();
                         noti.FROM_USERNAME = currentUser.HOTEN;
                         noti.FROM_USER_ID = currentUser.ID;
@@ -1572,12 +1927,14 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
                         noti.TO_USER_ID = processor.ID;
                         SYS_TINNHANBusiness.Save(noti, "", false, entityVanBanDen.ID, TargetDocType.COORDINATED);
                     }
-
-                    TAILIEUDINHKEMBusiness.repository.InsertRange(groupForwardFiles);
-                    LogSMSBusiness.repository.InsertRange(groupLogSMS);
-
-                    TAILIEUDINHKEMBusiness.repository.Save();
                 }
+
+                //lưu thông tin tài liệu, sms, luồng xử lý
+                TAILIEUDINHKEMBusiness.repository.InsertRange(groupForwardFiles);
+                LogSMSBusiness.repository.InsertRange(groupLogSMS);
+                WF_ITEM_USER_PROCESSBusiness.repository.InsertRange(groupItemUserProcess);
+
+                TAILIEUDINHKEMBusiness.repository.Save();
             }
             catch (Exception)
             {
@@ -1593,12 +1950,22 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
         /// </summary>
         /// <param name="entityVanBanDi"></param>
         /// <param name="sms"></param>
+        /// <param name="otherRecipients">người nhận mới</param>
         /// <returns></returns>
-        public bool SaveVanBanPhatHanhToCaNhan(HSCV_VANBANDI entityVanBanDi, SMSDAL.SendSMSDAL sms)
+        public bool SaveVanBanPhatHanhToCaNhan(HSCV_VANBANDI entityVanBanDi, SMSDAL.SendSMSDAL sms, List<long> otherRecipients = null)
         {
             List<TAILIEUDINHKEM> groupForwardFiles = new List<TAILIEUDINHKEM>();
             List<LOGSMS> groupLogSMSs = new List<LOGSMS>();
-            var idsNguoiNhanDichDanh = entityVanBanDi.USER_RECEIVE_DIRECTLY.ToListLong(',');
+            var idsNguoiNhanDichDanh = new List<long>();
+            if (otherRecipients != null && otherRecipients.Any())
+            {
+                idsNguoiNhanDichDanh = otherRecipients;
+            }
+            else if(!string.IsNullOrEmpty(entityVanBanDi.USER_RECEIVE_DIRECTLY))
+            {
+                idsNguoiNhanDichDanh = entityVanBanDi.USER_RECEIVE_DIRECTLY.ToListLong(',');
+            }
+
             bool result = true;
 
             try
@@ -1797,5 +2164,7 @@ namespace Web.Areas.HSVanBanDiArea.Controllers
             }
         }
 
+
+        //màn hình gửi đơn vị khác
     }
 }

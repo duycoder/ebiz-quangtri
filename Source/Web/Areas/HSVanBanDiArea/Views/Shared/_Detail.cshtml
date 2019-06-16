@@ -426,7 +426,7 @@
                     <h4 class="modal-title">CHỌN PHÒNG BAN/ ĐƠN VỊ</h4>
                 </div>
                 <div class="modal-body" style="max-height: 500px; overflow-y: scroll;" id="TreeChonDonViPartial">
-                    <input type="hidden" name="VANBANDI_ID" value="@Model.VanBanTrinhKy.ID"/>
+                    <input type="hidden" name="VANBANDI_ID" value="@Model.VanBanTrinhKy.ID" />
                     <div id="bodyTreeDonVi"></div>
                 </div>
                 <div class="modal-footer">
@@ -439,9 +439,9 @@
     }
 </div>
 
-@*@Html.Partial("../Common/_RecipientListOfDoc", Model.Recipients, new ViewDataDictionary {
-    {"VANBANDI_ID", Model.VanBanTrinhKy.ID }
-})*@
+<!--MODAL TÌM KIẾM NGƯỜI NHẬN VĂN BẢN-->
+<div class="modal" id="modal--recipients" role="dialog">
+</div>
 
 <style>
     #tbl_view_vanbanden td:nth-child(2n+1) {
@@ -522,8 +522,9 @@
         $("#KYDUYETVANBAN").remove();
     }
 
-    $(function(){
-        if ('@TempData["UpdateFiles"]' == 'True') {
+    $(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.js", function () {
+            if ('@TempData["UpdateFiles"]' == 'True') {
             setTimeout(function () {
                 NotiSuccess("Cập nhật tài liệu thành công");
             }, 500);
@@ -555,13 +556,22 @@
                     $("#dialogChonPhongBan").modal('show');
                 }
             });
-        }
+            }
 
-        if ($('#btn--send-users').length > 0) {
-            $('#btn--send-users').on('click', function () {
-                $('#modal--other-recipients').modal('show');
-            })
-        }
+            if ($('#btn--send-users').length > 0) {
+                $('#btn--send-users').on('click', function () {
+                    if ($('#modal--recipients').html().trim() != '') {
+                        $('#modal--recipients').modal('show');
+                    } else {
+                        var callBack = function (result) {
+                            $('#modal--recipients').html(result);
+                            $('#modal--recipients').modal('show');
+                        }
+                        AjaxCall('/Common/GetRecipientOfDocument', 'post', { idVanBanDi : @Model.VanBanTrinhKy.ID }, callBack);
+                    }
+                })
+            }
+        });
     });
 
     function onSendOtherDepts() {

@@ -83,11 +83,26 @@
             </div>
         </div>
 
-        <div class="modal-footer">
-            <button class="btn btn-primary" type="button" onclick="onChooseRecipients()">
-                <i class="fa fa-check"></i>&nbsp;Cập nhật
-            </button>
-        </div>
+
+        @if (Model.IsSendOthers == true && Model.EntityVanBanDi != null)
+        {
+            <input type="hidden" id="SEND_OTHER_VANBANDI_ID" name="SEND_OTHER_VANBANDI_ID" value="@Model.EntityVanBanDi.ID" />
+        }
+
+            <div class="modal-footer">
+                @if (Model.IsSendOthers == true && Model.EntityVanBanDi != null)
+                {
+                    <button class="btn btn-primary" type="button" onclick="onSendOtherRecipients()">
+                        <i class="fa fa-check"></i>&nbsp;Cập nhật
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-primary" type="button" onclick="onChooseRecipients()">
+                        <i class="fa fa-check"></i>&nbsp;Cập nhật
+                    </button>
+                }
+            </div>
     </div>
 </div>
 <script>
@@ -140,5 +155,32 @@
             $("#block--recipients .table tbody").html(html);
         }
         $('#modal--recipients').modal('hide');
+    }
+
+
+    /**
+     * gửi cá nhân khác
+     **/
+    function onSendOtherRecipients() {
+        var callBack = function (result) {
+            if (result.Status) {
+                NotiSuccess('Gửi cá nhân khác thành công');
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+            }
+        }
+
+        var recipients = [];
+
+        $('input[type=hidden][name=CHOSEN_RECIPIENT]').each(function () {
+            recipients.push($(this).val());
+        })
+
+        var data = {
+            VANBANDI_ID: $('#SEND_OTHER_VANBANDI_ID').val(),
+            USERS_RECEIVE_SPECIAL: recipients.join()
+        }
+        AjaxCall('/HSVanBanDiArea/HSVanBanDi/SendVanBanPhatHanhToCaNhan', 'post', data, callBack)
     }
 </script>

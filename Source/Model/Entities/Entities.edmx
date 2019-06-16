@@ -238,6 +238,7 @@
           <Property Name="NGUOISUA" Type="bigint" />
           <Property Name="IS_DELETE" Type="bit" />
           <Property Name="IS_RECEIVE_DOC_DIRECTLY" Type="bit" />
+          <Property Name="TRONGSO" Type="int" />
         </EntityType>
         <EntityType Name="DUNGLUONG_LUUTRU">
           <Key>
@@ -1858,6 +1859,7 @@
           <Property Name="NGUOISUA" Type="Int64" />
           <Property Name="IS_DELETE" Type="Boolean" />
           <Property Name="IS_RECEIVE_DOC_DIRECTLY" Type="Boolean" />
+          <Property Name="TRONGSO" Type="Int32" />
         </EntityType>
         <EntityType Name="DUNGLUONG_LUUTRU">
           <Key>
@@ -3289,6 +3291,7 @@
           <EntitySetMapping Name="DM_VAITRO">
             <EntityTypeMapping TypeName="DBModel.DM_VAITRO">
               <MappingFragment StoreEntitySet="DM_VAITRO">
+                <ScalarProperty Name="TRONGSO" ColumnName="TRONGSO" />
                 <ScalarProperty Name="IS_RECEIVE_DOC_DIRECTLY" ColumnName="IS_RECEIVE_DOC_DIRECTLY" />
                 <ScalarProperty Name="IS_DELETE" ColumnName="IS_DELETE" />
                 <ScalarProperty Name="NGUOISUA" ColumnName="NGUOISUA" />

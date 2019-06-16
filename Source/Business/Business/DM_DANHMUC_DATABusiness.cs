@@ -419,6 +419,55 @@ namespace Business.Business
             return result;
         }
 
+        /// <summary>
+        /// @author:duynn
+        /// @description: kiểm tra code tồn tại
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public bool CheckExistCode(string code, int groupId)
+        {
+            if (string.IsNullOrEmpty(code))
+            {
+                return false;
+            }
+
+            DM_DANHMUC_DATA entity = this.context.DM_DANHMUC_DATA
+                .Where(x => x.DM_NHOM_ID == groupId && x.CODE != null
+                && x.CODE.Trim().ToLower() == code.Trim().ToLower())
+                .FirstOrDefault();
+            if (entity != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: kiểm tra text tồn tại
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public bool CheckExistText(string text, int groupId)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            DM_DANHMUC_DATA entity = this.context.DM_DANHMUC_DATA
+                .Where(x => x.DM_NHOM_ID == groupId && x.TEXT != null
+                && x.TEXT.Trim().ToLower() == text.Trim().ToLower())
+                .FirstOrDefault();
+            if (entity != null)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
 
