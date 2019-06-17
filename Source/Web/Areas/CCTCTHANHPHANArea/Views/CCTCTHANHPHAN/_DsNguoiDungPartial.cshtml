@@ -1,154 +1,278 @@
-﻿@using Web.Areas.CoCauToChucArea.Models;
-@model CoCauToChucNguoiDungModel
-<h3>Danh sách nhân viên - @Model.Item.NAME</h3>
-<div style="margin:10px;" class="row">
-    <div class="col-sm-4">
-        <input class="form-control" id="search-box-nv" style="margin:5px;" placeholder="tìm kiếm" />
-    </div>
-    <div class="col-sm-8">
-        <button class="pull-right btn-flat btn btn-xs btn-primary" onclick="addNVPhongBan()">Thêm nhân viên</button>
-    </div>
-</div>
-<div class="col-sm-12">
+﻿@using Web.Areas.CCTCTHANHPHANArea.Models;
+@model UserDeptViewModel
+@using Newtonsoft.Json;
+@{
+    /**/
 
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>STT</th>
-                <th>Họ tên</th>
-                <th>Tài khoản</th>
-                <th>Vai trò</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="ListNguoiDung">
-            @for (int i = 0; i < Model.ListNguoiDung.Count; i++)
+    var groupDeptUserData = Html.Raw(JsonConvert.SerializeObject(Model.GroupUsers.ListItem));
+}
+<div class="modal-dialog" style="width:1000px;">
+
+    <!--hidden field-->
+    <input type="hidden" id="modal--dept-usertotalPage" value="@Model.GroupUsers.TotalPage" />
+    <input type="hidden" id="modal--dept-user-totalRecord" value="@Model.GroupUsers.Count" />
+    <input type="hidden" id="modal--dept-id" value="@Model.EntityDept.ID" />
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">
+                    DANH SÁCH NHÂN VIÊN - @Model.EntityDept.NAME
+                </h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            @using (Ajax.BeginForm("SearchDataDeptUsers", "CCTCTHANHPHAN", new { area = "CCTCTHANHPHANArea" },
+                new AjaxOptions()
+                {
+                    HttpMethod = "POST",
+                    OnSuccess = "searchDeptUserSuccess",
+                    OnFailure = "searchFail"
+                },new { id = "form--search-dept-user"}))
             {
-                <tr>
-                    <td>@(i + 1)</td>
-                    <td>@Model.ListNguoiDung[i].HOTEN</td>
-                    <td>@Model.ListNguoiDung[i].TENDANGNHAP</td>
-                    <td>@Model.ListNguoiDung[i].txtVaiTro</td>
-                    <td class="center">
-                        <a href='javascript:void(0)' onclick='DeleteAction(@Model.ListNguoiDung[i].ID)' title='Xóa'><i class=' glyphicon glyphicon-remove' style='color:red'> </i></a>
-                        <a href='/DMNguoiDungArea/DMNguoiDung/phanquyen/@Model.ListNguoiDung[i].ID' title='Phân quyền'><i class='glyphicon glyphicon-cog'> </i></a>
-                        <a href='javascript:void(0)' onclick='chuyenNVPhongBan(@Model.ListNguoiDung[i].ID)' title='Chuyển phòng ban'><i class=' 	glyphicon glyphicon-refresh'> </i></a>
-                    </td>
-                </tr>
+                <input type="hidden" value="@Model.EntityDept.ID" name="sea_DeptId" />
+                <div class="well" style="overflow:hidden">
+                    <div class="smart-form">
+                        <div class="row ">
+                            <section class="col col-md-6 ">
+                                <div class="col-md-4">
+                                    <label class="control-label txt-label" for="sea_HoTen">
+                                        Họ tên
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="sea_HoTen" id="sea_HoTen" class="form-control" />
+                                </div>
+                            </section>
+
+                            <section class="col col-md-6 ">
+                                <div class="col-md-4">
+                                    <label class="control-label txt-label" for="sea_TenDangNhap">
+                                        Tên đăng nhập
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="sea_TenDangNhap" id="sea_TenDangNhap" class="form-control" />
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="row">
+                            <section class="col col-md-6 ">
+                                <div class="col-md-4">
+                                    <label class="control-label txt-label" for="sea_Email">
+                                        Email
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="sea_Email" id="sea_Email" class="form-control" />
+                                </div>
+                            </section>
+
+                            <section class="col col-md-6 ">
+                                <div class="col-md-4">
+                                    <label class="control-label txt-label" for="sea_DienThoai">
+                                        Số điện thoại
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" name="sea_DienThoai" id="sea_DienThoai" class="form-control" />
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="row">
+                            <section class="col col-md-6 ">
+                                <div class="col-md-4">
+                                    <label class="control-label txt-label" for="sea_CHUCVU_ID">
+                                        Chức vụ
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    @Html.DropDownList("sea_CHUCVU_ID", Model.GroupPositions, "--- Chọn ---", new { @class = "select2" })
+                                </div>
+                            </section>
+
+                            <section class="col col-md-6 ">
+                                <div class="col-md-4">
+                                    <label class="control-label txt-label" for="sea_Roles">
+                                        Vai trò
+                                    </label>
+                                </div>
+                                <div class="col-md-8">
+                                    @Html.DropDownList("sea_Roles", Model.GroupRoles, new { @class = "select2", @multiple="multiple" })
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="col-md-12 center">
+                        <button type="submit" class="btn btn-labeled btn-primary">
+                            <span class="btn-label">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </span>
+                            Tìm kiếm
+                        </button>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+
+            <div id="tbl--dept-user" class="hntbl-cover" style="padding:10px;">
+                <table class="hinet-table table table-striped table-hover" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Họ tên</th>
+                            <th>Tên đăng nhập</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Chức vụ</th>
+                            <th>Vai trò</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer center">
+            <button type="button" class="btn btn-default btn-dong" data-dismiss="modal">
+                Đóng
+            </button>
+        </div>
+    </div>
 </div>
 
-<div id="ADDUserModal" title="Thêm nhân viên" role="dialog" class="modal fade">
-
-</div>
-<div id="ChuyenPhongUserModal" title="Chuyển phòng ban nhân viên" role="dialog" class="modal fade">
-
-</div>
 <script>
+    var groupDeptUserData = eval(@groupDeptUserData);
 
+    function reloadDetpUserTable() {
+        $("#tbl--dept-user").hinetTable("reload");
+    }
 
-    function DeleteAction(id) {
-        $.confirm({
-            'title': 'Xác nhận xóa',
-            'message': 'Bạn muốn đối tượng này?',
-            'buttons': {
-                'Xóa': {
-                    'class': 'btn-confirm-yes btn-primary',
-                    'action': function () {
-                        $.ajax({
-                            url: '/CCTCThanhPhanArea/CCTCThanhPhan/xoaNgDungPhongBan',
-                            type: 'post',
-                            cache: false,
-                            data: {
-                                id: id
-                            },
-                            success: function (data) {
-                                NotiSuccess("Xóa thành công");
-                                reloadModel();
-                            },
-                            error: function (xhr) {
-                                NotiError("Xóa thất bại");
-                            }
-                        });
-                    }
-                },
-                'Không xóa': {
-                    'class': 'btn-default',
-                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
+    function searchDeptUserSuccess(result) {
+        $("#tbl--dept-user").hinetTable("data", {
+            pageIndex: 1,
+            pagecount: result.TotalPage,
+            recordCount: result.Count,
+            listItem: result.ListItem,
+        });
+    }
+
+    function pagingDeptUserConfig() {
+        var configureDeptUserData = [
+            {
+                tdClass: "center",
+                isSort: false,
+                nameModel: "",
+                isCounter: true,
+                content: function (data) {
+                    return "<input type='checkbox'/>"
+                }
+            },
+            {
+                isSort: true,
+                nameModel: "HOTEN",
+                content: function (data) {
+                    return data.HOTEN;
+                }
+            },
+            {
+                isSort: true,
+                nameModel: "TENDANGNHAP",
+                content: function (data) {
+                    return data.TENDANGNHAP;
+                }
+            },
+            {
+                isSort: true,
+                nameModel: "DIENTHOAI",
+                content: function (data) {
+                    return data.DIENTHOAI;
+                }
+            },
+            {
+                isSort: true,
+                nameModel: "EMAIL",
+                content: function (data) {
+                    return data.EMAIL;
+                }
+            },
+            {
+                isSort: true,
+                nameModel: "ChucVu",
+                content: function (data) {
+                    return data.ChucVu;
+                }
+            },
+            {
+                isSort: false,
+                content: function (data) {
+                    return data.txtVaiTro;
                 }
             }
-        });
+        ];
 
-    }
-
-    function reloadModel()
-    {
-        UserModalOpen(@Model.Item.ID);
-    }
-    function addNVPhongBan() {
-        $.ajax({
-            url: '/CCTCTHANHPHANArea/CCTCTHANHPHAN/newUserModal/'+@Model.Item.ID,
-            type:'get',
-
-            success: function (rs) {
-                $("#ADDUserModal").html(rs);
-                $("#ADDUserModal").modal("show");
-
-            },
-            error:failureAjax
-        });
-    }
-
-    function chuyenNVPhongBan(id) {
-        $.ajax({
-            url: '/CCTCTHANHPHANArea/CCTCTHANHPHAN/ChuyenPhongBanModal/'+id,
-            type:'get',
-            success: function (rs) {
-                $("#ChuyenPhongUserModal").html(rs);
-                $("#ChuyenPhongUserModal").modal("show");
-
-            },
-            error:failureAjax
-        });
-    }
-    $("#search-box-nv").keypress(function (e) {
-        if(e.which ==13)
-        {
-            permissionLiveSearch($("#search-box-nv"));
+        var getDeptUserData = function (page, sortQuery, pageSize) {
+            $.ajax({
+                url: '/CCTCTHANHPHANArea/CCTCTHANHPHAN/GetDataDeptUsers',
+                type: 'post',
+                cache: false,
+                data: {
+                    "deptId": $('#modal--dept-id').val(),
+                    "pageIndex": page,
+                    "sortQuery": sortQuery,
+                    "pageSize": pageSize
+                },
+                success: function (data) {
+                    $("#tbl--dept-user").hinetTable("data", {
+                        pageSize: pageSize != -1 ? pageSize : data.Count,
+                        pageIndex: page,
+                        pagecount: data.TotalPage,
+                        recordCount: data.Count,
+                        listItem: data.ListItem,
+                    });
+                },
+                error: function (xhr) {
+                    notifyError(xhr.responseText);
+                }
+            });
         }
-    })
-
-    function generate_slugable(str) {
-        str = str.toLowerCase();
-        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-        str = str.replace(/đ/g, "d");
-        return str;
-    }
-
-    function permissionLiveSearch(event) {
-
-        var key = generate_slugable(event.val());
-
-        $("#ListNguoiDung tr").each(function () {
-            var $row = $(this);
-            var hoten = generate_slugable($row.find("td:eq(1)").text());
-            console.log(hoten);
-            var taikhoan = generate_slugable($row.find("td:eq(2)").text());
-            console.log(taikhoan);
-
-            if (hoten.toLowerCase().indexOf(key.toLowerCase()) > -1 || taikhoan.toLowerCase().indexOf(key.toLowerCase()) > -1) {
-                $row.show();
-            }
-            else {
-                $row.hide();
-            }
+        var tblData = $("#tbl--dept-user").hinetTable("init", {
+            pageSizeList: { size: [20, 50, 100, -1], label: ['20', '50', '100', 'Tất cả'] },
+            pagecount: $('#modal--dept-usertotalPage').val(),
+            recordCount: $('#modal--dept-user-totalRecord').val(),
+            getData: getDeptUserData,
+            listItem: groupDeptUserData,
+            config: configureDeptUserData
         });
     }
+
+    function generateDeptUserRoles(roles) {
+        if (roles == null || roles.length === 0) {
+            return "<b class='red'>N/A</b>";
+        } else {
+            var $container = $("<div></div>");
+            var $list = $("<ul></ul>");
+
+            var i = 0;
+            while (i < roles.length) {
+                var $item = $("<li><a href='javascript:void(0)' title='" + roles[i].TEN_VAITRO+"'>- " + roles[i].TEN_VAITRO + "</a></li>");
+                $list.append($item);
+                i++;
+            }
+            $container.append($list);
+            return $container.html();
+        }
+    }
+
+    $(document).ready(function () {
+        loadScript("/Scripts/jquery.unobtrusive-ajax.min.js", function () {
+            pagingDeptUserConfig();
+
+            if ($(".select2").length > 0) {
+                $(".select2").select2({
+                    width: '100%'
+                });
+            }
+        });
+    });
 </script>

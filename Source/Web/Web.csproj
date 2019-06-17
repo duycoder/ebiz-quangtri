@@ -42,10 +42,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Business, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLLOUTPUT\Business.dll</HintPath>
-    </Reference>
     <Reference Include="DnsClient, Version=1.0.7.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
       <HintPath>..\packages\DnsClient.1.0.7\lib\net45\DnsClient.dll</HintPath>
       <Private>True</Private>
@@ -54,12 +50,8 @@
       <HintPath>..\packages\DocumentFormat.OpenXml.2.8.1\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DocX, Version=1.0.0.15, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\VSIP\Lib\DocX.dll</HintPath>
-    </Reference>
     <Reference Include="Elasticsearch.Net">
-      <HintPath>..\..\..\Doji\Lib\Elasticsearch.Net.dll</HintPath>
+      <HintPath>..\lib\Elasticsearch.Net.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -72,10 +64,6 @@
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\EPPlus.dll</HintPath>
-    </Reference>
-    <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -114,14 +102,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Nest">
-      <HintPath>..\..\..\Doji\Lib\Nest.dll</HintPath>
+      <HintPath>..\lib\Nest.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NUnrar">
-      <HintPath>..\..\..\Doji\Lib\NUnrar.dll</HintPath>
+      <HintPath>..\lib\NUnrar.dll</HintPath>
     </Reference>
     <Reference Include="office, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -133,7 +121,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SMS">
-      <HintPath>..\..\..\SMS.dll</HintPath>
+      <HintPath>..\lib\SMS.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -272,10 +260,12 @@
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\CoCauToChucNguoiDungModel.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\CoCauToChucUpdateModel.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\CreateVM.cs" />
+    <Compile Include="Areas\CCTCTHANHPHANArea\Models\DeptUserEditViewModel.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\DM_CCTC_IMPORTBO.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\EditVM.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\ImportCCTC.cs" />
     <Compile Include="Areas\CCTCTHANHPHANArea\Models\NewNguoiDungVM.cs" />
+    <Compile Include="Areas\CCTCTHANHPHANArea\Models\UserDeptViewModel.cs" />
     <Compile Include="Areas\ChatArea\ChatAreaAreaRegistration.cs" />
     <Compile Include="Areas\ChatArea\Controllers\ChatController.cs" />
     <Compile Include="Areas\ChatArea\Models\ChatIndexViewModel.cs" />
@@ -2781,6 +2771,11 @@
     <Content Include="Areas\QL_NGUOINHAN_VANBANArea\Views\web.config" />
     <Content Include="Areas\HSVanBanDiArea\Views\Shared\_ChonDonVi.cshtml" />
     <Content Include="Areas\CCTCTHANHPHANArea\Views\CCTCTHANHPHAN\_ImportPartial.cshtml" />
+    <Content Include="Areas\QL_NGUOINHAN_VANBANArea\Views\QL_NGUOINHAN_VANBAN\_ListUsers.cshtml" />
+    <Content Include="Areas\CCTCTHANHPHANArea\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\CCTCTHANHPHANArea\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\CCTCTHANHPHANArea\Views\CCTCTHANHPHAN\_EditUser.cshtml" />
+    <Content Include="Areas\CCTCTHANHPHANArea\Views\CCTCTHANHPHAN\_DepartmentTreeView.cshtml" />
     <None Include="Properties\PublishProfiles\vanban_quangtri.pubxml" />
     <None Include="Resources\OfficeObject.xml" />
     <Content Include="obj\Debug\TempPE\Properties.Resources.Designer.cs.dll" />
@@ -3701,12 +3696,12 @@
     <Content Include="Views\Common\_EditDocAttachment.cshtml" />
     <Content Include="Views\Common\_RecipientListOfDoc.cshtml" />
     <Content Include="Views\Common\_Recipient.cshtml" />
+    <Content Include="Views\Common\_EditCategoryData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Abbyy\" />
     <Folder Include="App_Data\" />
     <Folder Include="Areas\ACTIONAUDITArea\Views\Shared\" />
-    <Folder Include="Areas\CCTCTHANHPHANArea\Views\Shared\" />
     <Folder Include="Areas\ChatArea\Views\Shared\" />
     <Folder Include="Areas\DMCHUCNANGArea\Views\Shared\" />
     <Folder Include="Areas\DMDANHMUCDATAArea\Views\Shared\" />
@@ -3787,6 +3782,10 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Business\Business.csproj">
+      <Project>{581ac6d4-65ec-4cc9-88eb-140ce3f04117}</Project>
+      <Name>Business</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CommonHelper\CommonHelper.csproj">
       <Project>{a9a63d35-decb-4dc3-b813-1d449183b938}</Project>
       <Name>CommonHelper</Name>

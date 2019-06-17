@@ -22,6 +22,137 @@ namespace Business.Business
             : base(unitofwork)
         {
         }
+
+        /// <summary>
+        /// danh sách phòng ban con mà người dùng hiện tại được xem
+        /// </summary>
+        private List<int> groupChildrenDepts = new List<int>();
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: lấy danh sách phòng ban theo trang
+        /// @since: 14/06/2019
+        /// </summary>
+        /// <param name="searchModel">thông tin tìm kiếm</param>
+        /// <param name="user">người dùng hiện tại</param>
+        /// <param name="pageIndex">thông tin trang hiện tại</param>
+        /// <param name="pageSize">số bản ghi trên một trang</param>
+        /// <returns></returns>
+        public PageListResultBO<CCTC_THANHPHAN_BO> GetDataByPage(CCTC_THANHPHAN_SEARCHBO searchModel,
+            UserInfoBO user,
+            int pageIndex = 1,
+            int pageSize = 20)
+        {
+            var query = from dept in this.context.CCTC_THANHPHAN
+                        join users in this.context.DM_NGUOIDUNG
+                        on dept.ID equals users.DM_PHONGBAN_ID
+                        into groupUserDepts
+
+                        join deptType in this.context.DM_LOAI_DONVI on dept.TYPE equals deptType.ID
+                        into groupDeptType
+                        from gDeptType in groupDeptType.DefaultIfEmpty()
+
+                        join deptLevel in this.context.DM_DANHMUC_DATA
+                        on dept.CATEGORY equals deptLevel.ID
+                        into groupDeptLevel
+                        from gDeptLevel in groupDeptLevel.DefaultIfEmpty()
+
+                        select new CCTC_THANHPHAN_BO
+                        {
+                            ID = dept.ID,
+                            CODE = dept.CODE,
+                            ITEM_LEVEL = dept.ITEM_LEVEL,
+                            NAME = dept.NAME,
+                            PARENT_ID = dept.PARENT_ID,
+                            TYPE = dept.TYPE,
+                            THUTU = dept.THUTU,
+                            SoLuongCanBo = groupUserDepts.Count(),
+                            TenLoaiDonVi = gDeptType != null ? gDeptType.LOAI : string.Empty,
+                            TenCapDonVi = gDeptLevel != null ? gDeptLevel.TEXT : string.Empty
+                        };
+
+            int deptId = 0;
+            if (user.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT"))
+            {
+                CCTC_THANHPHAN leaderDept = this.context.CCTC_THANHPHAN.Find(user.DM_PHONGBAN_ID.GetValueOrDefault());
+                if (leaderDept != null)
+                {
+                    deptId = leaderDept.PARENT_ID.HasValue ? leaderDept.PARENT_ID.Value : leaderDept.ID;
+                }
+            }
+            else if (user.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT_HUYENUY") || user.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT_XAPHUONG"))
+            {
+                if (user.DeptType == 10)
+                {
+                    deptId = user.DM_PHONGBAN_ID.GetValueOrDefault();
+                }
+                else
+                {
+                    deptId = user.DeptParentID.GetValueOrDefault();
+                }
+            }
+            else
+            {
+                deptId = user.DM_PHONGBAN_ID.GetValueOrDefault();
+            }
+
+            //duynn lấy danh sách các phòng ban dưới cấp phòng ban hiện tại
+            var tree = this.GetTree(deptId);
+
+            query = query.Where(x => groupChildrenDepts.Contains(x.ID));
+
+            if (searchModel != null)
+            {
+                if (!string.IsNullOrEmpty(searchModel.QR_MAPHONGBAN))
+                {
+                    query = query.Where(x => x.CODE.Contains(searchModel.QR_MAPHONGBAN));
+                }
+                if (!string.IsNullOrEmpty(searchModel.QR_TENPHONGBAN))
+                {
+                    query = query.Where(x => x.NAME.Contains(searchModel.QR_TENPHONGBAN));
+
+                }
+                if (searchModel.QR_LOAIPHONGBAN.HasValue)
+                {
+                    query = query.Where(x => x.TYPE == searchModel.QR_LOAIPHONGBAN);
+                }
+
+                if (searchModel.QR_CAPPHONGBAN.HasValue)
+                {
+                    query = query.Where(x => x.ITEM_LEVEL == searchModel.QR_CAPPHONGBAN);
+                }
+
+                if (!string.IsNullOrEmpty(searchModel.sortQuery))
+                {
+                    query = query.OrderBy(searchModel.sortQuery);
+                }
+                else
+                {
+                    query = query.OrderBy(x => x.ID);
+                }
+            }
+            else
+            {
+                query = query.OrderBy(x => x.ID);
+            }
+            var result = new PageListResultBO<CCTC_THANHPHAN_BO>();
+            if (pageSize == -1)
+            {
+                var pagedList = query.ToList();
+                result.Count = pagedList.Count;
+                result.TotalPage = 1;
+                result.ListItem = pagedList;
+            }
+            else
+            {
+                var pagedList = query.ToPagedList(pageIndex, pageSize);
+                result.Count = pagedList.TotalItemCount;
+                result.TotalPage = pagedList.PageCount;
+                result.ListItem = pagedList.ToList();
+            }
+            return result;
+        }
+
         private List<CCTCItemTreeBO> ListAll = new List<CCTCItemTreeBO>();
         public JsonResultBO saveImport(List<CCTC_THANHPHAN> lstObj)
         {
@@ -44,25 +175,35 @@ namespace Business.Business
             }
             return result;
         }
-        public bool ExistCode(string code, int id = 0)
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: kiểm tra code trùng
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool CheckExistCode(string code, int id = 0)
         {
-            var obj = this.context.CCTC_THANHPHAN.Where(x => x.CODE == code).FirstOrDefault();
-            if (obj == null)
-            {
-                return false;
-            }
-            else
-            {
-                if (id > 0 && obj.ID == id)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
+            var existed = this.context.CCTC_THANHPHAN
+                .Where(x => x.CODE == code && x.ID != id).FirstOrDefault() != null;
+            return existed;
         }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: kiểm tra tên trùng
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool CheckExistName(string name, int id = 0)
+        {
+            var existed = this.context.CCTC_THANHPHAN
+                .Where(x => x.NAME == name && x.ID != id).FirstOrDefault() != null;
+            return existed;
+        }
+
 
         public bool ExistChild(int id)
         {
@@ -145,7 +286,7 @@ namespace Business.Business
             {
                 lstChild = ListAll.Where(x => (x.PARENT_ID == id && (x.TYPE == 10 || x.TYPE == 11))).ToList();
             }
-            
+
             if (lstChild.Count > 0)
             {
                 if (Node.Child == null)
@@ -166,7 +307,7 @@ namespace Business.Business
                             item.Child.AddRange(subChild);
                         }
                     }
-                    
+
                     GetChildLabel(ref item, deptId == item.ID ? item.ID : 0);
                     Node.Child[i] = item;
                 }
@@ -218,7 +359,7 @@ namespace Business.Business
         {
             var id = Node.ID;
             var lstChild = ListAll.Where(x => x.PARENT_ID == id).OrderBy(x => x.THUTU)
-                .ThenByDescending(x=>x.TYPE).ThenByDescending(x=>x.NAME).ToList();
+                .ThenByDescending(x => x.TYPE).ThenByDescending(x => x.NAME).ToList();
             if (lstChild.Count > 0)
             {
                 Node.Child = new List<CCTCItemTreeBO>();
@@ -230,6 +371,9 @@ namespace Business.Business
                     Node.Child[i] = item;
                 }
             }
+
+            //duynn
+            groupChildrenDepts.AddRange(lstChild.Select(x => x.ID));
         }
 
         public List<CCTCItemTreeBO> GetAll(List<int> idsExclude)
@@ -336,6 +480,7 @@ namespace Business.Business
                     ListRoot = item;
                 }
             }
+            groupChildrenDepts.Add(ListRoot.ID);
 
             return ListRoot;
         }
@@ -391,7 +536,7 @@ namespace Business.Business
         }
         public List<CCTC_THANHPHAN> GetDataByIds(List<int> ids)
         {
-            if(ids != null && ids.Any())
+            if (ids != null && ids.Any())
             {
                 var result = from donvi in this.context.CCTC_THANHPHAN
                              where ids.Contains(donvi.ID)
@@ -513,7 +658,7 @@ namespace Business.Business
             result.AddRange(sameParentsAndTypes);
 
             //lấy các phòng ban có "TYPE = 10" khi người dùng có quyền xem báo cáo của hệ thống
-            if(viewSystemReport != null)
+            if (viewSystemReport != null)
             {
                 List<SelectListItem> depts = this.context.CCTC_THANHPHAN.Where(x => x.TYPE == 10)
                     .Select(x => new SelectListItem()

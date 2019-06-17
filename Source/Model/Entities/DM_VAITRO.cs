@@ -24,5 +24,6 @@ namespace Model.Entities
         public Nullable<long> NGUOISUA { get; set; }
         public Nullable<bool> IS_DELETE { get; set; }
         public Nullable<bool> IS_RECEIVE_DOC_DIRECTLY { get; set; }
+        public Nullable<int> TRONGSO { get; set; }
     }
 }

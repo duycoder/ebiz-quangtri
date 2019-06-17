@@ -18,7 +18,7 @@ namespace Model.Entities
         public string TEN_NHOM { get; set; }
         public string NGUOINHAN_IDS { get; set; }
         public Nullable<int> DM_PHONGBAN_ID { get; set; }
-        public Nullable<bool> IS_DEFAULT { get; set; }
         public Nullable<bool> IS_DELETE { get; set; }
+        public Nullable<bool> IS_DEFAULT { get; set; }
     }
 }

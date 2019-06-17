@@ -1,0 +1,115 @@
+﻿@using Web.Areas.CCTCTHANHPHANArea.Models;
+@using Newtonsoft.Json;
+@model CoCauToChucIndexModel
+@{
+    var treeData = Html.Raw(JsonConvert.SerializeObject(Model.TreeData));
+}
+
+<style>
+    .deptlabel {
+        background: antiquewhite
+    }
+
+    .grouplabel {
+        background: chartreuse;
+    }
+
+    .ms-drop {
+        /*width: 233px;*/
+        width: 100%;
+    }
+
+    .ms-choice > span {
+        width: 100%;
+    }
+
+    .ms-choice {
+        background: none;
+        border: 1px solid #999;
+        border-radius: 0px;
+        height: 30px;
+        width: 100%;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    .lbl3 {
+        margin-top: 7px;
+    }
+
+    .color-red {
+        color: red;
+    }
+
+    .width-100 {
+        width: 100% !important;
+    }
+
+    .title {
+        font-size: x-large;
+    }
+</style>
+
+<header role="heading">
+    <h2 class="group-tittle mt10">
+        MÔ HÌNH PHÂN CẤP PHÒNG BAN - <b>@Model.TreeData.NAME</b>
+    </h2>
+</header>
+
+<div class="widget-body">
+    <div class="tree">
+        <ul id="rootNode" role="tree"></ul>
+    </div>
+</div>
+
+<script>
+    var treeData = eval(@treeData);
+    function getChild(item) {
+        var str = "";
+        if (item.ITEM_LEVEL <= 3) {
+            str += "<li>";
+
+        } else {
+            str += "<li style='display:none'>";
+
+        }
+
+        if (item.Child != null && item.Child.length > 0) {
+            str += '<span class="itemData">' +
+                '<input type="hidden" value="' + item.ID + '"/>'
+                + '<i class="fa fa-lg fa-plus-circle"></i>' + item.CODE + " - " + item.NAME + "</span>";
+            str += "<ul>";
+            for (var i = 0; i < item.Child.length; i++) {
+                str += getChild(item.Child[i]);
+            }
+            str += "</ul>";
+        } else {
+            str += '<span class="itemData">' + '<input type="hidden" value="' + item.ID + '"/>' + '<i ></i>' + item.CODE + " - " + item.NAME + "</span>";
+        }
+        str += "</li>";
+
+        return str;
+    }
+
+    $(function () {
+        loadScript("/js/plugin/bootstraptree/bootstrap-tree.min.js", function () {
+            var nodes = getChild(treeData);
+            $("#rootNode").html(nodes);
+
+            $('.tree > ul').attr('role', 'tree').find('ul').attr('role', 'group');
+            $('.tree').find('li:has(ul)').addClass('parent_li').attr('role', 'treeitem').find(' > span').attr('title', 'Collapse this branch').on('click', function (e) {
+                var children = $(this).parent('li.parent_li').find(' > ul > li');
+                if (children.is(':visible')) {
+                    children.hide('fast');
+                    $(this).attr('title', 'Expand this branch').find(' > i').removeClass().addClass('fa fa-lg fa-plus-circle');
+                } else {
+                    children.show('fast');
+                    $(this).attr('title', 'Collapse this branch').find(' > i').removeClass().addClass('fa fa-lg fa-minus-circle');
+                }
+                e.stopPropagation();
+            });
+        });
+    })
+</script>

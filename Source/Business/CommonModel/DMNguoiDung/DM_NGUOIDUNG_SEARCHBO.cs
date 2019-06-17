@@ -16,5 +16,6 @@ namespace Business.CommonModel.DMNguoiDung
         public int? deptId { get; set; }
         public int? sea_PHONGBAN_ID { get; set; }
         public int? sea_CHUCVU_ID { get; set; }
+        public List<int> sea_Roles { get; set; }
     }
 }

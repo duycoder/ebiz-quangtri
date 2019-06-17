@@ -69,6 +69,8 @@ namespace Business.Business
                                into groupDeptRecipients
                                from gDeptRecipients in groupDeptRecipients.DefaultIfEmpty()
                                where recipient.IS_DELETE != true
+                               && (recipient.IS_DEFAULT == true || recipient.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID)
+                               orderby recipient.TEN_NHOM
                                select new QL_NGUOINHAN_VANBAN_BO()
                                {
                                    ID = recipient.ID,
@@ -78,21 +80,8 @@ namespace Business.Business
                                    DM_PHONGBAN_ID = recipient.DM_PHONGBAN_ID,
                                    TEN_PHONGBAN = gDeptRecipients.NAME,
                                });
-
-            //if (user.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT"))
-            //{
-            //    queryResult = queryResult.Where(x => x.IS_DEFAULT == true || x.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID);
-            //}
-            //else
-            //{
-            //    queryResult = queryResult.Where(x => x.DM_PHONGBAN_ID == user.DM_PHONGBAN_ID);
-            //}
             if (searchModel != null)
             {
-                if (searchModel.QueryDeptId.HasValue)
-                {
-                    queryResult = queryResult.Where(x => x.DM_PHONGBAN_ID == searchModel.QueryDeptId);
-                }
                 if (string.IsNullOrEmpty(searchModel.QueryName) == false)
                 {
                     searchModel.QueryName = searchModel.QueryName.Trim().ToLower();

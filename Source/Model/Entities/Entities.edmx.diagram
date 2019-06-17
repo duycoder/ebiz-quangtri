@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="3ddce21cbb8f4c42997c9204b9343795" Name="Diagram1" ZoomLevel="30">
+      <Diagram DiagramId="3ddce21cbb8f4c42997c9204b9343795" Name="Diagram1" ZoomLevel="27">
         <EntityTypeShape EntityType="DBModel.ACTION_AUDIT" Width="1.5" PointX="5.75" PointY="0.75" />
         <EntityTypeShape EntityType="DBModel.CCTC_THANHPHAN" Width="1.5" PointX="5.75" PointY="5.75" />
         <EntityTypeShape EntityType="DBModel.CHAT_GROUP" Width="1.5" PointX="7.75" PointY="0.75" />
@@ -24,11 +24,11 @@
         <EntityTypeShape EntityType="DBModel.EFILE_CHIASE" Width="1.5" PointX="13.75" PointY="12.75" />
         <EntityTypeShape EntityType="DBModel.EFILE_CHIASE_NGUOIDUNG" Width="1.5" PointX="7.75" PointY="14.75" />
         <EntityTypeShape EntityType="DBModel.FCM_NOTIFICATION" Width="1.5" PointX="15.75" PointY="0.75" />
-        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_CONGTAC" Width="1.5" PointX="3" PointY="7.75" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_CONGTAC" Width="1.5" PointX="3" PointY="10.75" />
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_DAOTAO" Width="1.5" PointX="3" PointY="13.375" />
-        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEBANTHAN" Width="1.5" PointX="3" PointY="1.5" />
-        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEKETHON" Width="1.5" PointX="3" PointY="4.625" />
-        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUATRINH_LUONG" Width="1.5" PointX="3" PointY="10.5" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEBANTHAN" Width="1.5" PointX="3" PointY="7.625" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEKETHON" Width="1.5" PointX="3" PointY="4.5" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUATRINH_LUONG" Width="1.5" PointX="3" PointY="1.5" />
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_THONGTINCHUNG" Width="1.5" PointX="0.75" PointY="2" />
         <EntityTypeShape EntityType="DBModel.HSCV_CAPNHATTIENDO_CV" Width="1.5" PointX="15.75" PointY="3.75" />
         <EntityTypeShape EntityType="DBModel.HSCV_CONGVIEC" Width="1.5" PointX="15.75" PointY="7.75" />

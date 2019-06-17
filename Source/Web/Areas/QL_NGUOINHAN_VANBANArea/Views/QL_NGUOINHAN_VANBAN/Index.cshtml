@@ -53,6 +53,8 @@
 
 <div id="modal--recipients-edit" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog"></div>
 
+<div id="modal--list-users" class="modal"></div>
+
 <script>
     var data = eval(@recipientJSON);
 
@@ -123,6 +125,7 @@
                      nameModel:"",
                      content: function (data) {
                          var result = "<div class='btn-group'>";
+                         result += "<a href='javascript:void(0)' onclick='onShowListUsers(" + data.ID + ")' title = 'Danh sách người dùng trong nhóm'><i class=' glyphicon glyphicon-user' style='color:blue'> </i></a>";
                          if ('@Model.IsSystemAdmin' == 'True') {
                              if (data.DM_PHONGBAN_ID == '@Model.DepartmentId' || data.IS_DEFAULT == true) {
                                  result += "<a href='javascript:void(0)' onclick='onEdit(" + data.ID + ")' title = 'Chỉnh sửa nhóm người nhận văn bản'><i class='glyphicon glyphicon-edit'></i></a>";
@@ -176,6 +179,17 @@
             $('#modal--recipients-edit').modal('show');
         });
     }
+
+
+    function onShowListUsers(groupId) {
+        var callBack = function (result) {
+            $('#modal--list-users').html(result);
+            $('#modal--list-users').modal('show');
+        }
+
+        AjaxCall('/QL_NGUOINHAN_VANBANArea/QL_NGUOINHAN_VANBAN/ListUsers', 'post', { groupId: groupId }, callBack);
+    }
+
 
    function onDelete(id){
         $.confirm({

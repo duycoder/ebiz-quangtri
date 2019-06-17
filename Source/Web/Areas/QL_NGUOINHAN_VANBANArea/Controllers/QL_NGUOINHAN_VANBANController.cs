@@ -221,7 +221,7 @@ namespace Web.Areas.QL_NGUOINHAN_VANBANArea.Controllers
         {
             UserBusiness = Get<DM_NGUOIDUNGBusiness>();
             var users = UserBusiness.GetUsersByRecipient(groupId, string.Empty);
-            return PartialView("_Recipient", users);
+            return PartialView("_ListUsers", users);
         }
     }
 }

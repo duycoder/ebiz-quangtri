@@ -1,0 +1,69 @@
+﻿@using Business.CommonModel.DMNguoiDung;
+@model IEnumerable<DM_NGUOIDUNG_BO>
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="center">
+                <h4 class="modal-title">
+                    DANH SÁCH NGƯỜI DÙNG
+                </h4>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="well">
+                <table class="table table-bordered table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>
+                                STT
+                            </th>
+                            <th>Họ tên</th>
+                            <th>Phòng ban</th>
+                            <th>Chức vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            int i = 0;
+                            foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @(++i)
+                                    </td>
+                                    <td>
+                                        @user.HOTEN
+                                    </td>
+                                    <td>
+                                        @user.TenPhongBan
+                                    </td>
+                                    <td>
+                                        @user.ChucVu
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">
+                                    <center>
+                                        <span class="text-danger">KHÔNG CÓ DỮ LIỆU</span>
+                                    </center>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">
+                Đóng
+            </a>
+        </div>
+    </div>
+</div>

@@ -2,9 +2,16 @@
 @model VanBanDiVM
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var lstVanBanDiDen = new List<SelectListItem>();
+    lstVanBanDiDen.Add(new SelectListItem() { Text = "Văn bản đến", Value = "1" });
+    lstVanBanDiDen.Add(new SelectListItem() { Text = "Văn bản đi", Value = "2" });
 }
 <link rel="stylesheet" href="/Content/select/css/bootstrap-select.css">
 <style>
+    #ChonVanBanLienQuanDS .row {
+        margin-top: 15px;
+    }
+
     .ms-drop {
         width: 100%;
     }
@@ -38,48 +45,58 @@
     }
 </style>
 <div id="ribbon" style=" background-color:#57889c">
+    <!-- breadcrumb -->
     <div class="col-md-6 col-sm-6">
-        <ol class="breadcrumb"></ol>
+        <ol class="breadcrumb">
+            <!-- This is auto generated -->
+        </ol>
     </div>
+    <!-- end breadcrumb -->
     <div class="col-md-6 col-sm-6" style="padding-top: 4px;">
         <a class="btn btn-default pull-right" href="@Url.Action("NavigateBackToList", new { type = Model.docType})">
-            <i class="fa fa-arrow-left"></i>
-            <span>Quay lại</span>
+            <i class="fa fa-arrow-left"></i> <span>Quay lại</span>
         </a>
     </div>
 </div>
-
 <div id="content">
     <div class="SearchCriterial clearfix hot-news-list-2">
         <div class="jarviswidget" id="wid-id-0">
             <header role="heading">
                 <span class="widget-icon"><i class="fa fa-file-image-o txt-color-darken"></i></span>
-                <h2 class="hidden-xs hidden-sm">
-                    @(Model.VanBan.ID > 0 ? "THÊM MỚI VĂN BẢN ĐI" : "CẬP NHẬT VĂN BẢN ĐI")
-                </h2>
+                <h2 class="hidden-xs hidden-sm">Thêm mới văn bản đi </h2>
             </header>
             <div role="content">
                 <div class="widget-body">
-                    <form action="@Url.Action("InsertVanBanDi")" method="post" enctype="multipart/form-data" id="form--update-vanbandi">
+                    <form action="/HSVanBanDiArea/HSVanBanDi/InsertVanBanDi" method="post" enctype="multipart/form-data" id="frmCreateVanBanDi">
                         @Html.AntiForgeryToken()
-
-                        <!--MÃ VĂN BẢN-->
                         <input type="hidden" name="ID" value="@Model.VanBan.ID" />
-
-                        <!--DANH SÁCH ĐƠN VỊ NHẬN VĂN BẢN-->
                         <input type="hidden" id="DONVINHAN_ID" value="@Model.VanBan.DONVINHAN_INTERNAL_ID" />
-
-
                         @if (Model.IsAllowPublish)
                         {
                             <input type="hidden" name="ALLOW_PUBLISH" value="1" />
                         }
-
                         <div class="tab-content custom-scroll">
                             <fieldset>
                                 <div class="row">
                                     <section class="col col-lg-6">
                                         <div class="row">
+                                            @if (Model.IsAllowPublish)
+                                            {
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                        <label for="SOHIEU" class="lbl control-label">
+                                                            Số hiệu <span class="text-danger">*</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" id="SOHIEU" value="@Model.VanBan.SOHIEU" name="SOHIEU" class="required form-control" />
+                                                        <div class="note-error">
+                                                            <span class="error mes-note-error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+
                                             <div class="form-group">
                                                 <div class="col-sm-3">
                                                     <label for="TRICHYEU" class="lbl control-label">
@@ -94,6 +111,50 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        @if (Model.IsAllowPublish)
+                                        {
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                        <label for="SOVANBAN_ID" class="lbl control-label">
+                                                            Sổ văn bản đi&nbsp;<span class="text-danger">*</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        @Html.DropDownList("SOVANBAN_ID", Model.LstSoVanBanDi, "--- Chọn sổ văn bản ---", new { @class = "requiredDropDownList width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                                                        <div class="note-error">
+                                                            <span class="error mes-note-error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                        <label for="SOTHEOSO" class="lbl control-label">
+                                                            Số đi theo sổ <span class="text-danger">*</span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" id="SOTHEOSO" value="@Model.VanBan.SOTHEOSO" name="SOTHEOSO" class="required form-control" />
+                                                        <div class="note-error">
+                                                            <span class="error mes-note-error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row hide" id="SOTHEOSO_INFO_ROW">
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <p id="SOTHEOSO_INFO" class="text-info"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
 
                                         <div class="row">
                                             <div class="form-group">
@@ -111,6 +172,7 @@
                                             </div>
                                         </div>
 
+
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-sm-3">
@@ -126,7 +188,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-sm-3">
@@ -142,7 +203,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-sm-3">
@@ -158,7 +218,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-sm-3">
@@ -174,7 +233,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-sm-3">
@@ -218,12 +276,19 @@
                                             </div>
                                         </div>
 
+
+
                                         <div class="row">
                                             <div class="form-group">
                                                 <div class="col-sm-3">
                                                     <label for="LOAIVANBAN_ID" class="lbl control-label">
                                                         Thể loại văn bản
-                                                    </label>
+                                                    </label><br />
+                                                    <a href="javascript:void(0)" onclick="onEditCategory(this);" class="control-label btn--add-category" data-groupcode="LOAIVANBAN" data-target="LOAIVANBAN_ID">
+                                                        <b>
+                                                            <u>(<i class="fa fa-plus"></i>&nbsp;Thêm mới)</u>
+                                                        </b>
+                                                    </a>
                                                 </div>
                                                 <div class="col-sm-9">
                                                     @Html.DropDownList("LOAIVANBAN_ID", Model.LstLoaiVanBan, "--- Chọn Thể loại văn bản ---", new { @class = "width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
@@ -239,7 +304,12 @@
                                                 <div class="col-sm-3">
                                                     <label for="LINHVUCVANBAN_ID" class="lbl control-label">
                                                         Lĩnh vực
-                                                    </label>
+                                                    </label><br />
+                                                    <a href="javascript:void(0)" onclick="onEditCategory(this);" class="control-label btn--add-category" data-groupcode="LINHVUCVANBAN" data-target="LINHVUCVANBAN_ID">
+                                                        <b>
+                                                            <u>(<i class="fa fa-plus"></i>&nbsp;Thêm mới)</u>
+                                                        </b>
+                                                    </a>
                                                 </div>
                                                 <div class="col-sm-9">
                                                     @Html.DropDownList("LINHVUCVANBAN_ID", Model.LstLinhVucVanBan, "--- Chọn lĩnh vực ---", new { @class = "width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
@@ -249,6 +319,56 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        @if (Model.IsAllowPublish)
+                                        {
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                        <label for="NGAYBANHANH" class="lbl control-label">
+                                                            Ngày ban hành
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" id="NGAYBANHANH" value="@string.Format("{0:dd/MM/yyyy}",Model.VanBan.NGAYBANHANH)" name="NGAYBANHANH" class="form-control" />
+                                                        <div class="note-error">
+                                                            <span class="error mes-note-error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                        <label for="NGAY_HIEULUC" class="lbl control-label">
+                                                            Ngày có hiệu lực
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" id="NGAY_HIEULUC" value="@string.Format("{0:dd/MM/yyyy}",Model.VanBan.NGAYCOHIEULUC)" name="NGAYCOHIEULUC" class="form-control" />
+                                                        <div class="note-error">
+                                                            <span class="error mes-note-error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="form-group">
+                                                    <div class="col-sm-3">
+                                                        <label for="NGAYHET_HIEULUC" class="lbl control-label">
+                                                            Ngày hết hiệu lực
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" id="NGAYHET_HIEULUC" value="@Model.VanBan.NGAYHETHIEULUC" name="NGAYHET_HIEULUC" class="form-control" />
+                                                        <div class="note-error">
+                                                            <span class="error mes-note-error"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
 
                                         <div class="row">
                                             <div class="form-group">
@@ -269,11 +389,9 @@
                                     </section>
 
                                     <section class="col col-lg-6">
-                                        <!--THÔNG TIN VĂN BẢN ĐẾN-->
                                         @if (Model.VanBanDen != null)
                                         {
                                             <input type="hidden" name="VANBANDENLIENQUAN" value="@Model.VanBanDen.ID" />
-
                                             <div class="jarviswidget" style="padding: 0px;border: none">
                                                 <header role="heading">
                                                     <span class="widget-icon"><i class="fa fa-paperclip txt-color-red"></i></span>
@@ -312,9 +430,7 @@
 
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <label class="lbl control-label">
-                                                    Gửi tin nhắn SMS:
-                                                </label>
+                                                <label for="" class="lbl control-label">Gửi tin nhắn SMS:</label>
                                             </div>
                                             <div class="col-sm-8">
                                                 <label class="radio-inline">
@@ -352,7 +468,7 @@
                                                         </label>
                                                     </div>
                                                     <div class="col-sm-8">
-                                                        <a class="btn btn-default" id="btn--select-department">
+                                                        <a class="btn btn-default" href="javascript:choosePhongban()">
                                                             <i class="fa fa-group"></i>&nbsp;Chọn đơn vị nhận
                                                         </a>
                                                         <div class="note-error">
@@ -363,28 +479,30 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-sm-12" id="block--chosen-depts">
-                                                    @if (Model.ListDonVi.Any())
-                                                    {
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Đơn vị/ phòng ban nhận văn bản</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @{
-                                                                    foreach (var item in Model.ListDonVi)
-                                                                    {
-                                                                        <tr>
-                                                                            <td>
-                                                                                <input type="hidden" name="department-choose" value="@item.ID">@item.CODE - @item.NAME
-                                                                            </td>
-                                                                        </tr>
+                                                <div class="col-sm-12" id="ChooseDeptId">
+                                                    @{
+                                                        if (Model.ListDonVi.Any())
+                                                        {
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Đơn vị/ phòng ban nhận văn bản</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        foreach (var item in Model.ListDonVi)
+                                                                        {
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <input type="hidden" name="department-choose" value="@item.ID">@item.CODE - @item.NAME
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
                                                                     }
-                                                                }
-                                                            </tbody>
-                                                        </table>
+                                                                </tbody>
+                                                            </table>
+                                                        }
                                                     }
                                                 </div>
                                             </div>
@@ -481,7 +599,7 @@
                         </div>
                         <div class="form-actions center">
                             <center>
-                                <input type="button" value="Lưu văn bản" id="btnSave" class="btn btn-primary btn-sm" />
+                                <input type="submit" value="Lưu văn bản" id="btnSave" class="btn btn-primary btn-sm" />
                                 <input type="button" value="Hủy bỏ" onclick="location.href='@Url.Action("Index")'" class="btn btn-default btn-sm" />
                             </center>
                         </div>
@@ -496,63 +614,337 @@
     </div>
 </div>
 
-<!--Modal chọn đơn vị-->
-<div id="modal-choose-department" class="modal fade" role="dialog">
+<div id="modal--select-users" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">CHỌN NGƯỜI NHẬN ĐÍCH DANH</h4>
+            </div>
+            <div class="modal-body" style="max-height: 600px; overflow-y: scroll" id="block--select-users">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="chooseUsersReceive()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div><!--Modal chọn đơn vị-->
+
+<div id="dialogChonPhongBan" class="modal fade" role="dialog">
     <div class="modal-dialog" style="width:80%">
+        <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">CHỌN PHÒNG BAN/ ĐƠN VỊ</h4>
             </div>
             <div class="modal-body" style="max-height: 500px; overflow-y: scroll" id="TreeChonDonViPartial">
+                @*@Html.Partial("_ChonDonVi", Model.TreeDonVi)*@
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="btn--save-chosen-department">Lưu</button>
+                <button type="button" class="btn btn-success" onclick="chooseDepartment()">Lưu</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="dialogChonVanBanLienQuan" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width: 80%">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Chọn văn bản liên quan</h4>
+            </div>
+            <div class="modal-body" style="overflow-y: scroll; min-height: 75vh" id="ChonVanBanLienQuanDS">
+                <form>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="RELATE_VANBANDIDEN" class="lbl control-label">
+                                    Chọn loại văn bản
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.DropDownList("RELATE_VANBANDIDEN", lstVanBanDiDen, new { @class = "width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="RELATE_SOHIEU_VANBAN" class="lbl control-label">
+                                    Số hiệu văn bản
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" name="RELATE_SOHIEU_VANBAN">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="RELATE_LOAIVANBAN_ID" class="lbl control-label">
+                                    Thể loại văn bản
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.DropDownList("RELATE_LOAIVANBAN_ID", Model.LstLoaiVanBan, "--- Chọn Thể loại văn bản ---", new { @class = "width-100 selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="RELATE_LINHVUCVANBAN_ID" class="lbl control-label">
+                                    Lĩnh vực
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.DropDownList("RELATE_LINHVUCVANBAN_ID", Model.LstLinhVucVanBan, "--- Chọn lĩnh vực ---", new { @class = "width-100  selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label for="RELATE_DOKHAN_ID" class="lbl control-label">
+                                    Mức độ quan trọng
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.DropDownList("RELATE_DOKHAN_ID", Model.LstDoKhan, "--- Chọn mức độ quan trọng ---", new { @class = "width-100  selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                            </div>
+                            <div class="col-sm-2">
+                                <label for="RELATE_DOKHAN_ID" class="lbl control-label">
+                                    Độ ưu tiên
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.DropDownList("RELATE_DOUUTIEN_ID", Model.LstDoUuTien, "--- Chọn độ ưu tiên ---", new { @class = "width-100  selectpicker1", @data_actions_box = "true", @data_live_search = "true" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="text-align: center">
+                        <button type="button" class="btn btn-success" onclick="timkiemvanbanlienquan()">Tìm kiếm</button>
+                    </div>
+                </form>
+                <div style="width: 100%; border-bottom: 1px solid #ddd; padding-top: 10px;"></div>
+                <div id="resultVanBanLienQuan">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="chooseVanBanLienQuan()">Lưu</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="modal_create" class="modal fade"></div>
+
+
+<div id="modal--block-sovanban" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog" style="width: 55%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-hover table-condensed" id="table--sovanban">
+                    <thead>
+                        <tr>
+                            <th class="width-30"></th>
+                            <th class="width-30">STT</th>
+                            <th>Số đi theo sổ</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="onChooseSoVanBan()">Chọn</button>
+                <button type="button" data-dismiss="modal" class="btn">Đóng</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    function configControls() {
-        /**
-     * mở hộp thoại tìm kiếm phòng ban
-     */
-        $('#btn--select-department').on('click', function () {
-            if ($('#modal-choose-department .modal-body').html().trim() != '') {
-                $("#modal-choose-department").modal('show');
-            } else {
-                var callBack = function (result) {
-                    $('#modal-choose-department .modal-body').html(result);
-                    $("#modal-choose-department").modal('show');
+    function timkiemvanbanlienquan() {
+
+    }
+    //hàm chọn văn bản liên quan
+    function chooseRelateVanBan() {
+        $("#dialogChonVanBanLienQuan").modal();
+    }
+
+    function deleteUserReceiveDirectly(obj, entityId, userId){
+        $.confirm({
+            'title': 'Xác nhận xóa',
+            'message': 'Bạn có chắc chắn muốn xóa người dùng này?',
+            'buttons': {
+                'Đồng ý': {
+                    'class': 'btn-confirm-yes btn-primary',
+                    'action': function () {
+                        if(userId != undefined && userId != null){
+                            $.ajax({
+                                url: '@Url.Action("UpdateUsersReceive")',
+                                data: { 'id': entityId, 'userId': userId },
+                                type: 'post',
+                                success: function (result) {
+                                    if (result.Status) {
+                                        NotiSuccess(result.Message);
+                                    } else {
+                                        NotiError(rs.Message);
+                                    }
+                                },
+                                error: function () {
+                                    NotiError("Không thực hiện được thao tác");
+                                }
+                            });
+                        }
+                        $(obj).parent().parent().remove();
+                    }
+                },
+                'Hủy bỏ': {
+                    'class': 'btn-default',
+                    'action': function () { }	// Nothing to do in this case. You can as well omit the action property.
                 }
-                AjaxCall('/HSVanBanDiArea/HSVanBanDi/GetTreeDonVi', 'post', {}, callBack);
             }
         });
+    }
 
-        /**
-         * lưu thông tin phòng đã chọn
-         */
-        $('#btn--save-chosen-department').on('click', function () {
-            $("#modal-choose-department").modal("hide");
-            var checkboxes = $("#TreeChonDonViPartial input[type=checkbox]:checked.dept-doji");
+    //lấy danh sách người dùng chọn gửi đích danh
+    function chooseUsersReceive(){
+        var checkedUsers = $('#block--select-users input[class="cbx-users"][type=checkbox]:checked');
+        var alreadyCheckedUsersHTML = "";
+        //lấy danh sách người dùng đã chọn sẵn để không hiển thị lặp
+        var alreadyCheckedUsers = [];
+        if($('#block--users-receive input[type=hidden]').length > 0){
+            $.each($('#block--users-receive input[type=hidden]'), function(index, item){
+                alreadyCheckedUsers.push($(item).val());
+                alreadyCheckedUsersHTML += '<tr><td>'
+                        + '<input type="hidden" name="users-receive-directly" value="' + $(item).val() + '" /><span class="input-Name">'
+                        + $(item).parents('tr').find('.input-Name').html() + '</span></td>'
+                        + '<td><span class="dept-Name">'+$(item).parents('tr').find('.dept-Name').html()+'</span></td>'
+                        + '<td>'
+                        + '<a href="javascript:void(0)" onclick="deleteUserReceiveDirectly(this,@Model.VanBan.ID,'+$(item).data('id')+')">'
+                        + '<i class=" glyphicon glyphicon-remove fa-lg" style="color:red"> </i>'
+                        + '</a></td></tr>';
+            });
+        }
 
-            if (checkboxes.length > 0) {
-                $("#block--chosen-depts").html("");
-                return;
+        $('#modal--select-users').modal('hide');
+        if (checkedUsers.length > 0) {
+            var html = '<table class="table table-bordered"><thead><tr><th>Người nhận đích danh</th><th>Phòng ban</th><th></th></tr></thead><tbody>';
+            for (var i = 0; i < checkedUsers.length; i++) {
+                  //kiểm tra người dùng đã được hiển thị sẵn
+                if(alreadyCheckedUsers.indexOf(checkedUsers[i]["value"]) < 0){
+                    html += '<tr><td>'
+                        + '<input type="hidden" name="users-receive-directly" value="' + checkedUsers[i]["value"] + '" /><span class="input-Name">'
+                        + $("#" + checkedUsers[i]['id']).parents('tr').find('.input-Name').html() + '</span></td>'
+                        + '<td><span class="dept-Name">'+$("#" + checkedUsers[i]['id']).parents('tr').find('.dept-Name').html()+'</span></td>'
+                        + '<td>'
+                        + '<a href="javascript:void(0)" onclick="deleteUserReceiveDirectly(this,@Model.VanBan.ID)">'
+                        + '<i class="glyphicon glyphicon-remove fa-lg" style="color:red"> </i>'
+                        + '</a></td></tr>';
+                }
             }
+            html += alreadyCheckedUsersHTML;
+            html += '</tbody></table>';
+            $("#block--users-receive").html(html);
+        } else {
+            $("#block--users-receive").html("");
+        }
+    }
+
+    function openChooseUsersModal(roleId, docId){
+        var selected = $('input[type=hidden][name="users-receive-directly"]').val();
+        if(selected == undefined){
+            selected = "";
+        }else{
+            selected = $("input[type=hidden][name='users-receive-directly']").map(function () {
+                return this.value;
+            }).get().join(",");
+        }
+        $.get('/HSVanBanDiArea/HSVanBanDi/GetUsersReceiveDirectly?roleId='+roleId+'&docId='+docId+'&selected='+selected, function(view){
+            $('#modal--select-users #block--select-users').html(view);
+            $('#modal--select-users').modal('show');
+        });
+    }
+    //Hàm lấy danh sách đơn vị gửi đến
+    function chooseDepartment() {
+        var lstItem = $("#TreeChonDonViPartial input[type=checkbox]:checked.dept-doji");
+        $("#dialogChonPhongBan").modal("hide");
+        if (lstItem.length > 0) {
             var html = '<table class="table table-bordered"><thead><tr><th>Đơn vị/ phòng ban nhận văn bản</th></tr></thead><tbody>';
-            for (var i = 0; i < checkboxes.length; i++) {
-                html += '<tr><td>';
-                html += '<input type="hidden" name="department-choose" value="' + checkboxes[i]["value"] + '" />';
-                html += $("#" + checkboxes[i]["id"]).parent().find('.input-Name').html() + '</td></tr>';
+            for (var i = 0; i < lstItem.length; i++) {
+                html += '<tr><td>'
+                    + '<input type="hidden" name="department-choose" value="' + lstItem[i]["value"] + '" />'
+                    + $("#" + lstItem[i]["id"]).parent().find('.input-Name').html() + '</td></tr>';
             }
             html += '</tbody></table>';
-            $("#block--chosen-depts").html(html);
+            $("#ChooseDeptId").html(html);
+        } else {
+            $("#ChooseDeptId").html("");
+        }
+    }
+    function choosePhongban() {
+        if ($('#dialogChonPhongBan .modal-body').html().trim() != '') {
+            $("#dialogChonPhongBan").modal('show');
+        } else {
+            var callBack = function (result) {
+                $('#dialogChonPhongBan .modal-body').html(result);
+                $("#dialogChonPhongBan").modal('show');
+            }
+            AjaxCall('/HSVanBanDiArea/HSVanBanDi/GetTreeDonVi', 'post', {}, callBack);
+        }
+    }
+
+    var pageFunction = function () {
+        if($('#accordion table').length > 0){
+            $.each($('#accordion table'), function(index, item){
+                var roleId = $(item).data('role');
+                var checkedBoxes = $(item).find('tbody input[type=checkbox]:checked');
+                if(checkedBoxes.length > 0){
+                    $('#span--role-title-'+roleId).text("("+checkedBoxes.length+")");
+                }
+            });
+        }
+
+        $(".selectpicker1").selectpicker();
+        $('select.select2').select2();
+        CKEDITOR.replace('NOIDUNGVANBAN', {  // Define the toolbar groups as it is a more accessible solution.
+            toolbarGroups: [
+                { "name": "basicstyles", "groups": ["basicstyles"] },
+                { "name": "links", "groups": ["links"] },
+                { "name": "paragraph", "groups": ["list", "blocks"] },
+                { "name": "document", "groups": ["mode"] },
+                { "name": "insert", "groups": ["insert"] },
+                { "name": "styles", "groups": ["styles"] },
+                { "name": "about", "groups": ["about"] }
+            ],
+            // Remove the redundant buttons from toolbar groups defined above.
+            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
         });
 
-        //events
+        $("#TENNGUOIKY").on('change', function () {
+            $.ajax({
+                url: '/hsvanbandiarea/hsvanbandi/GetChucVuNguoiKy',
+                type: 'post',
+                data: { 'id': $("#TENNGUOIKY").val() },
+                async: false,
+                success: function (rs) {
+                    $("#CHUCVUNGUOIKY").val(rs);
+                },
+                error: function () {
+                    $("#CHUCVUNGUOIKY").val("");
+                }
+
+            });
+        })
         $('#THOIHAN_HOIBAO_CHECK').on('change', function (event) {
             if ($(this).is(':checked')) {
                 $('#THOIHAN_HOIBAO').removeAttr('disabled');
@@ -575,18 +967,20 @@
 
             }
         });
+        //$('#button--huybo-vanbandi').on('click', function () {
+        //    location.href = "/HSVanBanDiArea/HSVanBanDi/Index";
+        //});
 
-        $("#TENNGUOIKY").on('change', function () {
-            var callBack = function (result) {
-                $("#CHUCVUNGUOIKY").val(result);
+        $("#btnSave").click(function () {
+            var is_submit = onSubmit();
+            if (is_submit) {
+                $("#frmCreateVanBanDi").submit();
+            } else {
+                return false;
             }
-            AjaxCall('/hsvanbandiarea/hsvanbandi/GetChucVuNguoiKy', 'post', { id: $(this).val() }, callBack);
         });
 
-        /**
-         * sự kiện mở modal chọn người dùng
-         */
-        if ($('#button--choose-users').length > 0) {
+        if($('#button--choose-users').length > 0){
             $('#button--choose-users').on('click', function () {
                 if ($('#modal--recipients').html().trim() != '') {
                     $('#modal--recipients').modal('show');
@@ -600,62 +994,170 @@
             })
         }
 
-        //plugins
-        $(".selectpicker1").selectpicker();
-        $('select.select2').select2();
-        $(".datepicker1").datepicker({
+        $("#NGAYBANHANH").datepicker({
             dateFormat: 'dd/mm/yy',
+            changeMonth: true,
+            changeYear: true, yearRange: "-10:+20",
+            showWeek: false, weekHeader: "Tuần",
+            language: 'vi',
             prevText: '<i class="fa fa-chevron-left"></i>',
             nextText: '<i class="fa fa-chevron-right"></i>',
+            onClose: function (date) {
+                $("#NGAYBANHANH").datepicker('option', 'minDate', date);
+            }
+        });
+        $("#NGAY_HIEULUC").datepicker({
+            dateFormat: 'dd/mm/yy',
             changeMonth: true,
-            changeYear: true,
-            yearRange: "-20:+20"
+            changeYear: true, yearRange: "-10:+20",
+            showWeek: false, weekHeader: "Tuần",
+            language: 'vi',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            onClose: function (date) {
+                $("#NGAYHET_HIEULUC").datepicker('option', 'minDate', date);
+            }
+        });
+        $("#NGAYHET_HIEULUC").datepicker({
+            dateFormat: 'dd/mm/yy',
+            changeMonth: true,
+            changeYear: true, yearRange: "-10:+20",
+            showWeek: false, weekHeader: "Tuần",
+            language: 'vi',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            onClose: function (date) {
+                $("#NGAY_HIEULUC").datepicker('option', 'maxDate', date);
+            }
         });
 
-        CKEDITOR.replace('NOIDUNGVANBAN', {  // Define the toolbar groups as it is a more accessible solution.
-            toolbarGroups: [
-                { "name": "basicstyles", "groups": ["basicstyles"] },
-                { "name": "links", "groups": ["links"] },
-                { "name": "paragraph", "groups": ["list", "blocks"] },
-                { "name": "document", "groups": ["mode"] },
-                { "name": "insert", "groups": ["insert"] },
-                { "name": "styles", "groups": ["styles"] },
-                { "name": "about", "groups": ["about"] }
-            ],
-            // Remove the redundant buttons from toolbar groups defined above.
-            removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
-        });
+        $('#SOVANBAN_ID').on('change', function () {
+            var value = $(this).val();
+            var name = $(this).find('option:selected').text();
+            if (value !== '' && value !== '0') {
+                $.ajax({
+                    url: '/Common/GetSoDiTheoSo',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify({ 'idSoVanBan': value, 'isVanBanDi': true }),
+                    contentType: 'application/json',
+                    success: function (rs) {
+                        $('#SOTHEOSO').val(rs.numbSoDiTheoSo);
 
-        $("#btnSave").click(function () {
-            var isValid = onValidateSubmit();
-            if (isValid) {
-                $("#form--update-vanbandi").submit();
+                        if (rs.numbSoDiChuaCo.length > 0) {
+                            $('#SOTHEOSO_INFO_ROW').removeClass('hide');
+                            //setting modal
+                            $('#modal--block-sovanban .modal-header h3').text("Các số chưa được vào sổ văn bản: \'" + name + "\'");
+
+                            if (rs.numbSoDiChuaCo.length <= 5) {
+                                $('#SOTHEOSO_INFO').html(name + " còn thiếu các số: " + rs.numbSoDiChuaCo.toString());
+                            } else {
+                                for (var i = 0; i < rs.numbSoDiChuaCo.length; i++) {
+                                    var numbValue = rs.numbSoDiChuaCo[i];
+                                    var html = '<tr>';
+                                    html += "<td><input id='radio" + (numbValue) + "' type='radio' name='radio--sovanban' value='" + (numbValue) + "'/></td>";
+                                    html += "<td><label for='radio" + (numbValue) + "' style='display:block;'>" + (i + 1) + "</label></td>";
+                                    html += "<td><label for='radio" + (numbValue) + "' style='display:block;'><b>" + numbValue + "</b></label></td>";
+                                    html += '</tr>'
+                                    $('#table--sovanban tbody').append(html);
+                                }
+                                //setting data table
+                                if (!$.fn.DataTable.isDataTable('#table--sovanban')) {
+                                    $('#table--sovanban').DataTable({
+                                        paging: true,
+                                        searching: true,
+                                        //pageLength: 5,
+                                        "language": {
+                                            "decimal": "",
+                                            "emptyTable": "Không có dữ liệu",
+                                            "info": "Hiển thị _START_ đến _END_ của _TOTAL_ đối tượng",
+                                            "infoEmpty": "Hiển thị 0 đến 0 của 0 đối tượng",
+                                            "infoFiltered": "(lọc từ _MAX_ tổng đối tượng)",
+                                            "infoPostFix": "",
+                                            "thousands": ",",
+                                            "lengthMenu": "Hiển thị _MENU_ đối tượng",
+                                            "loadingRecords": "Đang tải...",
+                                            "processing": "Đang xử lý...",
+                                            "search": "Tìm kiếm:",
+                                            "zeroRecords": "Không có kết quả phù hợp",
+                                            "paginate": {
+                                                "first": "Đầu",
+                                                "last": "Cuối",
+                                                "next": "Tiếp",
+                                                "previous": "Trước"
+                                            },
+                                            "aria": {
+                                                "sortAscending": ": kích hoạt sắp xếp tăng dần",
+                                                "sortDescending": ": kích hoạt sắp xếp giảm dần"
+                                            }
+                                        }
+                                    });
+                                }
+
+                                $('#SOTHEOSO_INFO').html(name + " còn thiếu các số: " + rs.numbSoDiChuaCo.splice(0, 5).toString() + '...&nbsp;<a data-toggle="modal" href="#modal--block-sovanban">Xem tất cả</a>');
+                            }
+                        } else {
+                            $('#SOTHEOSO_INFO').text('');
+                            $('#SOTHEOSO_INFO_ROW').addClass('hide');
+                        }
+
+                    }, error: function (err) {
+                        NotifErr('Có lỗi xảy ra');
+                    }
+                })
+            } else {
+                $('#SOTHEOSO').val('');
             }
         });
     }
-
     var $emptyStr = "";
 
-    function onValidateSubmit() {
+    $(".datepicker1").datepicker({
+        dateFormat: 'dd/mm/yy',
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-20:+20"
+    });
+
+    function onChooseSoVanBan() {
+        var checked = $('#table--sovanban input[type=radio]:checked');
+        if (checked.length > 0) {
+            var value = checked[0].value;
+            $('#modal--block-sovanban').modal('hide');
+            $('#SOTHEOSO').val(value);
+        } else {
+            NotiError('Vui lòng chọn số đi theo sổ');
+        }
+    }
+
+    function onSubmit() {
         var err = 0;
-        var require = requiredFieldForFormId("form--update-vanbandi");
+        var require = requiredFieldForFormId("frmCreateVzanBanDi");
         if (!require) {
             err++;
         }
-        var IsDate = ValidateFieldDate("form--update-vanbandi");
+        var IsDate = ValidateFieldDate("frmCreateVanBanDi");
         if (!IsDate) {
             err++;
         }
-        var requireDropdownlist = RequireDropDownlist("form--update-vanbandi");
+        var requireDropdownlist = RequireDropDownlist("frmCreateVanBanDi");
         if (!requireDropdownlist) {
             err++;
         }
 
-        var IsDateExist = ValidateFieldDateExist("form--update-vanbandi");
+        var IsDateExist = ValidateFieldDateExist("frmCreateVanBanDi");
         if (!IsDateExist) {
             err++;
         }
-
+        //if (CKEDITOR.instances.NOIDUNGVANBAN.getData() == "") {
+        //    err++;
+        //    $("#NOIDUNG_ERROR").show();
+        //    $("#NOIDUNG_ERROR").html("Bạn phải nhập nội dung văn bản");
+        //} else {
+        //    $("#NOIDUNG_ERROR").hide();
+        //}
         if (err == 0) {
             return true;
         } else {
@@ -664,16 +1166,48 @@
         }
     }
 
+    function checkUsers(obj, isCheckAll){
+        var roleId = $(obj).data('role');
+        if(isCheckAll){
+            var checked = $(obj).is(':checked');
+            var checkboxes = $(obj).parents('table').find('input[type=checkbox]');
+            checkboxes.prop('checked', checked);
+        }else{
+            var checkbox = $(obj).parents('table').find('input.checkbox--all');
+            if(!$(obj).is(':checked')){
+                checkbox.prop('checked', false);
+            }
+        }
+
+        var checkedBoxes = $(obj).parents('table').find('tbody input[type=checkbox]:checked');
+        if(checkedBoxes.length > 0) {
+            $('#span--role-title-'+roleId).text("("+checkedBoxes.length+")");
+        }else{
+            $('#span--role-title-'+roleId).text("");
+        }
+    }
+
     $(document).ready(function () {
         loadScript("/ckeditor/ckeditor.js", function () {
-            loadScript("/Content/select/js/bootstrap-select.js", configControls);
-        });
+            loadScript("/Content/select/js/bootstrap-select.js", function () {
+                loadScript("/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("/js/plugin/datatable-responsive/datatables.responsive.min.js", function () {
+                                    pageFunction();
+                                });
+                            });
+                        });
+                    })
+                })
+            });
+        })
     })
 
     $(document).ajaxSuccess(function (event, jqxhr, settings, thrownError) {
         $(".loading-ajax").hide();
     });
-
     $(document).ajaxStart(function () {
         $(".loading-ajax").html("Đang xử lý");
         $(".loading-ajax").show();
@@ -681,4 +1215,32 @@
     $(document).ajaxStop(function () {
         $(".loading-ajax").hide();
     });
+
+    function generate_slugable(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        return str;
+    }
+
+    function onChangeRecipient(obj){
+        var checked = $(obj).is('checked');
+        var id = $(obj).data('group-id');
+        $('input[type=checkbox][data-id='+id+']').prop('checked', checked);
+    }
+
+    function onEditCategory(obj) {
+        var groupCode = $(obj).data('groupcode');
+        var targetId = $(obj).data('target');
+        $.get('/Common/EditCategoryData?groupCode=' + groupCode + '&targetID=' + targetId, function (result) {
+            $('#modal_create').html(result);
+            $('#modal_create').modal('show');
+        })
+    }
 </script>
+

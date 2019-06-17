@@ -1,0 +1,195 @@
+﻿@using Web.Areas.CCTCTHANHPHANArea.Models;
+@model DeptUserEditViewModel
+<div class="modal-dialog" style="width:1000px;">
+    @using (Ajax.BeginForm("SaveUser", "CCTCTHANHPHAN", new { @area = "CCTCTHANHPHANArea" }, new AjaxOptions()
+    {
+        HttpMethod = "POST",
+        OnFailure = "failureAjax",
+        OnSuccess = "successAjaxCreate",
+    }, new { id = "form--create-dept-user" }))
+    {
+        @Html.AntiForgeryToken()
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="center">
+                    <h4 class="modal-title">
+                        THÊM NGƯỜI DÙNG PHÒNG BAN - @Model.EntityDepartment.NAME.ToUpper()
+                    </h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="row nomargin">
+                        <input type="hidden" value="@Model.EntityDepartment.ID" name="ID_PHONGBAN" />
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="TENDANGNHAP">
+                                Tên đăng nhập
+                                <span class="red">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control required" autocomplete="off" name="TENDANGNHAP" id="TENDANGNHAP">
+                                <div class="note-error">
+                                    <span class="error mes-note-error" id="errTaiKhoan"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="HOTEN">
+                                Họ tên <span class="red">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control required" name="HOTEN" id="HOTEN">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="MATKHAU">
+                                Mật khẩu <span class="red">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control required" autocomplete="off" name="MATKHAU" id="MATKHAU">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="REMATKHAU">
+                                Nhập lại mật khẩu <span class="red">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="password" class="form-control required" autocomplete="off" id="REMATKHAU" name="REMATKHAU">
+                                <div class="note-error">
+                                    <span class="error mes-note-error" id="errReMatKhau"></span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="DIENTHOAI">
+                                Điện thoại
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control " name="DIENTHOAI" id="DIENTHOAI">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="EMAIL">
+                                Email <span class="red">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control validateEmail" name="EMAIL" id="EMAIL">
+                                <div class="note-error">
+                                    <span class="error mes-note-error" id="errEmail"></span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="CHUCVU_ID">Chức vụ <span class="red">*</span></label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("CHUCVU_ID", Model.GroupPositions,"--- Chọn ---", new { @class = "requiredDropDownList select2" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="VAITRO_ID">Vai trò</label>
+                            <div class="col-sm-8">
+                                @Html.DropDownList("VAITRO_ID", Model.GroupRoles, new { @class = "select2", multiple = "multiple" })
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="NGAYSINH">Ngày sinh</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control txt-picker" name="NGAYSINH" id="NGAYSINH">
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label class="control-label col-sm-4" for="DIACHI">Địa chỉ</label>
+                            <div class="col-sm-8">
+                                <textarea type="text" class="form-control resize-vertical" rows="3" name="DIACHI" id="DIACHI"></textarea>
+                                <div class="note-error">
+                                    <span class="error mes-note-error"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer center">
+                <button type="button" class="btn btn-primary" onclick="onSave()">Cập nhật</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function successAjaxCreate(result) {
+        if (result.Status) {
+            $("#tbl-phongban").hinetTable("reload");
+            $("#modal-edit").modal("hide");
+            $("#modal-edit").empty();
+            NotiSuccess("Cập nhật thành công");
+        } else {
+            NotiError(result.Message);
+        }
+    }
+
+    function onSave() {
+        var err = checkForm('form--create-dept-user');
+        if (err) {
+            $("#form--create-dept-user").submit();
+        } else {
+            NotiError("Có lỗi xảy ra");
+        }
+        return false;
+    }
+
+    $(document).ready(function () {
+        loadScript("/js/plugin/select2/select2.min.js", function () {
+            $(".select2").select2({
+                width: '100%'
+            });
+
+            $(".txt-picker").datepicker({
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true, yearRange: "-50:+20",
+                showWeek: false, weekHeader: "Tuần",
+                language: 'vi',
+                prevText: '<i class="fa fa-chevron-left"></i>',
+                nextText: '<i class="fa fa-chevron-right"></i>',
+                onSelect: function (date) { }
+            });
+        });
+    })
+</script>

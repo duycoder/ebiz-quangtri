@@ -238,6 +238,7 @@
           <Property Name="NGUOISUA" Type="bigint" />
           <Property Name="IS_DELETE" Type="bit" />
           <Property Name="IS_RECEIVE_DOC_DIRECTLY" Type="bit" />
+          <Property Name="TRONGSO" Type="int" />
         </EntityType>
         <EntityType Name="DUNGLUONG_LUUTRU">
           <Key>
@@ -884,8 +885,8 @@
           <Property Name="TEN_NHOM" Type="nvarchar" MaxLength="500" />
           <Property Name="NGUOINHAN_IDS" Type="nvarchar(max)" />
           <Property Name="DM_PHONGBAN_ID" Type="int" />
-          <Property Name="IS_DEFAULT" Type="bit" />
           <Property Name="IS_DELETE" Type="bit" />
+          <Property Name="IS_DEFAULT" Type="bit" />
         </EntityType>
         <EntityType Name="QL_PHONGHOP">
           <Key>
@@ -1858,6 +1859,7 @@
           <Property Name="NGUOISUA" Type="Int64" />
           <Property Name="IS_DELETE" Type="Boolean" />
           <Property Name="IS_RECEIVE_DOC_DIRECTLY" Type="Boolean" />
+          <Property Name="TRONGSO" Type="Int32" />
         </EntityType>
         <EntityType Name="DUNGLUONG_LUUTRU">
           <Key>
@@ -2514,8 +2516,8 @@
           <Property Name="TEN_NHOM" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="NGUOINHAN_IDS" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DM_PHONGBAN_ID" Type="Int32" />
-          <Property Name="IS_DEFAULT" Type="Boolean" />
           <Property Name="IS_DELETE" Type="Boolean" />
+          <Property Name="IS_DEFAULT" Type="Boolean" />
         </EntityType>
         <EntityType Name="QL_PHONGHOP">
           <Key>
@@ -3289,6 +3291,7 @@
           <EntitySetMapping Name="DM_VAITRO">
             <EntityTypeMapping TypeName="DBModel.DM_VAITRO">
               <MappingFragment StoreEntitySet="DM_VAITRO">
+                <ScalarProperty Name="TRONGSO" ColumnName="TRONGSO" />
                 <ScalarProperty Name="IS_RECEIVE_DOC_DIRECTLY" ColumnName="IS_RECEIVE_DOC_DIRECTLY" />
                 <ScalarProperty Name="IS_DELETE" ColumnName="IS_DELETE" />
                 <ScalarProperty Name="NGUOISUA" ColumnName="NGUOISUA" />
@@ -3976,8 +3979,8 @@
           <EntitySetMapping Name="QL_NGUOINHAN_VANBAN">
             <EntityTypeMapping TypeName="DBModel.QL_NGUOINHAN_VANBAN">
               <MappingFragment StoreEntitySet="QL_NGUOINHAN_VANBAN">
-                <ScalarProperty Name="IS_DELETE" ColumnName="IS_DELETE" />
                 <ScalarProperty Name="IS_DEFAULT" ColumnName="IS_DEFAULT" />
+                <ScalarProperty Name="IS_DELETE" ColumnName="IS_DELETE" />
                 <ScalarProperty Name="DM_PHONGBAN_ID" ColumnName="DM_PHONGBAN_ID" />
                 <ScalarProperty Name="NGUOINHAN_IDS" ColumnName="NGUOINHAN_IDS" />
                 <ScalarProperty Name="TEN_NHOM" ColumnName="TEN_NHOM" />

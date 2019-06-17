@@ -25,7 +25,9 @@ namespace Business.CommonModel.DMNguoiDung
         public string NGAYSINH_TEXT { get; set; }
         public string TEN_VAITRO { get; set; }
         public string MA_VAITRO { set; get; }
+        public List<int> ListVaiTroIDs { get; set; }
         public List<string> LstVaiTro { get; set; }
+
         public string txtVaiTro
         {
             get
@@ -40,6 +42,7 @@ namespace Business.CommonModel.DMNguoiDung
                 }
             }
         }
+
         public DM_NGUOIDUNG ToModel()
         {
             DM_NGUOIDUNG model = new DM_NGUOIDUNG();

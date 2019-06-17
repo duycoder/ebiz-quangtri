@@ -104,7 +104,7 @@ namespace Business.Business
             {
                 stateID = customState;
             }
-            
+
             var stateCurrent = this.context.WF_STATE.Find(stateID);
 
             var process = new WF_PROCESS();
@@ -114,6 +114,10 @@ namespace Business.Business
             process.WF_ID = flow.ID;
             process.CURRENT_STATE = stateCurrent.ID;
             process.CURRENT_STATE_NAME = stateCurrent.STATE_NAME;
+            if (customState > 0)
+            {
+                process.IS_END = stateCurrent.IS_KETTHUC.GetValueOrDefault();
+            }
             this.Save(process);
 
             var userProcess = new WF_ITEM_USER_PROCESS();
@@ -123,18 +127,47 @@ namespace Business.Business
             userProcess.USER_ID = userId.ID;
             userProcess.create_at = DateTime.Now;
             userProcess.create_by = userId.ID;
+            if (customState > 0)
+            {
+                userProcess.DAXULY = true;
+            }
             this.context.WF_ITEM_USER_PROCESS.Add(userProcess);
-
             var log = new WF_LOG();
             log.ITEM_ID = process.ITEM_ID;
             log.ITEM_TYPE = process.ITEM_TYPE;
             log.NGUOIXULY_ID = userId.ID;
             log.WF_ID = process.WF_ID;
-            log.MESSAGE = "<div class='label label-info'>Khởi tạo</div>";
+            if (customState > 0)
+            {
+                log.MESSAGE = "<div class='label label-info'>" + stateCurrent.STATE_NAME + "</div>";
+            }
+            else
+            {
+                log.MESSAGE = "<div class='label label-info'>Khởi tạo</div>";
+            }
             log.STEP_ID = null;
             log.create_at = DateTime.Now;
             log.create_by = userId.ID;
             this.context.WF_LOG.Add(log);
+
+            if(customState > 0)
+            {
+                var function = this.context.WF_STATE_FUNCTION
+                    .Where(x => x.WF_STATE_ID == customState)
+                    .FirstOrDefault();
+                if(function != null)
+                {
+                    var functionDone = new WF_FUNCTION_DONE();
+                    functionDone.ITEM_TYPE = itemType;
+                    functionDone.ITEM_ID = ItemId;
+                    functionDone.STATE = customState;
+                    functionDone.FUNCTION_STATE = function.ID;
+                    functionDone.create_at = DateTime.Now;
+                    functionDone.create_by = userId.ID;
+                    this.context.WF_FUNCTION_DONE.Add(functionDone);
+                }
+            }
+
             this.context.SaveChanges();
             return result;
         }

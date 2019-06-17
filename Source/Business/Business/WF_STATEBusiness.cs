@@ -159,27 +159,22 @@ namespace Business.Business
         /// <returns></returns>
         public WF_STATE GetFinalStateOfItem(string itemType, UserInfoBO user)
         {
-            WF_STATE result = null;
+            WF_STATE result = new WF_STATE();
             WF_MODULE wfModule = this.context.WF_MODULE.Where(x => x.MODULE_CODE == itemType).FirstOrDefault();
             if (wfModule != null && string.IsNullOrEmpty(wfModule.WF_STREAM_ID) == false)
             {
                 //Lấy thông tin luồng xử lý
-                var department = this.context.CCTC_THANHPHAN.Find(user.DM_PHONGBAN_ID);
-                if (department != null)
-                {
-                    var wfStreamIds = wfModule.WF_STREAM_ID.ToListInt(',');
-                    var wfStream = this.context.WF_STREAM
-                        .Where(x => x.LEVEL_ID == department.CATEGORY && wfStreamIds.Contains(x.ID))
-                        .FirstOrDefault();
-                    if (wfStream != null)
-                    {
-                        result = this.context.WF_STATE
-                            .Where(x => x.WF_ID == wfStream.ID && x.IS_KETTHUC == true)
-                            .FirstOrDefault();
-                    }
-                }
-            }
+                var department = this.context.CCTC_THANHPHAN.Find(user.DM_PHONGBAN_ID) ?? new CCTC_THANHPHAN();
+                var wfStreamIds = wfModule.WF_STREAM_ID.ToListInt(',');
 
+                var wfStream = this.context.WF_STREAM
+                    .Where(x => x.LEVEL_ID == department.CATEGORY && wfStreamIds.Contains(x.ID))
+                    .FirstOrDefault() ?? new WF_STREAM();
+
+                result = this.context.WF_STATE
+                        .Where(x => x.WF_ID == wfStream.ID && x.IS_KETTHUC == true)
+                        .FirstOrDefault();
+            }
             return result;
         }
     }

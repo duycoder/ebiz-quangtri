@@ -154,6 +154,7 @@ namespace Web.Areas.DMVAITROArea.Controllers
                 myobj.NGAYTAO = DateTime.Now;
                 myobj.MA_VAITRO = collection["MA_VAITRO"].ToString();
                 myobj.TEN_VAITRO = collection["TEN_VAITRO"].ToString();
+                myobj.TRONGSO = collection["TRONGSO"].ToIntOrZero();
                 myobj.IS_RECEIVE_DOC_DIRECTLY = collection["IS_RECEIVE_DOC_DIRECTLY"].ToIntOrZero() > 0;
                 DM_VAITROBusiness.Save(myobj);
             }
@@ -187,6 +188,7 @@ namespace Web.Areas.DMVAITROArea.Controllers
 
                 myobj.MA_VAITRO = collection["MA_VAITRO"].ToString();
                 myobj.TEN_VAITRO = collection["TEN_VAITRO"].ToString();
+                myobj.TRONGSO = collection["TRONGSO"].ToIntOrZero();
                 myobj.IS_RECEIVE_DOC_DIRECTLY = collection["IS_RECEIVE_DOC_DIRECTLY"].ToIntOrZero() > 0;
                 DM_VAITROBusiness.Save(myobj);
             }
