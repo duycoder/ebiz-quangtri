@@ -72,6 +72,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
         /// </summary>
         /// <returns></returns>
         //[CodeAllowAccess(Code = "DsCCTC")]
+
         public ActionResult Index()
         {
             AssignUserInfo();
@@ -88,7 +89,6 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                 DS_TYPE = DMLoaiDonViBusiness.DSLoaiDonVi(),
                 DS_CATEGORY = DM_DANHMUC_DATABusiness.DsByMaNhom("DMCAPPHONGBAN", currentUser.ID)
             };
-
             #region settings deptId
             int deptId = 0;
             if (currentUser.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT"))
@@ -101,22 +101,8 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             }
             else if (currentUser.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT_HUYENUY") || currentUser.ListVaiTro.Any(x => x.MA_VAITRO == "QLHT_XAPHUONG"))
             {
-                if (currentUser.DeptType == 10)
-                {
-                    deptId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
-                }
-                else
-                {
-                    deptId = currentUser.DeptParentID.GetValueOrDefault();
-                }
-            }
-            else
-            {
-                deptId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
-            }
-            viewModel.TreeData = CCTC_THANHPHANBusiness.GetTree(deptId);
-            #endregion
 
+            }
             return View(viewModel);
         }
 
@@ -168,6 +154,163 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             SessionManager.SetValue("CctcThanhPhanSearch", searchModel);
             var data = CCTC_THANHPHANBusiness.GetDataByPage(searchModel, currentUser, pageIndex, pageSize);
             return Json(data);
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: xóa phòng ban
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Delele(int id)
+        {
+            JsonResultBO result = new JsonResultBO(true);
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            try
+            {
+                CCTC_THANHPHANBusiness.repository.Delete(id);
+                CCTC_THANHPHANBusiness.Save();
+                return Json(result);
+            }
+            catch
+            {
+                result.Status = false;
+                result.Message = "Xóa phòng ban thành công";
+                return Json(result);
+            }
+        }
+
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: gửi phòng ban
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Save(FormCollection form)
+        {
+            AssignUserInfo();
+            JsonResultBO result = new JsonResultBO(true);
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            try
+            {
+                var id = form["ID"].ToIntOrZero();
+                var dept = CCTC_THANHPHANBusiness.Find(id) ?? new CCTC_THANHPHAN();
+                var parent = CCTC_THANHPHANBusiness.Find(dept.PARENT_ID);
+                dept.PARENT_ID = form["PARENT_ID"].ToIntOrNULL();
+                dept.NAME = form["NAME"]?.Trim();
+                dept.CODE = form["CODE"]?.Trim();
+
+                var existCode = CCTC_THANHPHANBusiness.CheckExistCode(dept.CODE, id);
+                if (existCode)
+                {
+                    deptId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
+                    result.Status = false;
+                    result.Message = "Mã phòng ban đã tồn tại";
+                    return Json(result);
+                }
+
+                var existName = CCTC_THANHPHANBusiness.CheckExistName(dept.NAME, id);
+                if (existName)
+                {
+                    deptId = currentUser.DeptParentID.GetValueOrDefault();
+                    result.Status = false;
+                    result.Message = "Tên phòng ban đã tồn tại";
+                    return Json(result);
+                }
+                
+                dept.TYPE = form["TYPE"].ToIntOrZero();
+                dept.CATEGORY = form["CATEGORY"].ToIntOrZero();
+
+                dept.THUTU = form["THUTU"].ToIntOrZero();
+                dept.ITEM_LEVEL = parent.ITEM_LEVEL + 1;
+                dept.NGUOITAO = currentUser.ID;
+                dept.NGAYTAO = DateTime.Now;
+                if (dept.TYPE == 10)
+                {
+                    dept.CAN_SEND_SMS = form["CAN_SEND_SMS"].ToIntOrZero() > 0;
+                }
+                CCTC_THANHPHANBusiness.Save(dept);
+                return Json(result);
+            }
+            catch
+            {
+                deptId = currentUser.DM_PHONGBAN_ID.GetValueOrDefault();
+            }
+            viewModel.TreeData = CCTC_THANHPHANBusiness.GetTree(deptId);
+            #endregion
+
+            return View(viewModel);
+                result.Status = false;
+                result.Message = "Cập nhật phòng ban không thành công";
+                return Json(result);
+            }
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: tìm kiếm phòng ban
+        /// @since: 03/06/2019
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SearchData(FormCollection form)
+        {
+            AssignUserInfo();
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            var searchModel = (CCTC_THANHPHAN_SEARCHBO)SessionManager.GetValue("CctcThanhPhanSearch") ?? new CCTC_THANHPHAN_SEARCHBO();
+            searchModel.pageSize = 20;
+            searchModel.QR_MAPHONGBAN = form["QR_MAPHONGBAN"];
+            searchModel.QR_LOAIPHONGBAN = form["QR_LOAIPHONGBAN"].ToIntOrNULL();
+            searchModel.QR_CAPPHONGBAN = form["QR_CAPPHONGBAN"].ToIntOrNULL();
+            searchModel.QR_TENPHONGBAN = form["QR_TENPHONGBAN"];
+            SessionManager.SetValue("CctcThanhPhanSearch", searchModel);
+            var data = CCTC_THANHPHANBusiness.GetDataByPage(searchModel, currentUser, 1, searchModel.pageSize);
+            return Json(data);
+        }
+
+        /// <summary>
+        /// @author:duynn
+        /// @description: tìm kiếm cơ cấu tổ chức thành phần
+        /// @since: 14/06/2019
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetData(int pageIndex, string sortQuery, int pageSize)
+        {
+            AssignUserInfo();
+            CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+            var searchModel = (CCTC_THANHPHAN_SEARCHBO)SessionManager.GetValue("CctcThanhPhanSearch") ?? new CCTC_THANHPHAN_SEARCHBO();
+            if (!string.IsNullOrEmpty(sortQuery))
+            {
+                searchModel.sortQuery = sortQuery;
+            }
+            if (pageSize > 0)
+            {
+                searchModel.pageSize = pageSize;
+            }
+            SessionManager.SetValue("CctcThanhPhanSearch", searchModel);
+            var data = CCTC_THANHPHANBusiness.GetDataByPage(searchModel, currentUser, pageIndex, pageSize);
+            return Json(data);
+        }
+
+        /// @description: lấy danh sách người dùng thuộc phòng ban
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public PartialViewResult GetListUsers(int deptId)
+        {
+            //DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+            //var searchModel = new DM_NGUOIDUNG_
+
+            //var data = DM_NGUOIDUNGBusiness.GetUser
+            return PartialView("_ListUsers");
+>>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
         }
 
         /// <summary>
@@ -278,6 +421,7 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
                 return Json(result);
             }
         }
+
 
         /// <summary>
         /// @author:duynn
@@ -493,6 +637,19 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
         //    return Json(model, JsonRequestBehavior.AllowGet);
         //}
 
+        //public JsonResult GetUser(int id)
+        //{
+        //    DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
+        //    CCTC_THANHPHANBusiness = Get<CCTC_THANHPHANBusiness>();
+        //    var model = new CoCauToChucNguoiDungModel();
+        //    var lstUser = DM_NGUOIDUNGBusiness.GetByPhongBan(id);
+
+        //    var node = CCTC_THANHPHANBusiness.Find(id);
+        //    model.Item = node;
+        //    model.ListNguoiDung = lstUser;
+        //    return Json(model, JsonRequestBehavior.AllowGet);
+        //}
+
         public PartialViewResult GetUserPhongBan(int id)
         {
             DM_NGUOIDUNGBusiness = Get<DM_NGUOIDUNGBusiness>();
@@ -654,7 +811,6 @@ namespace Web.Areas.CCTCTHANHPHANArea.Controllers
             model.DS_CATEGORY = DM_DANHMUC_DATABusiness.DsByMaNhom("DMCAPPHONGBAN", currentUser.ID, item.CATEGORY.HasValue ? item.CATEGORY.Value : 0);
             return Json(model, JsonRequestBehavior.AllowGet);
         }
-
 
         [HttpPost]
         public JsonResult CheckHasChild(int id)

@@ -24,10 +24,17 @@
         <EntityTypeShape EntityType="DBModel.EFILE_CHIASE" Width="1.5" PointX="13.75" PointY="12.75" />
         <EntityTypeShape EntityType="DBModel.EFILE_CHIASE_NGUOIDUNG" Width="1.5" PointX="7.75" PointY="14.75" />
         <EntityTypeShape EntityType="DBModel.FCM_NOTIFICATION" Width="1.5" PointX="15.75" PointY="0.75" />
+<<<<<<< HEAD
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_CONGTAC" Width="1.5" PointX="3" PointY="10.75" />
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_DAOTAO" Width="1.5" PointX="3" PointY="13.375" />
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEBANTHAN" Width="1.5" PointX="3" PointY="7.625" />
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEKETHON" Width="1.5" PointX="3" PointY="4.5" />
+=======
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_CONGTAC" Width="1.5" PointX="3" PointY="7.625" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_DAOTAO" Width="1.5" PointX="3" PointY="10.375" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEBANTHAN" Width="1.5" PointX="3" PointY="4.5" />
+        <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUANHEKETHON" Width="1.5" PointX="3" PointY="13.625" />
+>>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_QUATRINH_LUONG" Width="1.5" PointX="3" PointY="1.5" />
         <EntityTypeShape EntityType="DBModel.HOSO_CANBO_THONGTINCHUNG" Width="1.5" PointX="0.75" PointY="2" />
         <EntityTypeShape EntityType="DBModel.HSCV_CAPNHATTIENDO_CV" Width="1.5" PointX="15.75" PointY="3.75" />

@@ -1737,6 +1737,14 @@ namespace Business.Business
         {
             var query = (from user in this.context.DM_NGUOIDUNG
                          .Where(x => x.DM_PHONGBAN_ID == deptId)
+<<<<<<< HEAD
+=======
+                         join userRole in this.context.NGUOIDUNG_VAITRO
+                         on user.ID equals userRole.NGUOIDUNG_ID
+                         join role in this.context.DM_VAITRO
+                         on userRole.VAITRO_ID equals role.DM_VAITRO_ID
+                         into groupUserRole
+>>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                          join position in this.context.DM_DANHMUC_DATA
                          on user.CHUCVU_ID equals position.ID
                          into groupUserPosition
@@ -1745,11 +1753,15 @@ namespace Business.Business
                          {
                              ID = user.ID,
                              HOTEN = user.HOTEN,
+<<<<<<< HEAD
                              TENDANGNHAP = user.TENDANGNHAP,
+=======
+>>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                              EMAIL = user.EMAIL,
                              DIENTHOAI = user.DIENTHOAI,
                              ChucVu = gUserPosition.TEXT,
                              CHUCVU_ID = user.CHUCVU_ID,
+<<<<<<< HEAD
                              ListVaiTroIDs = this.context.NGUOIDUNG_VAITRO
                              .Where(x => x.NGUOIDUNG_ID == user.ID && x.VAITRO_ID != null)
                              .Select(x => x.VAITRO_ID.Value).ToList(),
@@ -1764,6 +1776,16 @@ namespace Business.Business
                 if (searchModel.sea_CHUCVU_ID != null)
                 {
                     query = query.Where(x => x.CHUCVU_ID == searchModel.sea_CHUCVU_ID);
+=======
+                             LstVaiTro = groupUserRole
+                             .Select(x => x.TEN_VAITRO).ToList(),
+                         });
+            if (searchModel != null)
+            {
+                if (searchModel.sea_CHUCVU_ID.HasValue)
+                {
+                    query = query.Where(x => x.ChucVu_Id == searchModel.sea_CHUCVU_ID);
+>>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                 }
 
                 if (!string.IsNullOrEmpty(searchModel.sea_HoTen))
@@ -1789,11 +1811,14 @@ namespace Business.Business
                     query = query.Where(x => x.TENDANGNHAP != null && x.TENDANGNHAP.Contains(searchModel.sea_TenDangNhap));
                 }
 
+<<<<<<< HEAD
                 if (searchModel.sea_Roles != null && searchModel.sea_Roles.Any())
                 {
                     query = query.Where(x => x.ListVaiTroIDs.Intersect(searchModel.sea_Roles).Any());
                 }
 
+=======
+>>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                 if (!string.IsNullOrEmpty(searchModel.sortQuery))
                 {
                     query = query.OrderBy(searchModel.sortQuery);
