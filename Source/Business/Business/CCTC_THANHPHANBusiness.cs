@@ -44,28 +44,17 @@ namespace Business.Business
             int pageSize = 20)
         {
             var query = from dept in this.context.CCTC_THANHPHAN
-<<<<<<< HEAD
                         join users in this.context.DM_NGUOIDUNG
                         on dept.ID equals users.DM_PHONGBAN_ID
                         into groupUserDepts
-
-=======
->>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                         join deptType in this.context.DM_LOAI_DONVI on dept.TYPE equals deptType.ID
                         into groupDeptType
                         from gDeptType in groupDeptType.DefaultIfEmpty()
 
                         join deptLevel in this.context.DM_DANHMUC_DATA
-<<<<<<< HEAD
                         on dept.CATEGORY equals deptLevel.ID
                         into groupDeptLevel
                         from gDeptLevel in groupDeptLevel.DefaultIfEmpty()
-
-=======
-                        on dept.ITEM_LEVEL equals deptLevel.ID
-                        into groupDeptLevel
-                        from gDeptLevel in groupDeptLevel.DefaultIfEmpty()
->>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                         select new CCTC_THANHPHAN_BO
                         {
                             ID = dept.ID,
@@ -74,11 +63,8 @@ namespace Business.Business
                             NAME = dept.NAME,
                             PARENT_ID = dept.PARENT_ID,
                             TYPE = dept.TYPE,
-<<<<<<< HEAD
                             THUTU = dept.THUTU,
                             SoLuongCanBo = groupUserDepts.Count(),
-=======
->>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
                             TenLoaiDonVi = gDeptType != null ? gDeptType.LOAI : string.Empty,
                             TenCapDonVi = gDeptLevel != null ? gDeptLevel.TEXT : string.Empty
                         };
@@ -200,7 +186,6 @@ namespace Business.Business
             var existed = this.context.CCTC_THANHPHAN
                 .Where(x => x.CODE == code && x.ID != id).FirstOrDefault() != null;
             return existed;
-<<<<<<< HEAD
         }
 
         /// <summary>
@@ -216,8 +201,6 @@ namespace Business.Business
                 .Where(x => x.NAME == name && x.ID != id).FirstOrDefault() != null;
             return existed;
         }
-
-=======
         }
 
         /// <summary>
@@ -233,8 +216,6 @@ namespace Business.Business
                 .Where(x => x.NAME == name && x.ID != id).FirstOrDefault() != null;
             return existed;
         }
-
->>>>>>> be8d1df87d9714202c3906c410b17caa656c6083
 
         public bool ExistChild(int id)
         {
